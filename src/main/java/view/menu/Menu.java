@@ -1,5 +1,7 @@
 package view.menu;
 
+import controller.AllAccountZone;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -34,8 +36,12 @@ public abstract class Menu {
 
     public void showAvailableMenus() {
         System.out.println(this.getName() + " : ");
-        if (!this.getName().equals("Sign in"))
+        if (AllAccountZone.getCurrentAccount() == null && !this.getName().equals("Sign in") &&
+                !this.getName().equals("Logout"))
             System.out.println("Sign in");
+        else if (AllAccountZone.getCurrentAccount() != null && !this.getName().equals("Logout") &&
+                !this.getName().equals("Logout"))
+            System.out.println("Logout");
         for (Menu menu : submenus) {
             System.out.println(menu.getName());
         }
@@ -55,8 +61,12 @@ public abstract class Menu {
                 nextMenu = this.parentMenu;
         } else if (chosenMenu.equalsIgnoreCase("help")) {
             this.showAvailableMenus();
-        } else if (chosenMenu.equalsIgnoreCase("sign in") && !this.getName().equals("Sign in")) {
+        } else if (chosenMenu.equalsIgnoreCase("sign in") && !this.getName().equals("Sign in") &&
+                !this.getName().equals("Logout") && AllAccountZone.getCurrentAccount() == null) {
             nextMenu = new SignInMenu(this);
+        } else if (chosenMenu.equalsIgnoreCase("logout") && !this.getName().equals("Sign in") &&
+                !this.getName().equals("Logout") && AllAccountZone.getCurrentAccount() != null) {
+            nextMenu = new LogoutMenu(this);
         } else if (getMenuByName(chosenMenu) != null) {
             nextMenu = getMenuByName(chosenMenu);
         } else {

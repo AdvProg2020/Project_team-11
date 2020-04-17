@@ -10,7 +10,7 @@ public class ViewCartMenu extends Menu {
         super("View Cart", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getShowProductsInCartMenu());
-        submenus.add(getViewProductInCart());
+        submenus.add(getViewProductInCart());//should be edited to ShowProductMenu ;)
         submenus.add(getIncreaseProductMenu());
         submenus.add(getDecreaseProductMenu());
         submenus.add(getShowTotalPriceMenu());

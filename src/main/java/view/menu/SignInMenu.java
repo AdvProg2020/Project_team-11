@@ -28,7 +28,6 @@ public class SignInMenu extends Menu {
                     this.parentMenu.execute();
                 } else {
                     // receive information for new account
-                    System.out.println("Account Created");
                 }
                 this.parentMenu.execute();
             }
