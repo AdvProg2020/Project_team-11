@@ -1,7 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-
 public abstract class Account {
     protected String firstName;
     protected String lastName;
@@ -9,7 +7,6 @@ public abstract class Account {
     protected int phoneNumber;
     protected String username;
     protected String password;
-    private static ArrayList<Account> allAccounts = new ArrayList<>();
 
     public Account(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
                    String password) {
@@ -19,6 +16,6 @@ public abstract class Account {
         this.phoneNumber = phoneNumber;
         this.username = username;
         this.password = password;
-        allAccounts.add(this);
+        DateBase.getDateBase().setAllAccounts(this);
     }
 }

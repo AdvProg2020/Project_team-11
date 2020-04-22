@@ -10,7 +10,6 @@ public class Auction {
     private Date startDate;
     private Date endDate;
     private int discountAmount;
-    private static ArrayList<Auction> allAuction = new ArrayList<>();
 
     public Auction(int id, ArrayList<Product> productList, String status, Date startDate, Date endDate,
                    int discountAmount) {
@@ -20,6 +19,6 @@ public class Auction {
         this.startDate = startDate;
         this.endDate = endDate;
         this.discountAmount = discountAmount;
-        allAuction.add(this);
+        DateBase.getDateBase().setAllAuctions(this);
     }
 }

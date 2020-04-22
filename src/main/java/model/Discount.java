@@ -11,7 +11,6 @@ public class Discount {
     private HashMap<Integer, Integer> amount;
     private int repeatedTimes;
     private ArrayList<Buyer> allowedUsers;
-    private static ArrayList<Discount> allDiscounts = new ArrayList<>();
 
     public Discount(String code, Date startDate, Date endDate, HashMap<Integer, Integer> amount,
                     int repeatedTimes, ArrayList<Buyer> allowedUsers) {
@@ -21,6 +20,6 @@ public class Discount {
         this.amount = new HashMap<>(amount);
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
-        allDiscounts.add(this);
+        DateBase.getDateBase().setAllDiscounts(this);
     }
 }

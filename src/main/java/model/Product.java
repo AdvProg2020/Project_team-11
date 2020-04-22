@@ -11,7 +11,6 @@ public class Product {
     private String description;
     private int averageScore;
     private ArrayList<Comment> comments;
-    private static ArrayList<Product> allProducts = new ArrayList<>();
 
     public Product(int id, String status, ProductInfo generalFeature,
                    Category category, ArrayList<String> specialFeature,
@@ -24,6 +23,6 @@ public class Product {
         this.description = description;
         this.averageScore = averageScore;
         this.comments = new ArrayList<>(comments);
-        allProducts.add(this);
+        DateBase.getDateBase().setAllProducts(this);
     }
 }
