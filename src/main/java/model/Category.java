@@ -12,6 +12,22 @@ public class Category {
         this.name = name;
         this.specialFeatures = new ArrayList<>(specialFeatures);
         this.productList = new ArrayList<>(productList);
-        DateBase.getDateBase().setAllCategories(this);
+        DataBase.getDataBase().setAllCategories(this);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<String> getSpecialFeatures() {
+        return specialFeatures;
+    }
+
+    public ArrayList<Product> getProductList() {
+        return productList;
+    }
+
+    public void addProductList(Product product) {
+        this.productList.add(product);
     }
 }

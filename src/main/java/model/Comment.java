@@ -13,6 +13,26 @@ public class Comment {
         this.commentText = commentText;
         this.status = status;
         this.hasUserBoughtProduct = hasUserBoughtProduct;
-        DateBase.getDateBase().setAllComments(this);
+        DataBase.getDataBase().setAllComments(this);
+    }
+
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public String getCommentText() {
+        return commentText;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public boolean isHasUserBoughtProduct() {
+        return hasUserBoughtProduct;
     }
 }

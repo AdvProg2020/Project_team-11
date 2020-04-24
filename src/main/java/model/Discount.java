@@ -20,6 +20,30 @@ public class Discount {
         this.amount = new HashMap<>(amount);
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
-        DateBase.getDateBase().setAllDiscounts(this);
+        DataBase.getDataBase().setAllDiscounts(this);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public HashMap<Integer, Integer> getAmount() {
+        return amount;
+    }
+
+    public int getRepeatedTimes() {
+        return repeatedTimes;
+    }
+
+    public ArrayList<Buyer> getAllowedUsers() {
+        return allowedUsers;
     }
 }

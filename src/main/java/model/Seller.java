@@ -14,4 +14,16 @@ public class Seller extends Account {
         this.wallet = wallet;
         this.sellHistory = new ArrayList<>();
     }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public int getWallet() {
+        return wallet;
+    }
+
+    public ArrayList<SellLog> getSellHistory() {
+        return sellHistory;
+    }
 }

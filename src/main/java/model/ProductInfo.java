@@ -14,4 +14,36 @@ public class ProductInfo {
         this.seller = seller;
         this.stockStatus = stockStatus;
     }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public int getStockStatus() {
+        return stockStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductInfo{" +
+                "name='" + name + '\'' +
+                ", company='" + company + '\'' +
+                ", price=" + price +
+                ", seller=" + seller +
+                ", stockStatus=" + stockStatus +
+                '}';
+    }
 }

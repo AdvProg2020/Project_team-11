@@ -19,4 +19,24 @@ public class SellLog extends ExchangeLog {
         this.buyer = buyer;
         this.sendingStatus = sendingStatus;
     }
+
+    public int getReceivedAmount() {
+        return receivedAmount;
+    }
+
+    public int getReducedAmountForAuction() {
+        return reducedAmountForAuction;
+    }
+
+    public ArrayList<Product> getSoldProducts() {
+        return soldProducts;
+    }
+
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public String getSendingStatus() {
+        return sendingStatus;
+    }
 }

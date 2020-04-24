@@ -19,6 +19,46 @@ public class Auction {
         this.startDate = startDate;
         this.endDate = endDate;
         this.discountAmount = discountAmount;
-        DateBase.getDateBase().setAllAuctions(this);
+        DataBase.getDataBase().setAllAuctions(this);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public ArrayList<Product> getProductList() {
+        return productList;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public int getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setProductList(ArrayList<Product> productList) {
+        this.productList = productList;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setDiscountAmount(int discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

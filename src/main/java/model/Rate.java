@@ -9,6 +9,18 @@ public class Rate {
         this.buyer = buyer;
         this.score = score;
         this.product = product;
-        DateBase.getDateBase().setAllRates(this);
+        DataBase.getDataBase().setAllRates(this);
+    }
+
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 }

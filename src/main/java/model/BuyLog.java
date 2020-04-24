@@ -19,4 +19,24 @@ public class BuyLog extends ExchangeLog {
         this.seller = seller;
         this.deliveryStatus = deliveryStatus;
     }
+
+    public int getPaidAmount() {
+        return paidAmount;
+    }
+
+    public int getDiscountAmountApplied() {
+        return discountAmountApplied;
+    }
+
+    public ArrayList<Product> getPurchasedProductions() {
+        return purchasedProductions;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
 }
