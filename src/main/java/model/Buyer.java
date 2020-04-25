@@ -1,11 +1,13 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Buyer extends Account {
     private int wallet;
     private ArrayList<Discount> discountCodes;
     private ArrayList<BuyLog> buyHistory;
+    private HashMap<Product, Integer> cart;
 
     public Buyer(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
                  String password, int wallet) {
@@ -13,6 +15,7 @@ public class Buyer extends Account {
         this.wallet = wallet;
         this.discountCodes = new ArrayList<>();
         this.buyHistory = new ArrayList<>();
+        this.cart = new HashMap<>();
     }
 
     public int getWallet() {
@@ -27,6 +30,10 @@ public class Buyer extends Account {
         return buyHistory;
     }
 
+    public HashMap<Product, Integer> getCart() {
+        return cart;
+    }
+
     public void setWallet(int wallet) {
         this.wallet = wallet;
     }
@@ -37,6 +44,10 @@ public class Buyer extends Account {
 
     public void setBuyHistory(ArrayList<BuyLog> buyHistory) {
         this.buyHistory = buyHistory;
+    }
+
+    public void setCart(Product product) {
+        this.cart.put(product, 1);
     }
 
     @Override

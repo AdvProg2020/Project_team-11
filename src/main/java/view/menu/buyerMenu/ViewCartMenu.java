@@ -1,6 +1,8 @@
 package view.menu.buyerMenu;
 
+import controller.BuyerZone;
 import view.menu.Menu;
+import view.menu.productMenu.ShowProductMenu;
 
 import java.util.ArrayList;
 
@@ -10,7 +12,7 @@ public class ViewCartMenu extends Menu {
         super("View Cart", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getShowProductsInCartMenu());
-        submenus.add(getViewProductInCart());//should be edited to ShowProductMenu ;)
+        submenus.add(new ShowProductMenu(this));
         submenus.add(getIncreaseProductMenu());
         submenus.add(getDecreaseProductMenu());
         submenus.add(getShowTotalPriceMenu());
@@ -21,28 +23,8 @@ public class ViewCartMenu extends Menu {
     private Menu getShowProductsInCartMenu() {
         return new Menu("Show Products", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
-                this.parentMenu.execute();
-            }
-        };
-    }
-
-    private Menu getViewProductInCart() {
-        return new Menu("View Product", this) {
-            @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
-            public void execute() {
-                //function
+                System.out.println(BuyerZone.showProductsInCart());
                 this.parentMenu.execute();
             }
         };
@@ -51,13 +33,9 @@ public class ViewCartMenu extends Menu {
     private Menu getIncreaseProductMenu() {
         return new Menu("Increase Product", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int productId = checkInputProductId();
+                System.out.println(BuyerZone.changeNumberOFProductInCart(productId, 1));
                 this.parentMenu.execute();
             }
         };
@@ -66,13 +44,9 @@ public class ViewCartMenu extends Menu {
     private Menu getDecreaseProductMenu() {
         return new Menu("Decrease Product", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int productId = checkInputProductId();
+                System.out.println(BuyerZone.changeNumberOFProductInCart(productId, -1));
                 this.parentMenu.execute();
             }
         };
@@ -81,13 +55,8 @@ public class ViewCartMenu extends Menu {
     private Menu getShowTotalPriceMenu() {
         return new Menu("Show Total Price", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                System.out.println(BuyerZone.calculateTotalPrice());
                 this.parentMenu.execute();
             }
         };

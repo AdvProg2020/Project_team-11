@@ -26,7 +26,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product", this) {
             @Override
             public void execute() {
-                int productId = checkInput();
+                int productId = checkInputProductId();
                 System.out.println(SellerZone.viewSellerProduct(productId));
                 this.parentMenu.execute();
             }
@@ -37,7 +37,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product Buyers", this) {
             @Override
             public void execute() {
-                int productId = checkInput();
+                int productId = checkInputProductId();
                 System.out.println(SellerZone.viewProductBuyers(productId));
                 this.parentMenu.execute();
             }
@@ -48,7 +48,7 @@ public class ManageProducts extends Menu {
         return new Menu("Edit Product", this) {
             @Override
             public void execute() {
-                int productId = checkInput();
+                int productId = checkInputProductId();
                 if (SellerZone.editProduct(productId).equals("Edit")) {
                     getChangedField();
                 } else {
@@ -76,28 +76,5 @@ public class ManageProducts extends Menu {
         description = scanner.nextLine();
         String requestDescription = name + "," + company + "," + price + "," + stockStatus + "," + description;
         SellerZone.sendEditProductRequest(requestDescription);
-    }
-
-    private int checkInput() {
-        String IdString;
-        System.out.print("Enter product ID: ");
-        IdString = scanner.nextLine();
-        while (!isNumeric(IdString)) {
-            System.out.print("Enter a Number: ");
-            IdString = scanner.nextLine();
-        }
-        return Integer.parseInt(IdString);
-    }
-
-    private static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            double d = Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
     }
 }

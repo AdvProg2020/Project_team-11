@@ -74,4 +74,27 @@ public abstract class Menu {
         }
         nextMenu.execute();
     }
+
+    protected int checkInputProductId() {
+        String IdString;
+        System.out.print("Enter product ID: ");
+        IdString = scanner.nextLine();
+        while (!isNumeric(IdString)) {
+            System.out.print("Enter a Number: ");
+            IdString = scanner.nextLine();
+        }
+        return Integer.parseInt(IdString);
+    }
+
+    private static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 }
