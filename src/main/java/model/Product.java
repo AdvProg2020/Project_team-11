@@ -23,6 +23,6 @@ public class Product {
         this.description = description;
         this.averageScore = averageScore;
         this.comments = new ArrayList<>(comments);
-        DateBase.getDateBase().setAllProducts(this);
+        DataBase.getDataBase().setAllProducts(this);
     }
 }

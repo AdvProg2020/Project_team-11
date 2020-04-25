@@ -1,3 +1,5 @@
+package main.java;
+
 import view.CommandProcessor;
 
 public class Main {

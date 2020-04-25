@@ -19,6 +19,6 @@ public class Auction {
         this.startDate = startDate;
         this.endDate = endDate;
         this.discountAmount = discountAmount;
-        DateBase.getDateBase().setAllAuctions(this);
+        DataBase.getDataBase().setAllAuctions(this);
     }
 }

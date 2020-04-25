@@ -20,6 +20,6 @@ public class Discount {
         this.amount = new HashMap<>(amount);
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
-        DateBase.getDateBase().setAllDiscounts(this);
+        DataBase.getDataBase().setAllDiscounts(this);
     }
 }

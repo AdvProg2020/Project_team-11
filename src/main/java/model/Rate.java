@@ -9,6 +9,6 @@ public class Rate {
         this.buyer = buyer;
         this.score = score;
         this.product = product;
-        DateBase.getDateBase().setAllRates(this);
+        DataBase.getDataBase().setAllRates(this);
     }
 }

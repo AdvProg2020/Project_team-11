@@ -9,6 +9,6 @@ public class Request {
         this.topic = topic;
         this.description = description;
         this.status = status;
-        DateBase.getDateBase().setAllRequests(this);
+        DataBase.getDataBase().setAllRequests(this);
     }
 }

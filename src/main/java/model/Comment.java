@@ -13,6 +13,6 @@ public class Comment {
         this.commentText = commentText;
         this.status = status;
         this.hasUserBoughtProduct = hasUserBoughtProduct;
-        DateBase.getDateBase().setAllComments(this);
+        DataBase.getDataBase().setAllComments(this);
     }
 }

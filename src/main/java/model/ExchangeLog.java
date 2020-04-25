@@ -9,6 +9,6 @@ public abstract class ExchangeLog {
     public ExchangeLog(int id, Date date) {
         this.id = id;
         this.date = date;
-        DateBase.getDateBase().setAllLogs(this);
+        DataBase.getDataBase().setAllLogs(this);
     }
 }

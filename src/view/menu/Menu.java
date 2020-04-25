@@ -1,6 +1,7 @@
 package view.menu;
 
 import controller.AllAccountZone;
+import model.DataBase;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -63,10 +64,10 @@ public abstract class Menu {
             this.showAvailableMenus();
         } else if (chosenMenu.equalsIgnoreCase("sign in") && !this.getName().equals("Sign in") &&
                 !this.getName().equals("Logout") && AllAccountZone.getCurrentAccount() == null) {
-            nextMenu = new SignInMenu(this);
+            nextMenu = new SignInOrSingUpMenu(this);
         } else if (chosenMenu.equalsIgnoreCase("logout") && !this.getName().equals("Sign in") &&
                 !this.getName().equals("Logout") && AllAccountZone.getCurrentAccount() != null) {
-            nextMenu = new LogoutMenu(this);
+            nextMenu = new view.menu.LogoutMenu(this);
         } else if (getMenuByName(chosenMenu) != null) {
             nextMenu = getMenuByName(chosenMenu);
         } else {

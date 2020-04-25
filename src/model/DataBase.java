@@ -2,8 +2,8 @@ package model;
 
 import java.util.ArrayList;
 
-public class DateBase {
-    private static DateBase dateBase;
+public class DataBase {
+    private static DataBase dataBase;
     private ArrayList<Account> allAccounts = new ArrayList<>();
     private ArrayList<Auction> allAuctions = new ArrayList<>();
     private ArrayList<Category> allCategories = new ArrayList<>();
@@ -14,12 +14,12 @@ public class DateBase {
     private ArrayList<Rate> allRates = new ArrayList<>();
     private ArrayList<Request> allRequests = new ArrayList<>();
 
-    public DateBase() {
-        dateBase = this;
+    public DataBase() {
+        dataBase = this;
     }
 
-    public static DateBase getDateBase() {
-        return dateBase;
+    public static DataBase getDataBase() {
+        return dataBase;
     }
 
     //set an array to fields
