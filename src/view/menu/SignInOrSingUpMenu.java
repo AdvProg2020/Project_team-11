@@ -1,5 +1,10 @@
 package view.menu;
 
+import controller.*;
+import controller.AdminZone;
+import controller.AllAccountZone;
+import controller.BuyerZone;
+import controller.SellerZone;
 import model.Account;
 import model.Admin;
 import model.Buyer;
@@ -9,8 +14,10 @@ import java.util.ArrayList;
 
 public class SignInOrSingUpMenu extends Menu {
 
+    Admission admission = new Admission();
+
     public SignInOrSingUpMenu(Menu parentMenu) {
-        super("Sign in", parentMenu);
+        super("Create account/Login", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getCreateAccountMenu());
         submenus.add(getLoginMenu());
@@ -27,28 +34,38 @@ public class SignInOrSingUpMenu extends Menu {
 
             @Override
             public void execute() {
-                String input = scanner.nextLine();
-                if (input.equalsIgnoreCase("back")) {
-                    System.out.println(this.parentMenu.getName());
-                    this.parentMenu.execute();
-                } else if (input.equalsIgnoreCase("help"))
+                String[] splitInput = scanner.nextLine().split("\\s");
+                if (splitInput[0].equalsIgnoreCase("help")) {
                     this.showAvailableMenus();
-                else if (input.startsWith("create account")){
-                    String[] splitInput = input.split("\\s");
-                    for ( Account account : DataBase.getDataBase().getAllAccounts()) {
-                        if (splitInput[4] == account.getUsername()){
-                            System.out.println("Username already taken");
-                            this.execute();
-                    }
-                        if (splitInput[3].equalsIgnoreCase("Buyer")){
-
+                    this.execute();
+                } else if (splitInput[0].equalsIgnoreCase("back"))
+                    this.parentMenu.execute();
+                else if (splitInput[0].equalsIgnoreCase("cteate")){
+                    if (admission.isThereAccountWhithUsername(splitInput[3])) {
+                        System.out.println("Username already taken");
+                        this.execute();
+                    } else {
+                        System.out.println("Enter your password :");
+                        String password = scanner.nextLine();
+                        if (admission.isPasswordValid(password)) {
+                            System.out.println("Enter user information(first name, last name, email address, phone number)");
+                            String[] userInfo = scanner.nextLine().split("\\s");
+                            if (splitInput[2].equalsIgnoreCase("buyer")) {
+                                BuyerZone.addBuyer(splitInput[3], userInfo[0], userInfo[1], userInfo[2], userInfo[3], password);
+                            } else if (splitInput[2].equalsIgnoreCase("admin")) {
+                                AdminZone.addAdmin(splitInput[3], userInfo[0], userInfo[1], userInfo[2], userInfo[3], password);
+                            } else if (splitInput[2].equalsIgnoreCase("seller")) {
+                                String companyName = scanner.nextLine();
+                                SellerZone.addSeller(splitInput[3], userInfo[0], userInfo[1], userInfo[2], userInfo[3], password, companyName);
+                            }
                         }
+                        this.parentMenu.execute();
                     }
                 }
-                this.parentMenu.execute();
             }
         };
     }
+
 
     private Menu getLoginMenu() {
         return new Menu("Login", this) {
@@ -60,33 +77,24 @@ public class SignInOrSingUpMenu extends Menu {
 
             @Override
             public void execute() {
-                String input = scanner.nextLine();
-                if (input.equalsIgnoreCase("back")) {
-                    System.out.println(this.parentMenu.getName());
-                    this.parentMenu.execute();
-                } else if (input.equalsIgnoreCase("help")){
+                String[] splitInput = scanner.nextLine().split("\\s");
+                if (splitInput[0].equalsIgnoreCase("help")) {
                     this.showAvailableMenus();
                     this.execute();
-                }
-                else if (input.startsWith("login")){
-                    String[] splitInput = input.split("\\s");
-                    for (Account account: DataBase.getDataBase().getAllAccounts()) {
-                        if (splitInput[2] == account.getUsername()){
-                            System.out.println("Enter your password :");
-                            input = scanner.nextLine();
-                            if (input == account.getPassword()){
-                                System.out.println("Successfuly logged in");
-                                this.parentMenu.execute();
-                            } else {
-                                System.out.println("Wrong password");
-                                this.execute();
-                            }
-                        }
-                        System.out.println("User doesn't exist");
+                } else if (splitInput[0].equalsIgnoreCase("back"))
+                    this.parentMenu.execute();
+                else if (splitInput[0].equalsIgnoreCase("login")){
+                    System.out.println("Enter your password :");
+                    String password = scanner.nextLine();
+                    if (admission.isPasswordCorrect(splitInput[1], password)){
+                        AllAccountZone.initialize(splitInput[1]);
+                        System.out.println("Login successfully");
+                        this.parentMenu.execute();
+                    } else {
+                        System.out.println("Wrong username or password");
                         this.execute();
                     }
-                } else if (input.equalsIgnoreCase("exit")) {
-                    System.exit(1);
+                }
             }
         };
     }

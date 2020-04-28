@@ -1,6 +1,7 @@
 package view.menu;
 
 import controller.AllAccountZone;
+import model.Account;
 import model.DataBase;
 
 import java.util.ArrayList;

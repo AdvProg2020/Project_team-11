@@ -132,4 +132,11 @@ public class DataBase {
     public ArrayList<Request> getAllRequests() {
         return allRequests;
     }
+
+    public Account getAccountByUsername(String username){
+        for (Account account:allAccounts) {
+            if (account.getUsername().equals(username));
+            return account;
+        }
+    }
 }

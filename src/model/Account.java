@@ -4,11 +4,11 @@ public abstract class Account {
     protected String firstName;
     protected String lastName;
     protected String emailAddress;
-    protected long phoneNumber;
+    protected String phoneNumber;
     protected String username;
     protected String password;
 
-    public Account( String username,String firstName, String lastName, String emailAddress, int phoneNumber,
+    public Account(String username, String firstName, String lastName, String emailAddress, String phoneNumber,
                    String password) {
         this.firstName = firstName;
         this.lastName = lastName;

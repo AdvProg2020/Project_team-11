@@ -7,9 +7,9 @@ public class Buyer extends Account {
     private ArrayList<Discount> discountCodes;
     private ArrayList<BuyLog> buyHistory;
 
-    public Buyer(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
+    public Buyer( String username, String firstName, String lastName, String emailAddress, String phoneNumber,
                  String password, int wallet) {
-        super(firstName, lastName, emailAddress, phoneNumber, username, password);
+        super( username, firstName, lastName, emailAddress, phoneNumber, password);
         this.wallet = wallet;
         this.discountCodes = new ArrayList<>();
         this.buyHistory = new ArrayList<>();
