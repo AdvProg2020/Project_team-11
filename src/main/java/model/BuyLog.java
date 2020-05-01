@@ -2,38 +2,33 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class BuyLog extends ExchangeLog {
-    private int paidAmount;
-    private int discountAmountApplied;
-    private ArrayList<Product> purchasedProductions;
-    private Seller seller;
+    private long paidAmount;
+    private long discountAmountApplied;
+    private HashMap<Product, String> purchasedProductionsAndSellers;
     private String deliveryStatus;
 
-    public BuyLog(int id, Date date, int paidAmount, int discountAmountApplied,
-                  ArrayList<Product> purchasedProductions, Seller seller, String deliveryStatus) {
-        super(id, date);
+    public BuyLog(Date date, long paidAmount, long discountAmountApplied,
+                  HashMap<Product, String> purchasedProductionsAndSellers, String deliveryStatus) {
+        super(date);
         this.paidAmount = paidAmount;
         this.discountAmountApplied = discountAmountApplied;
-        this.purchasedProductions = new ArrayList<>(purchasedProductions);
-        this.seller = seller;
+        this.purchasedProductionsAndSellers = purchasedProductionsAndSellers;
         this.deliveryStatus = deliveryStatus;
     }
 
-    public int getPaidAmount() {
+    public long getPaidAmount() {
         return paidAmount;
     }
 
-    public int getDiscountAmountApplied() {
+    public long getDiscountAmountApplied() {
         return discountAmountApplied;
     }
 
-    public ArrayList<Product> getPurchasedProductions() {
-        return purchasedProductions;
-    }
-
-    public Seller getSeller() {
-        return seller;
+    public HashMap<Product, String> getPurchasedProductionsAndSellers() {
+        return purchasedProductionsAndSellers;
     }
 
     public String getDeliveryStatus() {

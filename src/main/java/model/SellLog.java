@@ -4,36 +4,36 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class SellLog extends ExchangeLog {
-    private int receivedAmount;
-    private int reducedAmountForAuction;
-    private ArrayList<Product> soldProducts;
-    private Buyer buyer;
+    private long receivedAmount;
+    private long reducedAmountForAuction;
+    private Product soldProduct;
+    private String buyerName;
     private String sendingStatus;
 
-    public SellLog(int id, Date date, int receivedAmount, int reducedAmountForAuction,
-                   ArrayList<Product> soldProducts, Buyer buyer, String sendingStatus) {
-        super(id, date);
+    public SellLog(Date date, long receivedAmount, long reducedAmountForAuction,
+                   Product soldProduct, String buyerName, String sendingStatus) {
+        super(date);
         this.receivedAmount = receivedAmount;
         this.reducedAmountForAuction = reducedAmountForAuction;
-        this.soldProducts = new ArrayList<>(soldProducts);
-        this.buyer = buyer;
+        this.soldProduct = soldProduct;
+        this.buyerName = buyerName;
         this.sendingStatus = sendingStatus;
     }
 
-    public int getReceivedAmount() {
+    public long getReceivedAmount() {
         return receivedAmount;
     }
 
-    public int getReducedAmountForAuction() {
+    public long getReducedAmountForAuction() {
         return reducedAmountForAuction;
     }
 
-    public ArrayList<Product> getSoldProducts() {
-        return soldProducts;
+    public Product getSoldProducts() {
+        return soldProduct;
     }
 
-    public Buyer getBuyer() {
-        return buyer;
+    public String getBuyerName() {
+        return buyerName;
     }
 
     public String getSendingStatus() {

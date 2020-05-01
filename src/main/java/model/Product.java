@@ -11,11 +11,13 @@ public class Product {
     private String description;
     private int averageScore;
     private ArrayList<Comment> comments;
+    private static int numOfAllProducts;
 
-    public Product(int id, String status, ProductInfo generalFeature,
+    public Product(String status, ProductInfo generalFeature,
                    Category category, ArrayList<String> specialFeature,
                    String description, int averageScore, ArrayList<Comment> comments) {
-        this.id = id;
+        this.id = numOfAllProducts;
+        numOfAllProducts += 1;
         this.status = status;
         this.generalFeature = generalFeature;
         this.category = category;
@@ -53,6 +55,8 @@ public class Product {
     public int getAverageScore() {
         return averageScore;
     }
+
+
 
     public ArrayList<Comment> getComments() {
         return comments;

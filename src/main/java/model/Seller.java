@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Seller extends Account {
     private String companyName;
-    private int wallet;
+    private long wallet;
     private ArrayList<SellLog> sellHistory;
 
-    public Seller(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
+    public Seller(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
                   String password, String companyName, int wallet) {
         super(firstName, lastName, emailAddress, phoneNumber, username, password);
         this.companyName = companyName;
@@ -19,11 +19,19 @@ public class Seller extends Account {
         return companyName;
     }
 
-    public int getWallet() {
+    public long getWallet() {
         return wallet;
     }
 
     public ArrayList<SellLog> getSellHistory() {
         return sellHistory;
+    }
+
+    public void setWallet(long wallet) {
+        this.wallet = wallet;
+    }
+
+    public void addSellHistory(SellLog sellHistory) {
+        this.sellHistory.add(sellHistory);
     }
 }

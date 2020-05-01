@@ -21,10 +21,8 @@ public class SellerZone {
         StringBuilder buyersList = new StringBuilder();
         for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
             if (log instanceof SellLog) {
-                for (Product soldProduct : ((SellLog) log).getSoldProducts()) {
-                    if (soldProduct.equals(product)) {
-                        buyersList.append(((SellLog) log).getBuyer());
-                    }
+                if (((SellLog) log).getSoldProducts().equals(product)) {
+                    buyersList.append(((SellLog) log).getBuyerName());
                 }
             }
         }

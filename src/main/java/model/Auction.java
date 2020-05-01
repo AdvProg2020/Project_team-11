@@ -10,10 +10,12 @@ public class Auction {
     private Date startDate;
     private Date endDate;
     private int discountAmount;
+    private static int numOfAllAuctions = 0;
 
-    public Auction(int id, ArrayList<Product> productList, String status, Date startDate, Date endDate,
+    public Auction(ArrayList<Product> productList, String status, Date startDate, Date endDate,
                    int discountAmount) {
-        this.id = id;
+        this.id = numOfAllAuctions;
+        numOfAllAuctions += 1;
         this.productList = new ArrayList<>(productList);
         this.status = status;
         this.startDate = startDate;

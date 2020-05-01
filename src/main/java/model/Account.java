@@ -4,11 +4,11 @@ public abstract class Account {
     protected String firstName;
     protected String lastName;
     protected String emailAddress;
-    protected int phoneNumber;
+    protected String phoneNumber;
     protected String username;
     protected String password;
 
-    public Account(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
+    public Account(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
                    String password) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,7 +31,7 @@ public abstract class Account {
         return emailAddress;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
@@ -55,7 +55,7 @@ public abstract class Account {
         this.emailAddress = emailAddress;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

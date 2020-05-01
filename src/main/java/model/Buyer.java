@@ -4,25 +4,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Buyer extends Account {
-    private int wallet;
-    private ArrayList<Discount> discountCodes;
+    private long wallet;
+    private HashMap<Discount, Integer> discountCodes;
     private ArrayList<BuyLog> buyHistory;
     private HashMap<Product, Integer> cart;
+    private Discount activeDiscount;
 
-    public Buyer(String firstName, String lastName, String emailAddress, int phoneNumber, String username,
-                 String password, int wallet) {
+    public Buyer(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
+                 String password, long wallet) {
         super(firstName, lastName, emailAddress, phoneNumber, username, password);
         this.wallet = wallet;
-        this.discountCodes = new ArrayList<>();
+        this.discountCodes = new HashMap<>();
         this.buyHistory = new ArrayList<>();
         this.cart = new HashMap<>();
     }
 
-    public int getWallet() {
+    public long getWallet() {
         return wallet;
     }
 
-    public ArrayList<Discount> getDiscountCodes() {
+    public HashMap<Discount, Integer> getDiscountCodes() {
         return discountCodes;
     }
 
@@ -34,20 +35,33 @@ public class Buyer extends Account {
         return cart;
     }
 
-    public void setWallet(int wallet) {
+    public Discount getActiveDiscount() {
+        return activeDiscount;
+    }
+
+    public void setWallet(long wallet) {
         this.wallet = wallet;
     }
 
-    public void setDiscountCodes(ArrayList<Discount> discountCodes) {
+    public void setDiscountCodes(HashMap<Discount, Integer> discountCodes) {
         this.discountCodes = discountCodes;
     }
 
-    public void setBuyHistory(ArrayList<BuyLog> buyHistory) {
-        this.buyHistory = buyHistory;
+    public void addBuyHistory(BuyLog buyHistory) {
+        this.buyHistory.add(buyHistory);
     }
 
     public void setCart(Product product) {
         this.cart.put(product, 1);
+    }
+
+    public void setActiveDiscount(Discount activeDiscount) {
+        this.activeDiscount = activeDiscount;
+    }
+
+    public void decreaseDiscountCode(Discount discount) {
+        int number = this.discountCodes.get(discount);
+        this.discountCodes.replace(discount, number - 1);
     }
 
     @Override

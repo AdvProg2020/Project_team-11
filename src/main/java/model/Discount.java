@@ -8,7 +8,7 @@ public class Discount {
     private String code;
     private Date startDate;
     private Date endDate;
-    private HashMap<Integer, Integer> amount;
+    private long[] amount;
     private int repeatedTimes;
     private ArrayList<Buyer> allowedUsers;
 
@@ -17,7 +17,7 @@ public class Discount {
         this.code = code;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.amount = new HashMap<>(amount);
+        this.amount = new long[2];
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
         DataBase.getDataBase().setAllDiscounts(this);
@@ -35,7 +35,7 @@ public class Discount {
         return endDate;
     }
 
-    public HashMap<Integer, Integer> getAmount() {
+    public long[] getAmount() {
         return amount;
     }
 

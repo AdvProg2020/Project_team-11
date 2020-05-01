@@ -3,7 +3,8 @@ package model;
 public class ProductInfo {
     private String name;
     private String company;
-    private int price;
+    private long price;
+    private long auctionPrice;
     private Seller seller;
     private int stockStatus;
 
@@ -11,6 +12,7 @@ public class ProductInfo {
         this.name = name;
         this.company = company;
         this.price = price;
+        this.auctionPrice = price;
         this.seller = seller;
         this.stockStatus = stockStatus;
     }
@@ -24,8 +26,12 @@ public class ProductInfo {
         return company;
     }
 
-    public int getPrice() {
+    public long getPrice() {
         return price;
+    }
+
+    public long getAuctionPrice() {
+        return auctionPrice;
     }
 
     public Seller getSeller() {
@@ -34,6 +40,10 @@ public class ProductInfo {
 
     public int getStockStatus() {
         return stockStatus;
+    }
+
+    public void setAuctionPrice(long auctionPrice) {
+        this.auctionPrice = auctionPrice;
     }
 
     @Override

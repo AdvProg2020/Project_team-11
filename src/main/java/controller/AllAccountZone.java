@@ -4,6 +4,8 @@ import model.Account;
 import model.DataBase;
 import model.Product;
 
+import java.util.Date;
+
 public class AllAccountZone {
     private static Account currentAccount = null;
 
@@ -21,5 +23,12 @@ public class AllAccountZone {
                 return product;
         }
         return null;
+    }
+
+    public static Date getCurrentDate() {
+        Date UTCDate = new Date();
+        final Date diffDate = new Date((4 * 3600 + 30 * 60) * 1000);
+        long sum = UTCDate.getTime() + diffDate.getTime();
+        return new Date(sum);
     }
 }

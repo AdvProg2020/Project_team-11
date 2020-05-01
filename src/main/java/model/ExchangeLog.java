@@ -5,10 +5,12 @@ import java.util.Date;
 public abstract class ExchangeLog {
     protected int id;
     protected Date date;
+    protected static int numOfAllLogs = 1;
 
-    public ExchangeLog(int id, Date date) {
-        this.id = id;
+    public ExchangeLog(Date date) {
+        this.id = numOfAllLogs;
         this.date = date;
+        numOfAllLogs += 1;
         DataBase.getDataBase().setAllLogs(this);
     }
 
