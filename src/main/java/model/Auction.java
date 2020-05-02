@@ -56,6 +56,10 @@ public class Auction {
         this.status = status;
     }
 
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }

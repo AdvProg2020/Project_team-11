@@ -46,6 +46,22 @@ public class ProductInfo {
         this.auctionPrice = auctionPrice;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setPrice(long price) {
+        this.price = price;
+    }
+
+    public void setStockStatus(int stockStatus) {
+        this.stockStatus = stockStatus;
+    }
+
     @Override
     public String toString() {
         return "ProductInfo{" +

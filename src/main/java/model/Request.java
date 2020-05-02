@@ -1,12 +1,16 @@
 package model;
 
 public class Request {
-    private Buyer sender;
+    private int Id;
+    private static int numOfAllRequest = 1;
+    private Seller sender;
     private String topic;
     private String description;
     private String status;
 
-    public Request(Buyer sender, String topic, String description, String status) {
+    public Request(Seller sender, String topic, String description, String status) {
+        this.Id = numOfAllRequest;
+        numOfAllRequest += 1;
         this.sender = sender;
         this.topic = topic;
         this.description = description;
@@ -14,7 +18,11 @@ public class Request {
         DataBase.getDataBase().setAllRequests(this);
     }
 
-    public Buyer getSender() {
+    public int getId() {
+        return Id;
+    }
+
+    public Seller getSender() {
         return sender;
     }
 
@@ -28,5 +36,9 @@ public class Request {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

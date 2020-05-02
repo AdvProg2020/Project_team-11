@@ -75,9 +75,9 @@ public abstract class Menu {
         nextMenu.execute();
     }
 
-    protected int checkInputProductId() {
+    protected int checkInputId(String field) {
         String IdString;
-        System.out.print("Enter product ID: ");
+        System.out.print("Enter " + field + " ID: ");
         IdString = scanner.nextLine();
         while (!isNumeric(IdString)) {
             System.out.print("Enter a Number: ");

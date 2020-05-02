@@ -56,10 +56,24 @@ public class Product {
         return averageScore;
     }
 
-
-
     public ArrayList<Comment> getComments() {
         return comments;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAverageScore(int averageScore) {
+        this.averageScore = averageScore;
+    }
+
+    public void addComments(Comment comments) {
+        this.comments.add(comments);
     }
 
     @Override

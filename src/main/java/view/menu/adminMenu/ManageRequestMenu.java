@@ -1,5 +1,6 @@
 package view.menu.adminMenu;
 
+import controller.AdminZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -15,16 +16,18 @@ public class ManageRequestMenu extends Menu {
         this.setSubmenus(submenus);
     }
 
+    @Override
+    public void execute() {
+        System.out.println(AdminZone.showAllRequests());
+        super.execute();
+    }
+
     private Menu getViewRequestDetailsMenu() {
         return new Menu("View Details", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int requestId = checkInputId("request");
+                System.out.println(AdminZone.viewRequestDetails(requestId));
                 this.parentMenu.execute();
             }
         };
@@ -33,13 +36,9 @@ public class ManageRequestMenu extends Menu {
     private Menu getAcceptRequestMenu() {
         return new Menu("Accept Request", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int requestId = checkInputId("request");
+                System.out.println(AdminZone.acceptRequest(requestId));
                 this.parentMenu.execute();
             }
         };
@@ -48,13 +47,9 @@ public class ManageRequestMenu extends Menu {
     private Menu getDeclineRequestMenu() {
         return new Menu("Decline Request", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int requestId = checkInputId("request");
+                System.out.println(AdminZone.declineRequest(requestId));
                 this.parentMenu.execute();
             }
         };

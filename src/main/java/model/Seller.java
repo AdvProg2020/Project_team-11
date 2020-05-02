@@ -8,7 +8,7 @@ public class Seller extends Account {
     private ArrayList<SellLog> sellHistory;
 
     public Seller(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
-                  String password, String companyName, int wallet) {
+                  String password, String companyName, long wallet) {
         super(firstName, lastName, emailAddress, phoneNumber, username, password);
         this.companyName = companyName;
         this.wallet = wallet;

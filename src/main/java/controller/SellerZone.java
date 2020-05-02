@@ -4,6 +4,15 @@ import model.*;
 
 public class SellerZone {
 
+    public static Product getProductById(int Id) {
+        for (Product product : DataBase.getDataBase().getAllProducts()) {
+            if (product.getId() == Id &&
+                    product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount()))
+                return product;
+        }
+        return null;
+    }
+
     public static String getSellerProducts() {
         StringBuilder productList = new StringBuilder();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
@@ -30,8 +39,8 @@ public class SellerZone {
     }
 
     public static String viewSellerProduct(int productId) {
-        Product product = AllAccountZone.getProductById(productId);
-        if (product == null || product.getGeneralFeature().getSeller() != AllAccountZone.getCurrentAccount()) {
+        Product product = getProductById(productId);
+        if (product == null) {
             return "You haven't this product.";
         } else {
             return product.toString();
@@ -39,8 +48,8 @@ public class SellerZone {
     }
 
     public static String viewProductBuyers(int productId) {
-        Product product = AllAccountZone.getProductById(productId);
-        if (product == null || product.getGeneralFeature().getSeller() != AllAccountZone.getCurrentAccount()) {
+        Product product = getProductById(productId);
+        if (product == null) {
             return "You haven't this product.";
         } else {
             return getProductBuyers(product);
@@ -48,8 +57,8 @@ public class SellerZone {
     }
 
     public static String editProduct(int productId) {
-        Product product = AllAccountZone.getProductById(productId);
-        if (product == null || product.getGeneralFeature().getSeller() != AllAccountZone.getCurrentAccount()) {
+        Product product = getProductById(productId);
+        if (product == null) {
             return "You haven't this product.";
         } else {
             return "Edit";
@@ -57,6 +66,8 @@ public class SellerZone {
     }
 
     public static void sendEditProductRequest(String description) {
-        new Request((Buyer) AllAccountZone.getCurrentAccount(), "edit product", description, "unseen");
+        Request request = new Request((Seller) AllAccountZone.getCurrentAccount(), "edit product", description,
+                "unseen");
+        DataBase.getDataBase().setAllRequests(request);
     }
 }

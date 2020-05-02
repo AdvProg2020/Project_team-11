@@ -26,7 +26,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputProductId();
+                int productId = checkInputId("product");
                 System.out.println(SellerZone.viewSellerProduct(productId));
                 this.parentMenu.execute();
             }
@@ -37,7 +37,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product Buyers", this) {
             @Override
             public void execute() {
-                int productId = checkInputProductId();
+                int productId = checkInputId("product");
                 System.out.println(SellerZone.viewProductBuyers(productId));
                 this.parentMenu.execute();
             }
@@ -48,19 +48,18 @@ public class ManageProducts extends Menu {
         return new Menu("Edit Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputProductId();
+                int productId = checkInputId("product");
                 if (SellerZone.editProduct(productId).equals("Edit")) {
-                    getChangedField();
+                    getChangedField(productId);
                 } else {
-                    System.out.println(SellerZone.editProduct(productId));
+                    System.out.println("You haven't this product.");
                 }
-
                 this.parentMenu.execute();
             }
         };
     }
 
-    private void getChangedField() {
+    private void getChangedField(int productId) {
         String name, company, description;
         int price, stockStatus;
         System.out.println("Enter the new field or 'next' to skip");
@@ -74,7 +73,8 @@ public class ManageProducts extends Menu {
         stockStatus = Integer.parseInt(scanner.nextLine());//can cause ERROR
         System.out.print("description: ");
         description = scanner.nextLine();
-        String requestDescription = name + "," + company + "," + price + "," + stockStatus + "," + description;
+        String requestDescription = productId + "," + name + "," + company + "," + price + "," + stockStatus +
+                "," + description;
         SellerZone.sendEditProductRequest(requestDescription);
     }
 }
