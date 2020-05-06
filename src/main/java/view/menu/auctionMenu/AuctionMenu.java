@@ -1,7 +1,7 @@
 package view.menu.auctionMenu;
 
 import view.menu.Menu;
-import view.menu.productMenu.ShowProductMenu;
+import view.menu.productsMenu.ShowProductMenu;
 
 import java.util.ArrayList;
 

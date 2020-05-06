@@ -1,20 +1,20 @@
-package view.menu.productMenu;
+package view.menu.productsMenu;
 
 import view.menu.Menu;
 
 import java.util.ArrayList;
 
-public class CommentMenu extends Menu {
+public class DigestMenu extends Menu {
 
-    public CommentMenu(Menu parentMenu) {
-        super("Compare", parentMenu);
+    public DigestMenu(Menu parentMenu) {
+        super("Digest", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
-        submenus.add(getAddCommentMenu());
+        submenus.add(getAddToCartMenu());
         this.setSubmenus(submenus);
     }
 
-    private Menu getAddCommentMenu() {
-        return new Menu("Add Comment", this) {
+    private Menu getAddToCartMenu() {
+        return new Menu("Add To Cart", this) {
             @Override
             public void showAvailableMenus() {
                 //probably empty

@@ -1,12 +1,12 @@
-package view.menu.productMenu;
+package view.menu.productsMenu;
 
 import view.menu.Menu;
 
 import java.util.ArrayList;
 
-public class ProductMenu extends Menu {
+public class ProductsMenu extends Menu {
 
-    public ProductMenu(Menu parentMenu) {
+    public ProductsMenu(Menu parentMenu) {
         super("Products", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getViewCategoriesMenu());

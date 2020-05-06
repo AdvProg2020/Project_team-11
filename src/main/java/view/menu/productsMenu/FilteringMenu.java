@@ -1,23 +1,23 @@
-package view.menu.productMenu;
+package view.menu.productsMenu;
 
 import view.menu.Menu;
 
 import java.util.ArrayList;
 
-public class SortingMenu extends Menu {
+public class FilteringMenu extends Menu {
 
-    public SortingMenu(Menu parentMenu) {
-        super("Sorting", parentMenu);
+    public FilteringMenu(Menu parentMenu) {
+        super("Filtering", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
-        submenus.add(getShowAvailableSortMenu());
-        submenus.add(getSortMenu());
-        submenus.add(getCurrentSortMenu());
-        submenus.add(getDisableSortMenu());
+        submenus.add(getShowAvailableFilters());
+        submenus.add(getFilterMenu());
+        submenus.add(getCurrentFiltersMenu());
+        submenus.add(getDisableFilterMenu());
         this.setSubmenus(submenus);
     }
 
-    private Menu getShowAvailableSortMenu() {
-        return new Menu("Show Available Sorts", this) {
+    private Menu getShowAvailableFilters() {
+        return new Menu("Show Available Filters", this) {
             @Override
             public void showAvailableMenus() {
                 //probably empty
@@ -31,8 +31,8 @@ public class SortingMenu extends Menu {
         };
     }
 
-    private Menu getSortMenu() {
-        return new Menu("Sort", this) {
+    private Menu getFilterMenu() {
+        return new Menu("Filter", this) {
             @Override
             public void showAvailableMenus() {
                 //probably empty
@@ -46,8 +46,8 @@ public class SortingMenu extends Menu {
         };
     }
 
-    private Menu getCurrentSortMenu() {
-        return new Menu("Show Current Sort", this) {
+    private Menu getCurrentFiltersMenu() {
+        return new Menu("Show Current Filters", this) {
             @Override
             public void showAvailableMenus() {
                 //probably empty
@@ -61,8 +61,8 @@ public class SortingMenu extends Menu {
         };
     }
 
-    private Menu getDisableSortMenu() {
-        return new Menu("Disable Sort", this) {
+    private Menu getDisableFilterMenu() {
+        return new Menu("Disable Filter", this) {
             @Override
             public void showAvailableMenus() {
                 //probably empty

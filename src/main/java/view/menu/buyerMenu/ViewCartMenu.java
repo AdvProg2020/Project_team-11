@@ -2,7 +2,7 @@ package view.menu.buyerMenu;
 
 import controller.BuyerZone;
 import view.menu.Menu;
-import view.menu.productMenu.ShowProductMenu;
+import view.menu.productsMenu.ShowProductMenu;
 
 import java.util.ArrayList;
 
