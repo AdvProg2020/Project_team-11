@@ -138,6 +138,7 @@ public class ViewCartMenu extends Menu {
                 if (BuyerZone.canPayMoney()) {
                     BuyerZone.payMoney();
                     System.out.println("Purchase Completed.\nThank you for buying.");
+                    Menu.getMainMenu().execute();
                 } else {
                     System.out.println("You don't have enough money.");
                     this.parentMenu.execute();

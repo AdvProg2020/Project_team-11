@@ -7,6 +7,7 @@ public class CommandProcessor {
 
     public static void runMenus() {
         Menu currentMenu = new MainMenu();
+        Menu.setMainMenu(currentMenu);
         currentMenu.execute();
     }
 }

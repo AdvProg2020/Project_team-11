@@ -6,20 +6,35 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class Menu {
-    private String name;
+    private final String name;
     protected Scanner scanner = new Scanner(System.in);
     protected ArrayList<Menu> submenus;
     protected Menu parentMenu;
-//    protected static ArrayList<Menu> allMenus;
+    protected static Menu mainMenu;
 
     public Menu(String name, Menu parentMenu) {
         this.name = name;
         this.parentMenu = parentMenu;
-//        allMenus.add(this);
     }
 
     public void setSubmenus(ArrayList<Menu> submenus) {
         this.submenus = submenus;
+    }
+
+    public void addSubmenus(Menu submenu) {
+        this.submenus.add(submenu);
+    }
+
+    public void removeSubmenu(Menu submenu) {
+        this.submenus.remove(submenu);
+    }
+
+    public static void setMainMenu(Menu mainMenu) {
+        Menu.mainMenu = mainMenu;
+    }
+
+    public static Menu getMainMenu() {
+        return mainMenu;
     }
 
     public String getName() {
