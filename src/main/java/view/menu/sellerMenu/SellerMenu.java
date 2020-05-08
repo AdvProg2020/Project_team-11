@@ -1,5 +1,6 @@
 package view.menu.sellerMenu;
 
+import controller.AllAccountZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -99,13 +100,8 @@ public class SellerMenu extends Menu {
     private Menu getViewBalanceMenu() {
         return new Menu("View Balance", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                System.out.println(AllAccountZone.viewUserBalance() + "$");
                 this.parentMenu.execute();
             }
         };

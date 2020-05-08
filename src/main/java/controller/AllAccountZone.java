@@ -1,9 +1,6 @@
 package controller;
 
-import model.Account;
-import model.Category;
-import model.DataBase;
-import model.Product;
+import model.*;
 import view.menu.Menu;
 import view.menu.auctionMenu.AuctionMenu;
 import view.menu.productsMenu.FilterInfo;
@@ -140,5 +137,13 @@ public class AllAccountZone {
             }
             return 0;
         }).collect(Collectors.toList());
+    }
+
+    public static long viewUserBalance() {
+        Account account = AllAccountZone.getCurrentAccount();
+        if (account instanceof Buyer)
+            return ((Buyer) account).getWallet();
+        else
+            return ((Seller) account).getWallet();
     }
 }
