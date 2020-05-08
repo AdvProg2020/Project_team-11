@@ -21,4 +21,12 @@ public abstract class ExchangeLog {
     public Date getDate() {
         return date;
     }
+
+    public static ExchangeLog getLogById(int logId) {
+        for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
+            if (log.getId() == logId)
+                return log;
+        }
+        return null;
+    }
 }

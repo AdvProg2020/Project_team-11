@@ -147,13 +147,14 @@ public class BuyerZone {
                     product.getGeneralFeature().getSeller().getLastName());
         }
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), paidAmount, totalPrice - paidAmount,
-                purchasedProducts, "sending");
+                purchasedProducts, AllAccountZone.getCurrentAccount().getUsername(), "sending");
         buyer.addBuyHistory(buyLog);
         for (Product product : buyer.getCart().keySet()) {
             SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(), product.getGeneralFeature().getAuctionPrice(),
                     product.getGeneralFeature().getPrice() - product.getGeneralFeature().getAuctionPrice(),
                     product, AllAccountZone.getCurrentAccount().getFirstName() + " " +
-                    AllAccountZone.getCurrentAccount().getLastName(), "sending");
+                    AllAccountZone.getCurrentAccount().getLastName(), product.getGeneralFeature().getSeller().getUsername(),
+                    "sending");
             product.getGeneralFeature().getSeller().addSellHistory(sellLog);
         }
     }
@@ -171,5 +172,52 @@ public class BuyerZone {
                         (product.getGeneralFeature().getPrice() * (1 - discountPercent)));
             }
         }
+    }
+
+    public static String getOrders() {
+        StringBuilder output = new StringBuilder();
+        for (BuyLog buyLog  : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
+            output.append(buyLog.getId()).append(". ").append(buyLog.getDate());
+        }
+        return output.toString();
+    }
+
+    public static String getOrderInfo(int logId) {
+        ExchangeLog log = ExchangeLog.getLogById(logId);
+        String output;
+        if (!(log instanceof BuyLog)) {
+            return "invalid ID";
+        } else if (!((BuyLog) log).getBuyerUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            return "invalid ID";
+        } else {
+            output = (log.getId() + ". " + log.getDate() + " : \n" + ((BuyLog) log).getPurchasedProductionsAndSellers() +
+                    "\n" + ((BuyLog) log).getPaidAmount() + "$ -> Discount = " + ((BuyLog) log).getDiscountAmountApplied() +
+                    "$\n" + ((BuyLog) log).getDeliveryStatus());
+        }
+        return output;
+    }
+
+    public static boolean hasUserBoughtProduct(int productId) {
+        for (BuyLog buyLog  : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
+            for (Product product : buyLog.getPurchasedProductionsAndSellers().keySet()) {
+                if (product.getId() == productId)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public static void createRate(int productId, int score) {
+        Product product = null;
+        for (BuyLog buyLog : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
+            for (Product boughtProduct : buyLog.getPurchasedProductionsAndSellers().keySet()) {
+                if (boughtProduct.getId() == productId)
+                    product = boughtProduct;
+            }
+        }
+        new Rate((Buyer) AllAccountZone.getCurrentAccount(), score, product);
+        double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getAverageScore() + 1);
+        product.setAverageScore(newScore);
+        product.addNumOfUsersRated();
     }
 }

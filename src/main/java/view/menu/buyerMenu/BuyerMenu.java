@@ -35,13 +35,8 @@ public class BuyerMenu extends Menu {
     private Menu getViewDiscountCodesMenu() {
         return new Menu("View Discount Codes", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+
                 this.parentMenu.execute();
             }
         };

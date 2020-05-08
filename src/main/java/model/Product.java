@@ -10,13 +10,13 @@ public class Product {
     private Category category;
     private HashMap<String, String> specialFeature;
     private String description;
-    private int averageScore;
+    private double averageScore;
+    private int numOfUsersRated;
     private ArrayList<Comment> comments;
     private static int numOfAllProducts;
 
-    public Product(String status, ProductInfo generalFeature,
-                   Category category, HashMap<String, String> specialFeature,
-                   String description, int averageScore, ArrayList<Comment> comments) {
+    public Product(String status, ProductInfo generalFeature, Category category,
+                   HashMap<String, String> specialFeature, String description, ArrayList<Comment> comments) {
         this.id = numOfAllProducts;
         numOfAllProducts += 1;
         this.status = status;
@@ -24,7 +24,8 @@ public class Product {
         this.category = category;
         this.specialFeature = new HashMap<>(specialFeature);
         this.description = description;
-        this.averageScore = averageScore;
+        this.averageScore = 0;
+        this.numOfUsersRated = 0;
         this.comments = new ArrayList<>(comments);
         DataBase.getDataBase().setAllProducts(this);
     }
@@ -53,8 +54,12 @@ public class Product {
         return description;
     }
 
-    public int getAverageScore() {
+    public double getAverageScore() {
         return averageScore;
+    }
+
+    public int getNumOfUsersRated() {
+        return numOfUsersRated;
     }
 
     public ArrayList<Comment> getComments() {
@@ -69,8 +74,12 @@ public class Product {
         this.description = description;
     }
 
-    public void setAverageScore(int averageScore) {
+    public void setAverageScore(double averageScore) {
         this.averageScore = averageScore;
+    }
+
+    public void addNumOfUsersRated() {
+        this.numOfUsersRated += 1;
     }
 
     public void addComments(Comment comments) {

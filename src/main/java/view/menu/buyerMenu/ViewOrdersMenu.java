@@ -1,5 +1,6 @@
 package view.menu.buyerMenu;
 
+import controller.BuyerZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -14,17 +15,19 @@ public class ViewOrdersMenu extends Menu {
         this.setSubmenus(submenus);
     }
 
+    @Override
+    public void execute() {
+        System.out.println(BuyerZone.getOrders());
+        super.execute();
+    }
+
     private Menu getShowOrderMenu() {
         return new Menu("Show Order", this) {
-            @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
+           @Override
             public void execute() {
-                //function
-                this.parentMenu.execute();
+               int orderId = Integer.parseInt(checkInput("Enter Order ID", "\\d+"));
+               System.out.println(BuyerZone.getOrderInfo(orderId));
+               this.parentMenu.execute();
             }
         };
     }
@@ -32,13 +35,15 @@ public class ViewOrdersMenu extends Menu {
     private Menu getRateProductMenu() {
         return new Menu("Rate Product", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                if (BuyerZone.hasUserBoughtProduct(productId)) {
+                    int score = Integer.parseInt(checkInput("Enter Score [1-5]", "^[12345]$"));
+                    BuyerZone.createRate(productId, score);
+                    System.out.println("Done.");
+                } else {
+                    System.out.println("You didn't buy this product");
+                }
                 this.parentMenu.execute();
             }
         };

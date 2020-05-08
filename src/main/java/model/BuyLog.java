@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -8,14 +7,16 @@ public class BuyLog extends ExchangeLog {
     private long paidAmount;
     private long discountAmountApplied;
     private HashMap<Product, String> purchasedProductionsAndSellers;
+    private String buyerUsername;
     private String deliveryStatus;
 
     public BuyLog(Date date, long paidAmount, long discountAmountApplied,
-                  HashMap<Product, String> purchasedProductionsAndSellers, String deliveryStatus) {
+                  HashMap<Product, String> purchasedProductionsAndSellers, String buyerUsername, String deliveryStatus) {
         super(date);
         this.paidAmount = paidAmount;
         this.discountAmountApplied = discountAmountApplied;
         this.purchasedProductionsAndSellers = purchasedProductionsAndSellers;
+        this.buyerUsername = buyerUsername;
         this.deliveryStatus = deliveryStatus;
     }
 
@@ -33,5 +34,9 @@ public class BuyLog extends ExchangeLog {
 
     public String getDeliveryStatus() {
         return deliveryStatus;
+    }
+
+    public String getBuyerUsername() {
+        return buyerUsername;
     }
 }
