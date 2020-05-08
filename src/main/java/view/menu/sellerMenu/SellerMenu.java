@@ -1,6 +1,7 @@
 package view.menu.sellerMenu;
 
 import controller.AllAccountZone;
+import controller.SellerZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -40,13 +41,8 @@ public class SellerMenu extends Menu {
     private Menu getSalesHistoryMenu() {
         return new Menu("View Sales History", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                System.out.println(SellerZone.getSellerHistory());
                 this.parentMenu.execute();
             }
         };

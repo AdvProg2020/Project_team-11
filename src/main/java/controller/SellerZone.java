@@ -70,4 +70,15 @@ public class SellerZone {
                 "unseen");
         DataBase.getDataBase().setAllRequests(request);
     }
+
+    public static String getSellerHistory() {
+        StringBuilder output = new StringBuilder();
+        for (SellLog sellLog : ((Seller) AllAccountZone.getCurrentAccount()).getSellHistory()) {
+            output.append(sellLog.getId()).append(". at ").append(sellLog.getDate()).append(sellLog.getSoldProducts())
+                    .append(" sold to ").append(sellLog.getBuyerName()).append(" ").append(sellLog.getReceivedAmount())
+                    .append("$ with discount ").append(sellLog.getReducedAmountForAuction()).append("$ ")
+                    .append(sellLog.getSendingStatus());
+        }
+        return output.toString();
+    }
 }
