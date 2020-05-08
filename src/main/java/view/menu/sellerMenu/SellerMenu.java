@@ -85,13 +85,8 @@ public class SellerMenu extends Menu {
     private Menu getShowCategories() {
         return new Menu("Show Categories", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                AllAccountZone.showCategories();
                 this.parentMenu.execute();
             }
         };
