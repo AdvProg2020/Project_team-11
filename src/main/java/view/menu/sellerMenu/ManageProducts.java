@@ -26,7 +26,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputId("product");
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
                 System.out.println(SellerZone.viewSellerProduct(productId));
                 this.parentMenu.execute();
             }
@@ -37,7 +37,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product Buyers", this) {
             @Override
             public void execute() {
-                int productId = checkInputId("product");
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
                 System.out.println(SellerZone.viewProductBuyers(productId));
                 this.parentMenu.execute();
             }
@@ -48,7 +48,7 @@ public class ManageProducts extends Menu {
         return new Menu("Edit Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputId("product");
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
                 if (SellerZone.editProduct(productId).equals("Edit")) {
                     getChangedField(productId);
                 } else {

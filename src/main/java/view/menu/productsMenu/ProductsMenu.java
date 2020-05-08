@@ -1,10 +1,26 @@
 package view.menu.productsMenu;
 
+import controller.AllAccountZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ProductsMenu extends Menu {
+    private static String sort = "date";
+    private static FilterInfo filter = new FilterInfo("", 0, Long.MAX_VALUE, new HashMap<>());
+
+    public static String getSort() {
+        return sort;
+    }
+
+    public static void setSort(String sort) {
+        ProductsMenu.sort = sort;
+    }
+
+    public static FilterInfo getFilter() {
+        return filter;
+    }
 
     public ProductsMenu(Menu parentMenu) {
         super("Products", parentMenu);
@@ -20,13 +36,8 @@ public class ProductsMenu extends Menu {
     private Menu getViewCategoriesMenu() {
         return new Menu("View Categories", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function to print all categories
+                System.out.println(AllAccountZone.showCategories());
                 this.parentMenu.execute();
             }
         };
@@ -35,13 +46,8 @@ public class ProductsMenu extends Menu {
     private Menu getShowProductsMenu() {
         return new Menu("Show Products", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function to show product sorted and filtered
+                System.out.println(AllAccountZone.getProductsInSortAndFiltered(parentMenu));
                 this.parentMenu.execute();
             }
         };

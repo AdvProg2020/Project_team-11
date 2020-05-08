@@ -4,6 +4,8 @@ import controller.AllAccountZone;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class Menu {
     private final String name;
@@ -41,6 +43,10 @@ public abstract class Menu {
         return name;
     }
 
+    public Menu getParentMenu() {
+        return parentMenu;
+    }
+
     public Menu getMenuByName(String name) {
         for (Menu menu : this.submenus) {
             if (menu.getName().equalsIgnoreCase(name))
@@ -60,7 +66,6 @@ public abstract class Menu {
         for (Menu menu : submenus) {
             System.out.println(menu.getName());
         }
-        System.out.println("Help");
         if (this.parentMenu != null)
             System.out.println("Back");
         else
@@ -90,26 +95,15 @@ public abstract class Menu {
         nextMenu.execute();
     }
 
-    protected int checkInputId(String field) {
-        String IdString;
-        System.out.print("Enter " + field + " ID: ");
-        IdString = scanner.nextLine();
-        while (!isNumeric(IdString)) {
-            System.out.print("Enter a Number: ");
-            IdString = scanner.nextLine();
-        }
-        return Integer.parseInt(IdString);
-    }
-
-    private static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            double d = Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
+    protected String checkInput(String massage, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher;
+        String input;
+        do {
+            System.out.print(massage + " : ");
+            input = scanner.nextLine().trim();
+            matcher = pattern.matcher(input);
+        } while (!matcher.matches());
+        return input;
     }
 }

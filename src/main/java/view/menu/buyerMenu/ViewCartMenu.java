@@ -34,7 +34,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Increase Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputId("product");
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
                 System.out.println(BuyerZone.changeNumberOFProductInCart(productId, 1));
                 this.parentMenu.execute();
             }
@@ -45,7 +45,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Decrease Product", this) {
             @Override
             public void execute() {
-                int productId = checkInputId("product");
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
                 System.out.println(BuyerZone.changeNumberOFProductInCart(productId, -1));
                 BuyerZone.removeProductFromCart();
                 this.parentMenu.execute();

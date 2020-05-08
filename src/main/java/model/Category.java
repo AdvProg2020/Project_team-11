@@ -30,4 +30,12 @@ public class Category {
     public void addProductList(Product product) {
         this.productList.add(product);
     }
+
+    public static Category getCategoryByName(String name) {
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            if (category.getName().equals(name))
+                return category;
+        }
+        return null;
+    }
 }

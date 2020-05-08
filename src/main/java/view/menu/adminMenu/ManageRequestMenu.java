@@ -26,7 +26,7 @@ public class ManageRequestMenu extends Menu {
         return new Menu("View Details", this) {
             @Override
             public void execute() {
-                int requestId = checkInputId("request");
+                int requestId = Integer.parseInt(checkInput("Enter Request ID", "\\d+"));
                 System.out.println(AdminZone.viewRequestDetails(requestId));
                 this.parentMenu.execute();
             }
@@ -37,7 +37,7 @@ public class ManageRequestMenu extends Menu {
         return new Menu("Accept Request", this) {
             @Override
             public void execute() {
-                int requestId = checkInputId("request");
+                int requestId = Integer.parseInt(checkInput("Enter Request ID", "\\d+"));
                 System.out.println(AdminZone.acceptRequest(requestId));
                 this.parentMenu.execute();
             }
@@ -48,7 +48,7 @@ public class ManageRequestMenu extends Menu {
         return new Menu("Decline Request", this) {
             @Override
             public void execute() {
-                int requestId = checkInputId("request");
+                int requestId = Integer.parseInt(checkInput("Enter Request ID", "\\d+"));
                 System.out.println(AdminZone.declineRequest(requestId));
                 this.parentMenu.execute();
             }

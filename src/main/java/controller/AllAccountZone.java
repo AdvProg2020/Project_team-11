@@ -1,10 +1,16 @@
 package controller;
 
 import model.Account;
+import model.Category;
 import model.DataBase;
 import model.Product;
+import view.menu.Menu;
+import view.menu.auctionMenu.AuctionMenu;
+import view.menu.productsMenu.FilterInfo;
+import view.menu.productsMenu.ProductsMenu;
 
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AllAccountZone {
     private static Account currentAccount = null;
@@ -22,5 +28,117 @@ public class AllAccountZone {
         final Date diffDate = new Date((4 * 3600 + 30 * 60) * 1000);
         long sum = UTCDate.getTime() + diffDate.getTime();
         return new Date(sum);
+    }
+
+    public static String showCategories() {
+        StringBuilder categories = new StringBuilder();
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            categories.append(category.getName()).append("\n");
+        }
+        return String.valueOf(categories);
+    }
+
+    public static String getCategoriesForFilter() {
+        StringBuilder categories = new StringBuilder();
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            categories.append(category.getName()).append(" | ");
+        }
+        return String.valueOf(categories);
+    }
+
+    public static String getCategoriesRegex() {
+        StringBuilder regex = new StringBuilder("(?i)(");
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            regex.append(category.getName()).append("|");
+        }
+        return String.valueOf(regex);
+    }
+
+    public static void setFilterCategoryFeature(String categoryName, Menu menu) {
+        HashMap<String, String> feature = new HashMap<>();
+        for (String specialFeature : Category.getCategoryByName(categoryName).getSpecialFeatures()) {
+            feature.put(specialFeature, "");
+        }
+        if (menu instanceof ProductsMenu)
+            ProductsMenu.getFilter().setFeature(feature);
+        else
+            AuctionMenu.getFilter().setFeature(feature);
+    }
+
+    public static String getProductsInSortAndFiltered(Menu menu) {
+        StringBuilder output  = new StringBuilder();
+        BuyerZone.setAuctionPrice();
+        List<Product> products = getSortedProducts(getFilteredProduct(DataBase.getDataBase().getAllProducts(), menu), menu);
+        for (Product product : products) {
+            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n")
+                    .append(product.getGeneralFeature().getCompany()).append(" ")
+                    .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
+                    .append(product.getAverageScore());
+        }
+        return String.valueOf(output);
+    }
+
+    public static String getAuctionProductsInSortAndFiltered(Menu menu) {
+        StringBuilder output = new StringBuilder();
+        BuyerZone.setAuctionPrice();
+        List<Product> auctionProducts = DataBase.getDataBase().getAllProducts().stream()
+                .filter(product ->
+                        product.getGeneralFeature().getPrice() != product.getGeneralFeature().getAuctionPrice())
+                .collect(Collectors.toList());
+        List<Product> products = getSortedProducts(getFilteredProduct(auctionProducts, menu), menu);
+        for (Product product : products) {
+            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n")
+                    .append(product.getGeneralFeature().getCompany()).append("\nOriginal Price : ")
+                    .append(product.getGeneralFeature().getPrice()).append("$   --->>> Current Price : ")
+                    .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
+                    .append(product.getAverageScore());
+        }
+        return String.valueOf(output);
+    }
+
+    private static List<Product> getFilteredProduct(List<Product> products, Menu menu) {
+        FilterInfo filterInfo;
+        if (menu instanceof ProductsMenu)
+            filterInfo = ProductsMenu.getFilter();
+        else
+            filterInfo = AuctionMenu.getFilter();
+        return products.stream()
+                .filter(product -> {
+                    if (!filterInfo.getCategory().equals("") &&
+                            !filterInfo.getCategory().equals(product.getCategory().getName()))
+                        return false;
+                    if (filterInfo.getMinimumPrice() > product.getGeneralFeature().getAuctionPrice())
+                        return false;
+                    if ((filterInfo.getMaximumPrice() < product.getGeneralFeature().getAuctionPrice()))
+                        return false;
+                    for (Map.Entry<String, String> entry : filterInfo.getFeature().entrySet()) {
+                        if (!entry.getValue().equals("") &&
+                                !entry.getValue().equals(product.getSpecialFeature().get(entry.getKey())))
+                            return false;
+                    }
+                    return true;
+                }).collect(Collectors.toList());
+    }
+
+    private static List<Product> getSortedProducts(List<Product> filteredProducts, Menu menu) {
+        String sort;
+        if (menu instanceof ProductsMenu)
+             sort = ProductsMenu.getSort();
+        else
+            sort = AuctionMenu.getSort();
+        return filteredProducts.stream().sorted((p1, p2) -> {
+            if (sort.equals("price(ascending)")) {
+                return Long.compare(p1.getGeneralFeature().getAuctionPrice(),
+                        p2.getGeneralFeature().getAuctionPrice());
+            } else if (sort.equals("price(descending)")) {
+                return -1 * Long.compare(p1.getGeneralFeature().getAuctionPrice(),
+                        p2.getGeneralFeature().getAuctionPrice());
+            } else if (sort.equals("score")) {
+                return -1 * Double.compare(p1.getAverageScore(), p2.getAverageScore());
+            } else if (sort.equals("date")) {
+                return -1 * Integer.compare(p1.getId(), p2.getId());
+            }
+            return 0;
+        }).collect(Collectors.toList());
     }
 }

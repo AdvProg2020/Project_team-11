@@ -1,27 +1,28 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Product {
     private int id;
     private String status;
     private ProductInfo generalFeature;
     private Category category;
-    private ArrayList<String> specialFeature;
+    private HashMap<String, String> specialFeature;
     private String description;
     private int averageScore;
     private ArrayList<Comment> comments;
     private static int numOfAllProducts;
 
     public Product(String status, ProductInfo generalFeature,
-                   Category category, ArrayList<String> specialFeature,
+                   Category category, HashMap<String, String> specialFeature,
                    String description, int averageScore, ArrayList<Comment> comments) {
         this.id = numOfAllProducts;
         numOfAllProducts += 1;
         this.status = status;
         this.generalFeature = generalFeature;
         this.category = category;
-        this.specialFeature = new ArrayList<>(specialFeature);
+        this.specialFeature = new HashMap<>(specialFeature);
         this.description = description;
         this.averageScore = averageScore;
         this.comments = new ArrayList<>(comments);
@@ -44,7 +45,7 @@ public class Product {
         return category;
     }
 
-    public ArrayList<String> getSpecialFeature() {
+    public HashMap<String, String> getSpecialFeature() {
         return specialFeature;
     }
 
@@ -78,15 +79,14 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", status='" + status + '\'' +
-                ", generalFeature=" + generalFeature +
-                ", category=" + category +
-                ", specialFeature=" + specialFeature +
-                ", description='" + description + '\'' +
-                ", averageScore=" + averageScore +
-                ", comments=" + comments +
+        return "id = " + id +
+                ", status = '" + status + '\'' +
+                ", generalFeature = " + generalFeature +
+                ", category = " + category +
+                ", specialFeature = " + specialFeature +
+                ", description = '" + description + '\'' +
+                ", averageScore = " + averageScore +
+                ", comments = " + comments +
                 '}';
     }
 }
