@@ -1,6 +1,7 @@
 package view.menu.buyerMenu;
 
 import controller.AllAccountZone;
+import controller.BuyerZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class BuyerMenu extends Menu {
         return new Menu("View Discount Codes", this) {
             @Override
             public void execute() {
-
+                System.out.println(BuyerZone.getBuyerDiscounts());
                 this.parentMenu.execute();
             }
         };

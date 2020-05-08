@@ -184,13 +184,13 @@ public class BuyerZone {
 
     public static String getOrderInfo(int logId) {
         ExchangeLog log = ExchangeLog.getLogById(logId);
-        String output;
+        String output = "";
         if (!(log instanceof BuyLog)) {
             return "invalid ID";
         } else if (!((BuyLog) log).getBuyerUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
             return "invalid ID";
         } else {
-            output = (log.getId() + ". " + log.getDate() + " : \n" + ((BuyLog) log).getPurchasedProductionsAndSellers() +
+            output += (log.getId() + ". " + log.getDate() + " : \n" + ((BuyLog) log).getPurchasedProductionsAndSellers() +
                     "\n" + ((BuyLog) log).getPaidAmount() + "$ -> Discount = " + ((BuyLog) log).getDiscountAmountApplied() +
                     "$\n" + ((BuyLog) log).getDeliveryStatus());
         }
@@ -219,5 +219,16 @@ public class BuyerZone {
         double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getAverageScore() + 1);
         product.setAverageScore(newScore);
         product.addNumOfUsersRated();
+    }
+
+    public static String getBuyerDiscounts() {
+        StringBuilder output = new StringBuilder();
+        for (Map.Entry<Discount, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getDiscountCodes().entrySet()) {
+            output.append(entry.getKey().getCode()).append(" : ").append(entry.getValue())
+                    .append(" times").append(entry.getKey().getAmount()[0]).append("% Max discount = ")
+                    .append(entry.getKey().getAmount()[1]).append(" from ").append(entry.getKey().getStartDate())
+                    .append(" to ").append(entry.getKey().getEndDate());
+        }
+        return output.toString();
     }
 }
