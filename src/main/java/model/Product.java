@@ -15,10 +15,14 @@ public class Product {
     private ArrayList<Comment> comments;
     private static int numOfAllProducts;
 
-    public Product(String status, ProductInfo generalFeature, Category category,
-                   HashMap<String, String> specialFeature, String description, ArrayList<Comment> comments) {
-        this.id = numOfAllProducts;
-        numOfAllProducts += 1;
+    public Product(int id, String status, ProductInfo generalFeature, Category category,
+                   HashMap<String, String> specialFeature, String description) {
+        if (id == 0) {
+            this.id = numOfAllProducts;
+            numOfAllProducts += 1;
+        } else {
+            this.id = id;
+        }
         this.status = status;
         this.generalFeature = generalFeature;
         this.category = category;
@@ -26,7 +30,7 @@ public class Product {
         this.description = description;
         this.averageScore = 0;
         this.numOfUsersRated = 0;
-        this.comments = new ArrayList<>(comments);
+        this.comments = new ArrayList<>();
         DataBase.getDataBase().setAllProducts(this);
     }
 

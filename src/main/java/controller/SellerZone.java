@@ -2,6 +2,8 @@ package controller;
 
 import model.*;
 
+import java.util.HashMap;
+
 public class SellerZone {
 
     public static Product getProductById(int Id) {
@@ -84,5 +86,24 @@ public class SellerZone {
 
     public static String getCompanyInfo() {
         return ((Seller) AllAccountZone.getCurrentAccount()).getCompanyName();
+    }
+
+    public static Category getCategoryByName(String name) {
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            if (category.getName().equalsIgnoreCase(name))
+                return category;
+        }
+        return null;
+    }
+
+    public static void sendAddProductRequest(int productId, Category category, HashMap<String, String> descriptions,
+                                             HashMap<String, String> categoryFeature) {
+        new Request((Seller) AllAccountZone.getCurrentAccount(), "add existing product",
+                String.valueOf(productId), "unseen");
+        ProductInfo productInfo = new ProductInfo(descriptions.get("name"), descriptions.get("company"),
+                Long.parseLong(descriptions.get("price")), (Seller) AllAccountZone.getCurrentAccount(),
+                Integer.parseInt(descriptions.get("stock status")));
+        new Product(productId, "construction", productInfo, category, categoryFeature,
+                descriptions.get("description"));
     }
 }

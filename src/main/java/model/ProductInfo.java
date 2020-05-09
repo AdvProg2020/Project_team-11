@@ -8,7 +8,7 @@ public class ProductInfo {
     private Seller seller;
     private int stockStatus;
 
-    public ProductInfo(String name, String company, int price, Seller seller, int stockStatus) {
+    public ProductInfo(String name, String company, long price, Seller seller, int stockStatus) {
         this.name = name;
         this.company = company;
         this.price = price;
