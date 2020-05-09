@@ -125,7 +125,7 @@ public class AdminZone {
         }
     }
 
-    private static Product getProductByIdAndSeller(int productId, Seller seller) {
+    public static Product getProductByIdAndSeller(int productId, Seller seller) {
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             if (product.getId() == productId && product.getGeneralFeature().getSeller().equals(seller))
                 return product;

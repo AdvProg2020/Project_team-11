@@ -1,8 +1,12 @@
 package view.menu.sellerMenu;
 
+import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
 import model.Category;
+import model.DataBase;
+import model.Product;
+import model.Seller;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -48,11 +52,6 @@ public class SellerMenu extends Menu {
     private Menu getAddProductMenu() {
         return new Menu("Add Product", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
                 System.out.println("Do you want to sale an existing product OR new product? [existing - new]");
                 String productType = checkInput("Enter your answer", "(?i)(existing|new)");
@@ -95,13 +94,15 @@ public class SellerMenu extends Menu {
     private Menu getRemoveProductMenu() {
         return new Menu("Remove Product", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int productId = Integer.parseInt(checkInput("Enter product Id", "\\d+"));
+                Product product = AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount());
+                if (product == null) {
+                    System.out.println("You haven't this product.");
+                } else {
+                    DataBase.getDataBase().getAllProducts().remove(product);
+                    System.out.println("Product removed from your products.");
+                }
                 this.parentMenu.execute();
             }
         };
