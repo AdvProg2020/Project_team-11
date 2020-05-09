@@ -81,4 +81,8 @@ public class SellerZone {
         }
         return output.toString();
     }
+
+    public static String getCompanyInfo() {
+        return ((Seller) AllAccountZone.getCurrentAccount()).getCompanyName();
+    }
 }

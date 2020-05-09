@@ -26,13 +26,8 @@ public class SellerMenu extends Menu {
     private Menu getViewCompanyInfoMenu() {
         return new Menu("View Company Info", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                System.out.println(SellerZone.getCompanyInfo());
                 this.parentMenu.execute();
             }
         };
