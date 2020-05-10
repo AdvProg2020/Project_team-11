@@ -108,7 +108,12 @@ public class ViewAuctionsMenu extends Menu {
         } else {
             requestDescription.append("next,");
         }
-        requestDescription.append(checkInput("Enter discount amount or 'next'", "(\\d+)|next"));
+        String description;
+        do {
+            description = checkInput("Enter discount amount or 'next'", "(\\d+)|next");
+        } while (!description.equals("next") &&
+                (Integer.parseInt(description) == 0 || Integer.parseInt(description) >= 100));
+        requestDescription.append(description);
         return requestDescription.toString();
     }
 
@@ -133,7 +138,11 @@ public class ViewAuctionsMenu extends Menu {
         newField.append(startDate.getTime()).append(",");
         Date endDate = getDate("end ");
         newField.append(endDate.getTime()).append(",");
-        newField.append(checkInput("Enter discount amount", "(\\d+)")).append(",");
+        String description;
+        do {
+            description = checkInput("Enter discount amount", "(\\d+)|next");
+        } while (Integer.parseInt(description) == 0 || Integer.parseInt(description) >= 100);
+        newField.append(description);
         SellerZone.createAuction(newField.toString());
     }
 }
