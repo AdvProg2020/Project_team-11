@@ -10,10 +10,11 @@ public class Auction {
     private Date startDate;
     private Date endDate;
     private int discountAmount;
+    private Seller seller;
     private static int numOfAllAuctions = 0;
 
     public Auction(ArrayList<Product> productList, String status, Date startDate, Date endDate,
-                   int discountAmount) {
+                   int discountAmount, Seller seller) {
         this.id = numOfAllAuctions;
         numOfAllAuctions += 1;
         this.productList = new ArrayList<>(productList);
@@ -21,6 +22,7 @@ public class Auction {
         this.startDate = startDate;
         this.endDate = endDate;
         this.discountAmount = discountAmount;
+        this.seller = seller;
         DataBase.getDataBase().setAllAuctions(this);
     }
 
@@ -46,6 +48,10 @@ public class Auction {
 
     public int getDiscountAmount() {
         return discountAmount;
+    }
+
+    public Seller getSeller() {
+        return seller;
     }
 
     public void setProductList(ArrayList<Product> productList) {

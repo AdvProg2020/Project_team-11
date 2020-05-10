@@ -118,7 +118,7 @@ public class AdminZone {
         if (!splitInfo.get(3).equals("next")) {
             long milliSeconds = Long.parseLong(splitInfo.get(3));
             Date endDate = new Date(milliSeconds);
-            auction.setStartDate(endDate);
+            auction.setEndDate(endDate);
         }
         if (!splitInfo.get(4).equals("next")) {
             auction.setDiscountAmount(Integer.parseInt(splitInfo.get(4)));
