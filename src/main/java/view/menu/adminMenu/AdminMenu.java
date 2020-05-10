@@ -1,6 +1,7 @@
 package view.menu.adminMenu;
 
 import view.menu.Menu;
+import view.menu.ViewPersonalInfoMenu;
 
 import java.util.ArrayList;
 

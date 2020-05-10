@@ -3,6 +3,7 @@ package view.menu.buyerMenu;
 import controller.AllAccountZone;
 import controller.BuyerZone;
 import view.menu.Menu;
+import view.menu.ViewPersonalInfoMenu;
 
 import java.util.ArrayList;
 

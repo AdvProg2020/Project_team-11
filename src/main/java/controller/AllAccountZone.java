@@ -146,4 +146,12 @@ public class AllAccountZone {
         else
             return ((Seller) account).getWallet();
     }
+
+    public static String getPersonalInfo() {
+        Admin admin = (Admin) AllAccountZone.getCurrentAccount();
+        return "name : " + admin.getFirstName() + "\nlast name : " + admin.getLastName() +
+                "\nemail address" + admin.getEmailAddress() + "\nphone number" +
+                admin.getPhoneNumber() + "\nusername : " + admin.getUsername() +
+                "\npassword : " + admin.getPassword();
+    }
 }
