@@ -1,5 +1,6 @@
 package view.menu.adminMenu;
 
+import controller.AdminZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -13,16 +14,18 @@ public class ManageAllProductsMenu extends Menu {
         this.setSubmenus(submenu);
     }
 
+    @Override
+    public void execute() {
+        System.out.println(AdminZone.getAllProducts());
+        super.execute();
+    }
+
     private Menu getRemoveMenu() {
         return new Menu("Remove", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                System.out.println(AdminZone.removeProduct(productId));
                 this.parentMenu.execute();
             }
         };

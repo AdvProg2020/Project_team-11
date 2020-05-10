@@ -188,4 +188,26 @@ public class AdminZone {
     public static void createAdminProfile(ArrayList<String> info) {
         new Admin(info.get(0), info.get(1), info.get(2), info.get(3), info.get(4), info.get(5));
     }
+
+    public static String removeProduct(int productId) {
+        ArrayList<Product> products = new ArrayList<>();
+        for (Product product : DataBase.getDataBase().getAllProducts()) {
+            if (product.getId() == productId) {
+                products.add(product);
+            }
+        }
+        DataBase.getDataBase().getAllProducts().removeAll(products);
+        if (products.isEmpty())
+            return "invalid product ID.";
+        else
+            return "product removed successfully.";
+    }
+
+    public static String getAllProducts() {
+        StringBuilder output = new StringBuilder();
+        for (Product product : DataBase.getDataBase().getAllProducts()) {
+            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n");
+        }
+        return output.toString();
+    }
 }
