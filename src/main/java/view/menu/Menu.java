@@ -2,7 +2,9 @@ package view.menu;
 
 import controller.AllAccountZone;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,5 +107,22 @@ public abstract class Menu {
             matcher = pattern.matcher(input);
         } while (!matcher.matches());
         return input;
+    }
+
+
+    protected Date getDate(String filed) {
+        String input = checkInput("Enter " + filed + "date [dd/mm/yyyy hh:mm:ss]",
+                "^\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}$");
+        SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
+        Date date;
+        while (true) {
+            try {
+                date = format.parse(input);
+                break;
+            } catch (Exception ex) {
+                System.out.println("Ha ha !!!!");
+            }
+        }
+        return date;
     }
 }

@@ -66,22 +66,6 @@ public class ViewAuctionsMenu extends Menu {
         };
     }
 
-    private Date getDate(String filed) {
-        String input = checkInput("Enter " + filed + "date [dd/mm/yyyy hh:mm:ss]",
-                "^\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}$");
-        SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
-        Date date;
-        while (true) {
-            try {
-                date = format.parse(input);
-                break;
-            } catch (Exception ex) {
-                System.out.println("Ha ha !!!!");
-            }
-        }
-        return date;
-    }
-
     private String getEditedField(int auctionId) {
         StringBuilder requestDescription = new StringBuilder(auctionId).append(",");
         System.out.println("Do you want to change product list? [yes-no]");

@@ -210,4 +210,25 @@ public class AdminZone {
         }
         return output.toString();
     }
+
+    public static Buyer getBuyerByUsername(String username) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account instanceof Buyer && account.getUsername().equals(username))
+                return (Buyer) account;
+        }
+        return null;
+    }
+
+    public static void createDiscount(ArrayList<String> info, ArrayList<String> usernames) {
+        Date startDate = new Date(Long.parseLong(info.get(1)));
+        Date endDate = new Date(Long.parseLong(info.get(2)));
+        long[] amount = new long[2];
+        amount[0] = Long.parseLong(info.get(3));
+        amount[1] = Long.parseLong(info.get(4));
+        ArrayList<Buyer> users = new ArrayList<>();
+        for (String username : usernames) {
+            users.add(getBuyerByUsername(username));
+        }
+        new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), users);
+    }
 }

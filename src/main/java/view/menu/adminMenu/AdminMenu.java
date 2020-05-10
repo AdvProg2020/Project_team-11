@@ -1,9 +1,11 @@
 package view.menu.adminMenu;
 
+import controller.AdminZone;
 import view.menu.Menu;
 import view.menu.ViewPersonalInfoMenu;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AdminMenu extends Menu {
 
@@ -23,13 +25,30 @@ public class AdminMenu extends Menu {
     private Menu getCreateDiscountCodeMenu() {
         return new Menu("Create Discount Code", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                ArrayList<String> discountInfo = new ArrayList<>();
+                discountInfo.add(checkInput("Enter Code", ".+"));
+                Date startDate = getDate("start ");
+                discountInfo.add(String.valueOf(startDate.getTime()));
+                Date endDate = getDate("end ");
+                discountInfo.add(String.valueOf(endDate.getTime()));
+                long percent;
+                do {
+                    percent = Long.parseLong(checkInput("Enter discount percent", "\\d+"));
+                } while (percent == 0 || percent >= 100);
+                discountInfo.add(String.valueOf(percent));
+                discountInfo.add(checkInput("Enter max discount amount", "\\d+"));
+                discountInfo.add(checkInput("Enter number of times can use this code", "\\d+"));
+                String username;
+                ArrayList<String> allowedUsers = new ArrayList<>();
+                do {
+                    username = checkInput("Enter username", ".+");
+                    if (AdminZone.getBuyerByUsername(username) == null && !username.equals("end of inserting usernames"))
+                        System.out.println("invalid username");
+                    else if (AdminZone.getBuyerByUsername(username) != null && !username.equals("end of inserting usernames"))
+                        allowedUsers.add(username);
+                } while (!username.equals("end of inserting usernames"));
+                AdminZone.createDiscount(discountInfo, allowedUsers);
                 this.parentMenu.execute();
             }
         };

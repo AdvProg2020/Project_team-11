@@ -12,12 +12,12 @@ public class Discount {
     private int repeatedTimes;
     private ArrayList<Buyer> allowedUsers;
 
-    public Discount(String code, Date startDate, Date endDate, HashMap<Integer, Integer> amount,
-                    int repeatedTimes, ArrayList<Buyer> allowedUsers) {
+    public Discount(String code, Date startDate, Date endDate, long[] amount,
+                                int repeatedTimes, ArrayList<Buyer> allowedUsers) {
         this.code = code;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.amount = new long[2];
+        this.amount = amount;//0 -> percent & 1 -> max.
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
         DataBase.getDataBase().setAllDiscounts(this);
