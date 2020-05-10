@@ -149,4 +149,43 @@ public class AdminZone {
             request.setStatus("declined");
         return "Done";
     }
+
+    public static String getUsers() {
+        StringBuilder output = new StringBuilder();
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account instanceof Buyer || account instanceof Seller) {
+                output.append(account.getUsername()).append("\n");
+            }
+        }
+        return output.toString();
+    }
+
+    public static String getUserInfo(String username) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account.getUsername().equalsIgnoreCase(username)) {
+                return account.getFirstName() + " " + account.getLastName() + "\n" +
+                        account.getEmailAddress() + " " + account.getPhoneNumber();
+            }
+        }
+        return "invalid username";
+    }
+
+    public static String deleteUser(String username) {
+        String output = "";
+        Account accountDeleted = null;
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account.getUsername().equalsIgnoreCase(username)) {
+                output = username + "deleted.";
+                accountDeleted = account;
+            }
+        }
+        DataBase.getDataBase().getAllAccounts().remove(accountDeleted);
+        if (output.equals(""))
+            output = "invalid username";
+        return output;
+    }
+
+    public static void createAdminProfile(ArrayList<String> info) {
+        new Admin(info.get(0), info.get(1), info.get(2), info.get(3), info.get(4), info.get(5));
+    }
 }
