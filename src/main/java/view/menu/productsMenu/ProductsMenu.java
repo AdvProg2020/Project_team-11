@@ -53,18 +53,4 @@ public class ProductsMenu extends Menu {
             }
         };
     }
-
-    private Menu getShowProductMenu() {
-        return new Menu("Show Product", this) {
-            @Override
-            public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
-                if (SellerZone.getProductById(productId) == null) {
-                    System.out.println("invalid ID");
-                } else {
-                    new ShowProductMenu(parentMenu, productId);
-                }
-            }
-        };
-    }
 }

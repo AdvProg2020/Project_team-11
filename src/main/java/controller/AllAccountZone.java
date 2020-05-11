@@ -204,4 +204,20 @@ public class AllAccountZone {
         return "Category : " + product.getCategory().getName() + "\n" + feature + product.getDescription() +
                 "score : " + product.getAverageScore() + " " + product.getNumOfUsersRated() + "person";
     }
+
+    public static String compareTwoProduct(int productId1, int productId2) {
+        Product product1 = SellerZone.getProductById(productId1);
+        Product product2 = SellerZone.getProductById(productId2);
+        Category category = product1.getCategory();
+        if (!category.getName().equals(product2.getCategory().getName())) {
+            return "Cannot compared! You should enter a product in " + product1.getCategory().getName() + "category";
+        } else {
+            StringBuilder output = new StringBuilder();
+            for (String feature : category.getSpecialFeatures()) {
+                output.append(feature).append(",").append(product1.getSpecialFeature().get(feature)).append(",")
+                        .append(product2.getSpecialFeature().get(feature)).append("-");
+            }
+            return output.toString();
+        }
+    }
 }

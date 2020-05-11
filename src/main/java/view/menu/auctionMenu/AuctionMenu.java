@@ -26,7 +26,7 @@ public class AuctionMenu extends Menu {
     public AuctionMenu(Menu parentMenu) {
         super("Auction", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
-        submenus.add(new ShowProductMenu(this));
+        submenus.add(getShowProductsMenu());
         submenus.add(new FilteringMenu(this));
         submenus.add(new SortingMenu(this));
         submenus.add(getShowProductsMenu());

@@ -1,6 +1,8 @@
 package view.menu;
 
 import controller.AllAccountZone;
+import controller.SellerZone;
+import view.menu.productsMenu.ShowProductMenu;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -124,5 +126,19 @@ public abstract class Menu {
             }
         }
         return date;
+    }
+
+    protected Menu getShowProductMenu() {
+        return new Menu("Show Product", this) {
+            @Override
+            public void execute() {
+                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                if (SellerZone.getProductById(productId) == null) {
+                    System.out.println("invalid ID");
+                } else {
+                    new ShowProductMenu(parentMenu, productId);
+                }
+            }
+        };
     }
 }
