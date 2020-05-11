@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public class ShowProductMenu extends Menu {
 
-    public ShowProductMenu(Menu parentMenu) {
+    public ShowProductMenu(Menu parentMenu, int productId) {
         super("Show Product", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
-        submenus.add(new DigestMenu(this));
+        submenus.add(new DigestMenu(this, productId));
         submenus.add(getAttributeMenu());
         submenus.add(getCompareMenu());
         submenus.add(new CommentMenu(this));

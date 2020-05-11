@@ -1,6 +1,7 @@
 package view.menu.productsMenu;
 
 import controller.AllAccountZone;
+import controller.SellerZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class ProductsMenu extends Menu {
         submenus.add(new FilteringMenu(this));
         submenus.add(new SortingMenu(this));
         submenus.add(getShowProductsMenu());
-        submenus.add(new ShowProductMenu(this));
+        submenus.add(getShowProductMenu());
         this.setSubmenus(submenus);
     }
 
@@ -49,6 +50,20 @@ public class ProductsMenu extends Menu {
             public void execute() {
                 System.out.println(AllAccountZone.getProductsInSortAndFiltered(parentMenu));
                 this.parentMenu.execute();
+            }
+        };
+    }
+
+    private Menu getShowProductMenu() {
+        return new Menu("Show Product", this) {
+            @Override
+            public void execute() {
+                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                if (SellerZone.getProductById(productId) == null) {
+                    System.out.println("invalid ID");
+                } else {
+                    new ShowProductMenu(parentMenu, productId);
+                }
             }
         };
     }

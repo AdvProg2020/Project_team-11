@@ -154,4 +154,38 @@ public class AllAccountZone {
                 admin.getPhoneNumber() + "\nusername : " + admin.getUsername() +
                 "\npassword : " + admin.getPassword();
     }
+
+    public static String showProductWithSellers(int productId) {
+        BuyerZone.setAuctionPrice();
+        StringBuilder output = new StringBuilder();
+        for (Product product : DataBase.getDataBase().getAllProducts()) {
+            if (product.getId() == productId)
+                output.append("Seller : ").append(product.getGeneralFeature().getSeller().getUsername()).append(" ")
+                        .append(product.getGeneralFeature().getName()).append(" ")
+                        .append(product.getGeneralFeature().getAuctionPrice()).append(" $ ")
+                        .append(product.getGeneralFeature().getCompany()).append(" ")
+                        .append(product.getCategory().getName()).append(" Score : ")
+                        .append(product.getAverageScore()).append(" ").append(product.getDescription()).append("\n");
+        }
+        return output.toString();
+    }
+
+    public static String addProductToCart(int productId, String sellerUsername) {
+        Seller seller = getSellerByUsername(sellerUsername);
+        if (seller == null) {
+            return "invalid username.";
+        } else {
+            Product product = AdminZone.getProductByIdAndSeller(productId, seller);
+            ((Buyer) AllAccountZone.getCurrentAccount()).setCart(product);
+            return "Done.";
+        }
+    }
+
+    public static Seller getSellerByUsername(String username) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account instanceof Seller && account.getUsername().equalsIgnoreCase(username))
+                return (Seller) account;
+        }
+        return null;
+    }
 }
