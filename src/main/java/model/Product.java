@@ -90,6 +90,14 @@ public class Product {
         this.comments.add(comments);
     }
 
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setSpecialFeature(HashMap<String, String> specialFeature) {
+        this.specialFeature = specialFeature;
+    }
+
     @Override
     public String toString() {
         return "id = " + id +

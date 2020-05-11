@@ -5,6 +5,7 @@ import model.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 public class AdminZone {
 
@@ -270,5 +271,42 @@ public class AdminZone {
             DataBase.getDataBase().getAllDiscounts().remove(discount);
             return "Done.";
         }
+    }
+
+    public static void addNewFeatureToCategory(Category category, String feature) {
+        for (Product product : category.getProductList()) {
+            product.getSpecialFeature().put(feature, "");
+        }
+    }
+
+    public static void deleteFeatureFromCategory(Category category, String feature) {
+        for (Product product : category.getProductList()) {
+            product.getSpecialFeature().remove(feature);
+        }
+    }
+
+    public static void renameFeatureOfCategory(Category category, String lastFeature, String feature) {
+        for (Product product : category.getProductList()) {
+            String value = product.getSpecialFeature().get(lastFeature);
+            product.getSpecialFeature().remove(lastFeature);
+            product.getSpecialFeature().put(feature, value);
+        }
+    }
+
+    public static void createCategory(String name, ArrayList<String> features, ArrayList<Integer> productList) {
+        ArrayList<Product> products = new ArrayList<>();
+        for (Integer productId : productList) {
+            products.add(SellerZone.getProductById(productId));
+        }
+        new Category(name, features, products);
+    }
+
+    public static void removeCategory(String name) {
+        Category category = Category.getCategoryByName(name);
+        for (Product product : category.getProductList()) {
+            product.setCategory(null);
+            product.setSpecialFeature(new HashMap<>());
+        }
+        DataBase.getDataBase().getAllCategories().remove(category);
     }
 }
