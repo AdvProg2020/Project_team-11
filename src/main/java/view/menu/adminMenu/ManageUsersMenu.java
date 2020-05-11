@@ -17,7 +17,7 @@ public class ManageUsersMenu extends Menu {
 
     @Override
     public void execute() {
-        System.out.println(AdminZone.getUsers());
+        System.out.println(AdminZone.showUsersInfo());
         super.execute();
     }
 
@@ -26,7 +26,7 @@ public class ManageUsersMenu extends Menu {
             @Override
             public void execute() {
                 String username = checkInput("Enter username", ".+");
-                System.out.println(AdminZone.getUserInfo(username));
+                System.out.println(AdminZone.showUserInfo(username));
                 this.parentMenu.execute();
             }
         };

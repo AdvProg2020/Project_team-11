@@ -60,12 +60,8 @@ public class ViewDiscountCodesMenu extends Menu {
                         Date date = getDate("end ");
                         discount.setEndDate(date);
                     } else if (field.equalsIgnoreCase("discount percent")) {
-                        newField = checkInput("Enter discount percent", "\\d+");
-                        if (Long.parseLong(newField) == 0 || Long.parseLong(newField) >= 100) {
-                            System.out.println("invalid");
-                        } else {
-                            discount.setDiscountPercent(Long.parseLong(newField));
-                        }
+                        newField = checkInput("Enter discount percent", "^[1-9][0-9]?$");
+                        discount.setDiscountPercent(Long.parseLong(newField));
                     } else if (field.equalsIgnoreCase("max discount")) {
                         newField = checkInput("Enter max discount", "\\d+");
                         discount.setMaxDiscount(Long.parseLong(newField));

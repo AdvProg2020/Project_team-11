@@ -151,7 +151,7 @@ public class AdminZone {
         return "Done";
     }
 
-    public static String getUsers() {
+    public static String showUsersInfo() {
         StringBuilder output = new StringBuilder();
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account instanceof Buyer || account instanceof Seller) {
@@ -161,7 +161,7 @@ public class AdminZone {
         return output.toString();
     }
 
-    public static String getUserInfo(String username) {
+    public static String showUserInfo(String username) {
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account.getUsername().equalsIgnoreCase(username)) {
                 return account.getFirstName() + " " + account.getLastName() + "\n" +
@@ -204,7 +204,7 @@ public class AdminZone {
             return "product removed successfully.";
     }
 
-    public static String getAllProducts() {
+    public static String showAllProducts() {
         StringBuilder output = new StringBuilder();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n");
@@ -236,7 +236,7 @@ public class AdminZone {
     public static String showDiscounts() {
         StringBuilder output = new StringBuilder();
         for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
-            output.append(discount.getCode()).append(" ").append(discount.getAmount()[0]).append("% max : ")
+            output.append(discount.getCode()).append(" ").append(discount.getAmount()[0]).append("% discount, max : ")
                     .append(discount.getAmount()[1]).append("$");
         }
         return output.toString();
@@ -254,10 +254,11 @@ public class AdminZone {
         Discount discount = getDiscountByCode(code);
         StringBuilder usernames = new StringBuilder();
         for (Buyer user : discount.getAllowedUsers()) {
-            usernames.append(user.getUsername());
+            usernames.append(user.getUsername()).append(", ");
         }
-        return discount.getAmount()[0] + "% max : " + discount.getAmount()[1] + "$ from " + discount.getStartDate() +
-                " to " + discount.getEndDate() + discount.getRepeatedTimes() + " times for " + usernames;
+        return discount.getAmount()[0] + "% discount, max : " + discount.getAmount()[1] + "$ from " +
+                discount.getStartDate() + " to " + discount.getEndDate() + " " + discount.getRepeatedTimes() +
+                " times for " + usernames;
     }
 
     public static String removeDiscount(String code) {

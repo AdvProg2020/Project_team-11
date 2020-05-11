@@ -148,11 +148,11 @@ public class AllAccountZone {
     }
 
     public static String getPersonalInfo() {
-        Admin admin = (Admin) AllAccountZone.getCurrentAccount();
-        return "name : " + admin.getFirstName() + "\nlast name : " + admin.getLastName() +
-                "\nemail address" + admin.getEmailAddress() + "\nphone number" +
-                admin.getPhoneNumber() + "\nusername : " + admin.getUsername() +
-                "\npassword : " + admin.getPassword();
+        Account account = AllAccountZone.getCurrentAccount();
+        return "name : " + account.getFirstName() + " " + account.getLastName() +
+                "\nemail address : " + account.getEmailAddress() + "\nphone number : " +
+                account.getPhoneNumber() + "\nusername : " + account.getUsername() +
+                "\npassword : " + account.getPassword();
     }
 
     public static String showProductWithSellers(int productId) {
@@ -187,5 +187,21 @@ public class AllAccountZone {
                 return (Seller) account;
         }
         return null;
+    }
+
+    public static String showProductAttribute(int productId) {
+        Product product = null;
+        for (Product product1 : DataBase.getDataBase().getAllProducts()) {
+            if (product1.getId() == productId) {
+                product = product1;
+                break;
+            }
+        }
+        String feature = "";
+        for (Map.Entry<String, String> entry : product.getSpecialFeature().entrySet()) {
+            feature += entry.getKey() + " : " + entry.getValue() + "\n";
+        }
+        return "Category : " + product.getCategory().getName() + "\n" + feature + product.getDescription() +
+                "score : " + product.getAverageScore() + " " + product.getNumOfUsersRated() + "person";
     }
 }

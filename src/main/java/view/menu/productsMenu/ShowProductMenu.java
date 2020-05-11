@@ -1,5 +1,6 @@
 package view.menu.productsMenu;
 
+import controller.AllAccountZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -10,22 +11,17 @@ public class ShowProductMenu extends Menu {
         super("Show Product", parentMenu);
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(new DigestMenu(this, productId));
-        submenus.add(getAttributeMenu());
+        submenus.add(getAttributeMenu(productId));
         submenus.add(getCompareMenu());
         submenus.add(new CommentMenu(this));
         this.setSubmenus(submenus);
     }
 
-    private Menu getAttributeMenu() {
+    private Menu getAttributeMenu(int productId) {
         return new Menu("Attribute", this) {
             @Override
-            public void showAvailableMenus() {
-                //probably empty
-            }
-
-            @Override
             public void execute() {
-                //function
+                System.out.println(AllAccountZone.showProductAttribute(productId));
                 this.parentMenu.execute();
             }
         };

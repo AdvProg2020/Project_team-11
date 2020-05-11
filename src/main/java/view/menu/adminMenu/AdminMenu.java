@@ -26,32 +26,36 @@ public class AdminMenu extends Menu {
         return new Menu("Create Discount Code", this) {
             @Override
             public void execute() {
-                ArrayList<String> discountInfo = new ArrayList<>();
-                discountInfo.add(checkInput("Enter Code", ".+"));
-                Date startDate = getDate("start ");
-                discountInfo.add(String.valueOf(startDate.getTime()));
-                Date endDate = getDate("end ");
-                discountInfo.add(String.valueOf(endDate.getTime()));
-                long percent;
-                do {
-                    percent = Long.parseLong(checkInput("Enter discount percent", "\\d+"));
-                } while (percent == 0 || percent >= 100);
-                discountInfo.add(String.valueOf(percent));
-                discountInfo.add(checkInput("Enter max discount amount", "\\d+"));
-                discountInfo.add(checkInput("Enter number of times can use this code", "\\d+"));
-                String username;
-                ArrayList<String> allowedUsers = new ArrayList<>();
-                System.out.println("'end of inserting usernames' to end");
-                do {
-                    username = checkInput("Enter username", ".+");
-                    if (AdminZone.getBuyerByUsername(username) == null && !username.equals("end of inserting usernames"))
-                        System.out.println("invalid username");
-                    else if (AdminZone.getBuyerByUsername(username) != null && !username.equals("end of inserting usernames"))
-                        allowedUsers.add(username);
-                } while (!username.equals("end of inserting usernames"));
-                AdminZone.createDiscount(discountInfo, allowedUsers);
+                AdminZone.createDiscount(getDiscountInfo(), getAllowedUsers());
                 this.parentMenu.execute();
             }
         };
+    }
+
+    private ArrayList<String> getDiscountInfo() {
+        ArrayList<String> discountInfo = new ArrayList<>();
+        discountInfo.add(checkInput("Enter Code", ".+"));
+        Date startDate = getDate("start ");
+        discountInfo.add(String.valueOf(startDate.getTime()));
+        Date endDate = getDate("end ");
+        discountInfo.add(String.valueOf(endDate.getTime()));
+        discountInfo.add(checkInput("Enter discount percent", "^[1-9][0-9]?$"));
+        discountInfo.add(checkInput("Enter max discount amount", "\\d+"));
+        discountInfo.add(checkInput("Enter number of times can use this code", "\\d+"));
+        return discountInfo;
+    }
+
+    private ArrayList<String> getAllowedUsers() {
+        String username;
+        ArrayList<String> allowedUsers = new ArrayList<>();
+        System.out.println("Print 'end of inserting usernames' to end");
+        do {
+            username = checkInput("Enter username", ".+");
+            if (AdminZone.getBuyerByUsername(username) == null && !username.equals("end of inserting usernames"))
+                System.out.println("invalid username");
+            else if (AdminZone.getBuyerByUsername(username) != null && !username.equals("end of inserting usernames"))
+                allowedUsers.add(username);
+        } while (!username.equals("end of inserting usernames"));
+        return allowedUsers;
     }
 }
