@@ -41,6 +41,7 @@ public class AdminMenu extends Menu {
                 discountInfo.add(checkInput("Enter number of times can use this code", "\\d+"));
                 String username;
                 ArrayList<String> allowedUsers = new ArrayList<>();
+                System.out.println("'end of inserting usernames' to end");
                 do {
                     username = checkInput("Enter username", ".+");
                     if (AdminZone.getBuyerByUsername(username) == null && !username.equals("end of inserting usernames"))

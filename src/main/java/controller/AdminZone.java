@@ -231,4 +231,44 @@ public class AdminZone {
         }
         new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), users);
     }
+
+    public static String showDiscounts() {
+        StringBuilder output = new StringBuilder();
+        for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
+            output.append(discount.getCode()).append(" ").append(discount.getAmount()[0]).append("% max : ")
+                    .append(discount.getAmount()[1]).append("$");
+        }
+        return output.toString();
+    }
+
+    public static Discount getDiscountByCode(String code) {
+        for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
+            if (discount.getCode().equals(code))
+                return discount;
+        }
+        return null;
+    }
+
+    public static String showDiscountInfo(String code) {
+        Discount discount = getDiscountByCode(code);
+        StringBuilder usernames = new StringBuilder();
+        for (Buyer user : discount.getAllowedUsers()) {
+            usernames.append(user.getUsername());
+        }
+        return discount.getAmount()[0] + "% max : " + discount.getAmount()[1] + "$ from " + discount.getStartDate() +
+                " to " + discount.getEndDate() + discount.getRepeatedTimes() + " times for " + usernames;
+    }
+
+    public static String removeDiscount(String code) {
+        Discount discount = getDiscountByCode(code);
+        if (discount == null) {
+            return "invalid code";
+        } else {
+            for (Buyer user : discount.getAllowedUsers()) {
+                user.getDiscountCodes().remove(discount);
+            }
+            DataBase.getDataBase().getAllDiscounts().remove(discount);
+            return "Done.";
+        }
+    }
 }

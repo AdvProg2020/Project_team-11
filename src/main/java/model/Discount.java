@@ -2,7 +2,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 public class Discount {
     private String code;
@@ -20,6 +19,9 @@ public class Discount {
         this.amount = amount;//0 -> percent & 1 -> max.
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
+        for (Buyer user : allowedUsers) {
+            user.getDiscountCodes().put(this, repeatedTimes);
+        }
         DataBase.getDataBase().setAllDiscounts(this);
     }
 
@@ -45,5 +47,33 @@ public class Discount {
 
     public ArrayList<Buyer> getAllowedUsers() {
         return allowedUsers;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setDiscountPercent(long amount) {
+        this.amount[0] = amount;
+    }
+
+    public void setMaxDiscount(long amount) {
+        this.amount[1] = amount;
+    }
+
+    public void setRepeatedTimes(int repeatedTimes) {
+        this.repeatedTimes = repeatedTimes;
+    }
+
+    public void setAllowedUsers(ArrayList<Buyer> allowedUsers) {
+        this.allowedUsers = allowedUsers;
     }
 }
