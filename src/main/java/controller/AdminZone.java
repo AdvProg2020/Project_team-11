@@ -24,9 +24,14 @@ public class AdminZone {
         if (request == null) {
             return "invalid request ID";
         } else {
-            return requestId + ". " + request.getTopic() + ": \n" +
-                    request.getSender().getFirstName() + " " + request.getSender().getLastName() + "\n" +
-                    request.getDescription();
+            if (request.getSender() != null) {
+                return requestId + ". " + request.getTopic() + ": \n" +
+                        request.getSender().getFirstName() + " " + request.getSender().getLastName() + "\n" +
+                        request.getDescription();
+            } else {
+                return requestId + ". " + request.getTopic() + ": \n" +
+                        request.getDescription();
+            }
         }
     }
 

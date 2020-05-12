@@ -1,5 +1,7 @@
 package view.menu;
 
+import controller.AllAccountZone;
+
 public class LogoutMenu extends Menu {
 
     public LogoutMenu(Menu parentMenu) {
@@ -8,8 +10,9 @@ public class LogoutMenu extends Menu {
 
     @Override
     public void execute() {
-        //things for logout
+        AllAccountZone.setCurrentAccount(null);
+        Menu.getMainMenu().removeMainMenuSubmenu();
         System.out.println("logout successfully");
-        this.parentMenu.execute();
+        Menu.getMainMenu().execute();
     }
 }

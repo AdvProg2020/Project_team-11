@@ -16,6 +16,7 @@ public class ViewPersonalInfoMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\n Personal Info : ");
         System.out.println(AllAccountZone.getPersonalInfo());
         super.execute();
     }
@@ -24,8 +25,8 @@ public class ViewPersonalInfoMenu extends Menu {
         return new Menu("Edit Personal Info", this) {
             @Override
             public void execute() {
-                System.out.println("Enter filed [first name - last name - email - phone number - password]");
-                String field = scanner.nextLine().trim();
+                String field = checkInput("Enter filed [first name - last name - email - phone number - password]",
+                        "(?i)first name|last name|email|phone number|password");
                 setAccountField(field);
                 this.parentMenu.execute();
             }

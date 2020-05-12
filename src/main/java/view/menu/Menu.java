@@ -4,6 +4,7 @@ import controller.AllAccountZone;
 import controller.SellerZone;
 import view.menu.productsMenu.ShowProductMenu;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,8 +32,8 @@ public abstract class Menu {
         this.submenus.add(submenu);
     }
 
-    public void removeSubmenu(Menu submenu) {
-        this.submenus.remove(submenu);
+    public void removeMainMenuSubmenu() {
+        this.submenus.remove(2);
     }
 
     public static void setMainMenu(Menu mainMenu) {
@@ -82,7 +83,7 @@ public abstract class Menu {
         if (chosenMenu.equalsIgnoreCase("exit") && parentMenu == null) {
             System.exit(1);
         } else if (chosenMenu.equalsIgnoreCase("back") && parentMenu != null) {
-                nextMenu = this.parentMenu;
+            nextMenu = this.parentMenu;
         } else if (chosenMenu.equalsIgnoreCase("help")) {
             this.showAvailableMenus();
         } else if (chosenMenu.equalsIgnoreCase("sign in") && !this.getName().equals("Sign in") &&
@@ -121,8 +122,9 @@ public abstract class Menu {
             try {
                 date = format.parse(input);
                 break;
-            } catch (Exception ex) {
+            } catch (ParseException ex) {
                 System.out.println("Ha ha !!!!");
+                ex.printStackTrace();
             }
         }
         return date;
