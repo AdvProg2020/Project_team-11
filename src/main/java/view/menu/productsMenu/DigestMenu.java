@@ -28,6 +28,7 @@ public class DigestMenu extends Menu {
             @Override
             public void execute() {
                 if (AllAccountZone.getCurrentAccount() == null) {
+                    System.out.println("You should login first.");
                     new SignInMenu(this).execute();
                 } else {
                     String sellerUsername = checkInput("Enter seller username", ".+");

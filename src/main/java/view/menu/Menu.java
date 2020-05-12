@@ -135,6 +135,7 @@ public abstract class Menu {
                 int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
                 if (SellerZone.getProductById(productId) == null) {
                     System.out.println("invalid ID");
+                    this.parentMenu.execute();
                 } else {
                     new ShowProductMenu(parentMenu, productId);
                 }

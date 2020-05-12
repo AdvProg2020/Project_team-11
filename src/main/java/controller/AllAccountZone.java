@@ -220,4 +220,27 @@ public class AllAccountZone {
             return output.toString();
         }
     }
+
+    public static String showProductComments(int productId) {
+        Product product = SellerZone.getProductById(productId);
+        StringBuilder output = new StringBuilder();
+        for (Comment comment : product.getComments()) {
+            output.append(comment.getCommentText()).append("\n");
+        }
+        return output.toString();
+    }
+
+    public static void createComment(String text, int productId) {
+        Buyer buyer = (Buyer) getCurrentAccount();
+        Product product = SellerZone.getProductById(productId);
+        boolean hasBought = false;
+        for (BuyLog buyLog : buyer.getBuyHistory()) {
+            if (buyLog.getPurchasedProductionsAndSellers().containsKey(product)) {
+                hasBought = true;
+                break;
+            }
+        }
+        new Comment(buyer, product, text, "unseen", hasBought);
+        // TODO : new request.
+    }
 }
