@@ -11,9 +11,14 @@ import java.util.stream.Collectors;
 
 public class AllAccountZone {
     private static Account currentAccount = null;
+    private static boolean hasAdminAccountCreated = false;
 
     public static Account getCurrentAccount() {
         return currentAccount;
+    }
+
+    public static boolean getHasAdminAccountCreated() {
+        return hasAdminAccountCreated;
     }
 
     public static void setCurrentAccount(Account currentAccount) {
@@ -242,5 +247,32 @@ public class AllAccountZone {
         }
         new Comment(buyer, product, text, "unseen", hasBought);
         // TODO : new request.
+    }
+
+    public static String createAccount(ArrayList<String> info) {
+        if (info.get(0).equalsIgnoreCase("admin")) {
+            hasAdminAccountCreated = true;
+            new Admin(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
+        } else if (info.get(0).equalsIgnoreCase("seller")) {
+            StringBuilder requestDescription = new StringBuilder();
+            for (int i = 1; i < 8; i++) {
+                requestDescription.append(info.get(i)).append(",");
+            }
+            new Request(null, "create seller account", requestDescription.toString(), "unseen");
+            // TODO : username may be taken.
+            return "Request sent. Wait for Admin agreement.";
+        } else {
+            new Buyer(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6),
+                    Long.parseLong(info.get(7)));
+        }
+        return "Successfully created.";
+    }
+
+    public static boolean isUsernameValid(String username) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account.getUsername().equalsIgnoreCase(username))
+                return false;
+        }
+        return true;
     }
 }

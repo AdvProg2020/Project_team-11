@@ -29,7 +29,7 @@ public class AuctionMenu extends Menu {
         submenus.add(getShowProductsMenu());
         submenus.add(new FilteringMenu(this));
         submenus.add(new SortingMenu(this));
-        submenus.add(getShowProductsMenu());
+        submenus.add(getShowProductMenu());
         this.setSubmenus(submenus);
     }
 
@@ -38,6 +38,7 @@ public class AuctionMenu extends Menu {
             @Override
             public void execute() {
                 System.out.println(AllAccountZone.getAuctionProductsInSortAndFiltered(parentMenu));
+                this.parentMenu.execute();
             }
         };
     }
