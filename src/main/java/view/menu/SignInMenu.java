@@ -27,14 +27,13 @@ public class SignInMenu extends Menu {
     private Menu getLoginMenu() {
         return new Menu("Login", this) {
             @Override
-            public void showAvailableMenus() {
-                System.out.println(this.getName());
-                System.out.println("Enter account's information or Back to return");
-            }
-
-            @Override
             public void execute() {
-                // receive information for login account
+                ArrayList<String> info = new ArrayList<>();
+                getAccountInfo(info, "Enter account type [admin - buyer - seller]",
+                        "(?i)admin|buyer|seller|back", parentMenu);
+                getAccountInfo(info, "Enter username", ".+", parentMenu);
+                getAccountInfo(info, "Enter password", ".+", parentMenu);
+                System.out.println(AllAccountZone.loginUser(info));
                 this.parentMenu.execute();
             }
         };

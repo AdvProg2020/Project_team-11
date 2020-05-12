@@ -2,9 +2,12 @@ package controller;
 
 import model.*;
 import view.menu.Menu;
+import view.menu.adminMenu.AdminMenu;
 import view.menu.auctionMenu.AuctionMenu;
+import view.menu.buyerMenu.BuyerMenu;
 import view.menu.productsMenu.FilterInfo;
 import view.menu.productsMenu.ProductsMenu;
+import view.menu.sellerMenu.SellerMenu;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -274,5 +277,39 @@ public class AllAccountZone {
                 return false;
         }
         return true;
+    }
+
+    public static String loginUser(ArrayList<String> info) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (info.get(0).equalsIgnoreCase("admin")) {
+                if (account instanceof Admin && account.getUsername().equals(info.get(1))) {
+                    if (account.getPassword().equals(info.get(2))) {
+                        setCurrentAccount(account);
+                        Menu.getMainMenu().addSubmenus(new AdminMenu(Menu.getMainMenu()));
+                        return "Login successfully.";
+                    }
+                    return "Wrong password.";
+                }
+            } else if (info.get(0).equalsIgnoreCase("seller")) {
+                if (account instanceof Seller && account.getUsername().equals(info.get(1))) {
+                    if (account.getPassword().equals(info.get(2))) {
+                        setCurrentAccount(account);
+                        Menu.getMainMenu().addSubmenus(new SellerMenu(Menu.getMainMenu()));
+                        return "Login successfully.";
+                    }
+                    return "Wrong password.";
+                }
+            } else if (info.get(0).equalsIgnoreCase("buyer")) {
+                if (account instanceof Buyer && account.getUsername().equals(info.get(1))) {
+                    if (account.getPassword().equals(info.get(2))) {
+                        setCurrentAccount(account);
+                        Menu.getMainMenu().addSubmenus(new BuyerMenu(Menu.getMainMenu()));
+                        return "Login successfully.";
+                    }
+                    return "Wrong password.";
+                }
+            }
+        }
+        return "Username not found.";
     }
 }

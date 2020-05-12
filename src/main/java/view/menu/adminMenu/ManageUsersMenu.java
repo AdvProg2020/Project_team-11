@@ -9,6 +9,7 @@ public class ManageUsersMenu extends Menu {
 
     public ManageUsersMenu(Menu parentMenu) {
         super("Manage Users", parentMenu);
+        ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getViewUserMenu());
         submenus.add(getDeleteUserMenu());
         submenus.add(getCreateManagerProfileMenu());
