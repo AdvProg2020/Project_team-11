@@ -12,9 +12,8 @@ public class AdminZone {
     public static String showAllRequests() {
         StringBuilder allRequests = new StringBuilder();
         for (Request request : DataBase.getDataBase().getAllRequests()) {
-            if (request.getStatus().equals("unseen")) {
-                allRequests.append(request.getId()).append(". ").append(request.getTopic()).append("\n");
-            }
+                allRequests.append(request.getId()).append(". ").append(request.getTopic()).append(" -> ")
+                        .append(request.getStatus()).append("\n");
         }
         return String.valueOf(allRequests);
     }
@@ -25,7 +24,7 @@ public class AdminZone {
             return "invalid request ID";
         } else {
             if (request.getSender() != null) {
-                return requestId + ". " + request.getTopic() + ": \n" +
+                return requestId + ". " + request.getTopic() + " : \n" +
                         request.getSender().getFirstName() + " " + request.getSender().getLastName() + "\n" +
                         request.getDescription();
             } else {
@@ -167,10 +166,16 @@ public class AdminZone {
     }
 
     public static String showUserInfo(String username) {
+        String accountType;
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account instanceof  Buyer) {
+                accountType = "Buyer";
+            } else {
+                accountType = "Seller";
+            }
             if (account.getUsername().equalsIgnoreCase(username)) {
-                return account.getFirstName() + " " + account.getLastName() + "\n" +
-                        account.getEmailAddress() + " " + account.getPhoneNumber();
+                return accountType + " : \nName : " + account.getFirstName() + " " + account.getLastName() + "\n Email : " +
+                        account.getEmailAddress() + "\n Phone number : " + account.getPhoneNumber();
             }
         }
         return "invalid username";
@@ -241,8 +246,8 @@ public class AdminZone {
     public static String showDiscounts() {
         StringBuilder output = new StringBuilder();
         for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
-            output.append(discount.getCode()).append(" ").append(discount.getAmount()[0]).append("% discount, max : ")
-                    .append(discount.getAmount()[1]).append("$");
+            output.append("Code : '").append(discount.getCode()).append("' ").append(discount.getAmount()[0])
+                    .append("% discount, at most : ").append(discount.getAmount()[1]).append("$");
         }
         return output.toString();
     }
@@ -261,8 +266,8 @@ public class AdminZone {
         for (Buyer user : discount.getAllowedUsers()) {
             usernames.append(user.getUsername()).append(", ");
         }
-        return discount.getAmount()[0] + "% discount, max : " + discount.getAmount()[1] + "$ from " +
-                discount.getStartDate() + " to " + discount.getEndDate() + " " + discount.getRepeatedTimes() +
+        return discount.getAmount()[0] + "% discount, at most : " + discount.getAmount()[1] + "$ from \"" +
+                discount.getStartDate() + "\" to \"" + discount.getEndDate() + "\" " + discount.getRepeatedTimes() +
                 " times for " + usernames;
     }
 

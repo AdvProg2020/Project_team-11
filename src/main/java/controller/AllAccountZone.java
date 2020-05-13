@@ -258,7 +258,7 @@ public class AllAccountZone {
             new Admin(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
         } else if (info.get(0).equalsIgnoreCase("seller")) {
             StringBuilder requestDescription = new StringBuilder();
-            for (int i = 1; i < 8; i++) {
+            for (int i = 1; i <= 8; i++) {
                 requestDescription.append(info.get(i)).append(",");
             }
             new Request(null, "create seller account", requestDescription.toString(), "unseen");

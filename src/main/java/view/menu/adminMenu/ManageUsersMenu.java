@@ -18,6 +18,7 @@ public class ManageUsersMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nUsers : ");
         System.out.println(AdminZone.showUsersInfo());
         super.execute();
     }
@@ -56,6 +57,7 @@ public class ManageUsersMenu extends Menu {
                 info.add(checkInput("Enter username", ".+"));
                 info.add(checkInput("Enter password", ".+"));
                 AdminZone.createAdminProfile(info);
+                System.out.println("Admin added.");
                 this.parentMenu.execute();
             }
         };

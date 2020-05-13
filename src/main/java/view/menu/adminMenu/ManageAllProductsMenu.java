@@ -16,6 +16,7 @@ public class ManageAllProductsMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nProducts : ");
         System.out.println(AdminZone.showAllProducts());
         super.execute();
     }

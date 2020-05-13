@@ -114,12 +114,12 @@ public abstract class Menu {
 
 
     protected Date getDate(String filed) {
-        String input = checkInput("Enter " + filed + "date [dd/mm/yyyy hh:mm:ss]",
-                "^\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}$");
-        SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
         Date date;
         while (true) {
             try {
+                String input = checkInput("Enter " + filed + "date [dd/mm/yyyy hh:mm:ss]",
+                        "^\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}$");
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 date = format.parse(input);
                 break;
             } catch (ParseException ex) {

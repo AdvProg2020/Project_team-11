@@ -16,7 +16,7 @@ public class ViewPersonalInfoMenu extends Menu {
 
     @Override
     public void execute() {
-        System.out.println("\n Personal Info : ");
+        System.out.println("\nPersonal Info : ");
         System.out.println(AllAccountZone.getPersonalInfo());
         super.execute();
     }

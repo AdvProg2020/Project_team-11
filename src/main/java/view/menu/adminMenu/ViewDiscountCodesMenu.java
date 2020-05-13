@@ -21,6 +21,7 @@ public class ViewDiscountCodesMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nDiscounts : ");
         System.out.println(AdminZone.showDiscounts());
         super.execute();
     }

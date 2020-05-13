@@ -21,6 +21,7 @@ public class ManageCategoriesMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nCategories : ");
         System.out.println(AllAccountZone.showCategories());
         super.execute();
     }
@@ -30,8 +31,9 @@ public class ManageCategoriesMenu extends Menu {
             @Override
             public void execute() {
                 String categoryName = checkInput("Enter category name", ".+");
-                try {
+                if (Category.getCategoryByName(categoryName) != null) {
                     Category category = Category.getCategoryByName(categoryName);
+
                     System.out.println("Which field do you want to edit? [name - feature - product list]");
                     String field = scanner.nextLine().trim();
                     String newField;
@@ -56,7 +58,7 @@ public class ManageCategoriesMenu extends Menu {
                             AdminZone.renameFeatureOfCategory(category, lastFeature, newField);
                         }
                     }
-                } catch (Exception ex) {
+                } else {
                     System.out.println("invalid name");
                 }
                 this.parentMenu.execute();
@@ -71,14 +73,15 @@ public class ManageCategoriesMenu extends Menu {
                 String name = checkInput("Enter category name", ".+");
                 ArrayList<String> features = new ArrayList<>();
                 String feature;
-                System.out.println("Enter 'end of features' to end");
+                System.out.println("Enter 'end of features' to end.");
                 do {
                     feature = checkInput("Enter feature", ".+");
                     if (!feature.equalsIgnoreCase("end of features"))
                         features.add(feature);
-                } while (feature.equalsIgnoreCase("end of features"));
+                } while (!feature.equalsIgnoreCase("end of features"));
                 ArrayList<Integer> productList = new ArrayList<>();
                 String productId;
+                System.out.println("Enter 'end' to finish.");
                 do {
                     productId = checkInput("Enter Product ID", "\\d+|end");
                     if (!productId.equalsIgnoreCase("end") &&
