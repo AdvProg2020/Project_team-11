@@ -33,7 +33,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Increase Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 System.out.println(BuyerZone.changeNumberOFProductInCart(productId, 1));
                 this.parentMenu.execute();
             }
@@ -44,7 +44,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Decrease Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 System.out.println(BuyerZone.changeNumberOFProductInCart(productId, -1));
                 BuyerZone.removeProductFromCart();
                 this.parentMenu.execute();
@@ -89,9 +89,6 @@ public class ViewCartMenu extends Menu {
         String command = scanner.nextLine().trim();
         if (command.equalsIgnoreCase("back")) {
             this.parentMenu.execute();
-        } else if (command.equalsIgnoreCase("help")) {
-            this.showAvailableMenus();
-            receiveInfo(field);
         }
         return command;
     }
@@ -99,18 +96,11 @@ public class ViewCartMenu extends Menu {
     private Menu getCheckDiscountCodeMenu() {
         return new Menu("Check discount code", parentMenu) {
             @Override
-            public void showAvailableMenus() {
-                System.out.println("Enter Discount Code or 'back' to cancel the purchase or 'next' to pay the money.");
-            }
-
-            @Override
             public void execute() {
-                String command = scanner.nextLine();
+                System.out.println("Enter Discount Code or 'back' to cancel the purchase or 'next' to pay the money.");
+                String command = scanner.nextLine().trim();
                 if (command.equalsIgnoreCase("back")) {
                     this.parentMenu.execute();
-                } else if (command.equalsIgnoreCase("help")) {
-                    this.showAvailableMenus();
-                    this.execute();
                 } else if (command.equalsIgnoreCase("next")) {
                     getPaymentMenu().execute();
                 } else {

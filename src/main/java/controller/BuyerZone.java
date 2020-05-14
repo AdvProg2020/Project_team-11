@@ -11,11 +11,11 @@ public class BuyerZone {
     public static String showProductsInCart() {
         StringBuilder productList = new StringBuilder();
         for (Product product : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
-            productList.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).
-                    append(" number: ").append(((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(product)).
-                    append(" ").append(product.getGeneralFeature().getPrice()).append("$ ").
-                    append(product.getGeneralFeature().getCompany()).append(" Average Score: ").
-                    append(product.getAverageScore()).append("\n");
+            productList.append(product.getId()).append(". ").append(product.getGeneralFeature().getName())
+                    .append(" number: ").append(((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(product))
+                    .append(" ").append(product.getGeneralFeature().getPrice()).append("$ Brand : ")
+                    .append(product.getGeneralFeature().getCompany()).append(" Average Score: ")
+                    .append(product.getAverageScore()).append("\n");
         }
         return String.valueOf(productList);
     }
@@ -184,17 +184,24 @@ public class BuyerZone {
 
     public static String getOrderInfo(int logId) {
         ExchangeLog log = ExchangeLog.getLogById(logId);
-        String output = "";
+        StringBuilder output = new StringBuilder();
         if (!(log instanceof BuyLog)) {
             return "invalid ID";
         } else if (!((BuyLog) log).getBuyerUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
             return "invalid ID";
         } else {
-            output += (log.getId() + ". " + log.getDate() + " : \n" + ((BuyLog) log).getPurchasedProductionsAndSellers() +
-                    "\n" + ((BuyLog) log).getPaidAmount() + "$ -> Discount = " + ((BuyLog) log).getDiscountAmountApplied() +
-                    "$\n" + ((BuyLog) log).getDeliveryStatus());
+            StringBuilder productList = new StringBuilder();
+            for (Map.Entry<Product, String> entry : ((BuyLog) log).getPurchasedProductionsAndSellers().entrySet()) {
+                productList.append(entry.getKey().getGeneralFeature().getName()).append(" seller : ")
+                        .append(entry.getValue());
+            }
+            output.append(log.getId()).append(". ").append(log.getDate()).append(" : \n")
+                    .append(productList).append("\n")
+                    .append(((BuyLog) log).getPaidAmount()).append("$ -> Discount = ")
+                    .append(((BuyLog) log).getDiscountAmountApplied()).append("$\n")
+                    .append(((BuyLog) log).getDeliveryStatus());
         }
-        return output;
+        return output.toString();
     }
 
     public static boolean hasUserBoughtProduct(int productId) {

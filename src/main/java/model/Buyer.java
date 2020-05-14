@@ -43,8 +43,12 @@ public class Buyer extends Account {
         this.wallet = wallet;
     }
 
-    public void setDiscountCodes(HashMap<Discount, Integer> discountCodes) {
-        this.discountCodes = discountCodes;
+    public void addDiscountCodes(Discount discount, int number) {
+        this.discountCodes.put(discount, number);
+    }
+
+    public void removeDiscountCode(Discount discount) {
+        this.discountCodes.remove(discount);
     }
 
     public void addBuyHistory(BuyLog buyHistory) {

@@ -2,7 +2,6 @@ package view.menu.adminMenu;
 
 import controller.AdminZone;
 import controller.AllAccountZone;
-import controller.SellerZone;
 import model.Category;
 import view.menu.Menu;
 
@@ -34,13 +33,15 @@ public class ManageCategoriesMenu extends Menu {
                 if (Category.getCategoryByName(categoryName) != null) {
                     Category category = Category.getCategoryByName(categoryName);
 
-                    System.out.println("Which field do you want to edit? [name - feature - product list]");
+                    System.out.println("Which field do you want to edit? [name - feature]");
                     String field = scanner.nextLine().trim();
                     String newField;
                     if (field.equalsIgnoreCase("name")) {
+                        // TODO : category name is specific.
                         newField = checkInput("Enter name", ".+");
                         category.setName(newField);
                     } else if (field.equalsIgnoreCase("feature")) {
+                        // TODO : edit products in this category.
                         System.out.println("Do you want to [add - remove - rename] a feature?");
                         String state = scanner.nextLine().trim();
                         if (state.equalsIgnoreCase("add")) {
@@ -70,6 +71,7 @@ public class ManageCategoriesMenu extends Menu {
         return new Menu("Add Category", this) {
             @Override
             public void execute() {
+                // TODO : category name is specific.
                 String name = checkInput("Enter category name", ".+");
                 ArrayList<String> features = new ArrayList<>();
                 String feature;
@@ -79,20 +81,7 @@ public class ManageCategoriesMenu extends Menu {
                     if (!feature.equalsIgnoreCase("end of features"))
                         features.add(feature);
                 } while (!feature.equalsIgnoreCase("end of features"));
-                ArrayList<Integer> productList = new ArrayList<>();
-                String productId;
-                System.out.println("Enter 'end' to finish.");
-                do {
-                    productId = checkInput("Enter Product ID", "\\d+|end");
-                    if (!productId.equalsIgnoreCase("end") &&
-                            SellerZone.getProductById(Integer.parseInt(productId)) == null) {
-                        System.out.println("invalid product ID.");
-                    } else if (!productId.equalsIgnoreCase("end") &&
-                            SellerZone.getProductById(Integer.parseInt(productId)) != null) {
-                        productList.add(Integer.parseInt(productId));
-                    }
-                } while (!productId.equalsIgnoreCase("end"));
-                AdminZone.createCategory(name, features, productList);
+                AdminZone.createCategory(name, features);
                 this.parentMenu.execute();
             }
         };

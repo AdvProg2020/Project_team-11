@@ -38,6 +38,7 @@ public class ManageUsersMenu extends Menu {
         return new Menu("Delete User", this) {
             @Override
             public void execute() {
+                // TODO : delete seller need delete his auctions and products.
                 String username = checkInput("Enter username", ".+");
                 System.out.println(AdminZone.deleteUser(username));
                 this.parentMenu.execute();

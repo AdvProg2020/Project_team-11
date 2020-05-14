@@ -32,7 +32,7 @@ public class ShowProductMenu extends Menu {
         return new Menu("Compare", this) {
             @Override
             public void execute() {
-                int productId2 = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                int productId2 = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                 if (SellerZone.getProductById(productId2) == null) {
                     System.out.println("invalid ID");
                 } else {

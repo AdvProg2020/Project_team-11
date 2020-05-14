@@ -76,8 +76,6 @@ public class AdminZone {
             product.getGeneralFeature().setPrice(Long.parseLong(splitInfo.get(3)));
         if (!splitInfo.get(4).equals("next"))
             product.getGeneralFeature().setStockStatus(Integer.parseInt(splitInfo.get(4)));
-        if (!splitInfo.get(5).equals("next"))
-            product.setDescription(splitInfo.get(5));
     }
 
     private static void acceptRequestCreateSellerAccount(Request request) {
@@ -88,6 +86,7 @@ public class AdminZone {
     }
 
     private static void acceptRequestAddProduct(Request request) {
+        // TODO : add product to category.
         String info = request.getDescription();
         int productId = Integer.parseInt(info);
         Product product = getProductByIdAndSeller(productId, (Seller) request.getSender());
@@ -318,19 +317,14 @@ public class AdminZone {
         }
     }
 
-    public static void createCategory(String name, ArrayList<String> features, ArrayList<Integer> productList) {
-        ArrayList<Product> products = new ArrayList<>();
-        for (Integer productId : productList) {
-            products.add(SellerZone.getProductById(productId));
-        }
-        new Category(name, features, products);
+    public static void createCategory(String name, ArrayList<String> features) {
+        new Category(name, features);
     }
 
     public static void removeCategory(String name) {
         Category category = Category.getCategoryByName(name);
         for (Product product : category.getProductList()) {
-            product.setCategory(null);
-            product.setSpecialFeature(new HashMap<>());
+            removeProduct(product.getId());
         }
         DataBase.getDataBase().getAllCategories().remove(category);
     }

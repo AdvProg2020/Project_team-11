@@ -58,11 +58,11 @@ public class SellerMenu extends Menu {
                 System.out.println("Do you want to sale an existing product OR new product? [existing - new]");
                 String productType = checkInput("Enter your answer", "(?i)(existing|new)");
                 if (productType.equalsIgnoreCase("existing")) {
-                    int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                    int productId = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                     while (true) {
                         if (SellerZone.getProductById(productId) == null) {
                             System.out.println("invalid product ID.");
-                            productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                            productId = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                         } else {
                             HashMap<String, String> requestDescription = new HashMap<>(getProductInfo());
                             HashMap<String, String> categoryFeature = new HashMap<>();
@@ -98,11 +98,12 @@ public class SellerMenu extends Menu {
         return new Menu("Remove Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter product Id", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter product Id", "\\d{1,9}"));
                 Product product = AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount());
                 if (product == null) {
                     System.out.println("You haven't this product.");
                 } else {
+                    // TODO : remove from auctions, category and delete its comment & Rate.
                     DataBase.getDataBase().getAllProducts().remove(product);
                     System.out.println("Product removed from your products.");
                 }
@@ -136,8 +137,8 @@ public class SellerMenu extends Menu {
         System.out.println("Enter your Product info : ");
         requestDescription.put("name", checkInput("Product name", ".+"));
         requestDescription.put("company", checkInput("Company or Brand", ".+"));
-        requestDescription.put("price", checkInput("Price", "\\d+"));
-        requestDescription.put("stock status", checkInput("Stock status", "\\d+"));
+        requestDescription.put("price", checkInput("Price", "\\d{1,18}"));
+        requestDescription.put("stock status", checkInput("Stock status", "\\d{1,9}"));
         requestDescription.put("description", checkInput("Description", ".+"));
         return requestDescription;
     }

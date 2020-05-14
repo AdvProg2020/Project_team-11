@@ -25,7 +25,8 @@ public class ManageAllProductsMenu extends Menu {
         return new Menu("Remove", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                // TODO : remove product from auctions, category and delete its comment & Rate
+                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                 System.out.println(AdminZone.removeProduct(productId));
                 this.parentMenu.execute();
             }

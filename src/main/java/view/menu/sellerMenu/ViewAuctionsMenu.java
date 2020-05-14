@@ -34,7 +34,7 @@ public class ViewAuctionsMenu extends Menu {
         return new Menu("View Auction", this) {
             @Override
             public void execute() {
-                int auctionId = Integer.parseInt(checkInput("Enter auction ID", "\\d+"));
+                int auctionId = Integer.parseInt(checkInput("Enter auction ID", "\\d{1,9}"));
                 System.out.println(SellerZone.showSellerAuction(auctionId));
                 this.parentMenu.execute();
             }
@@ -45,7 +45,7 @@ public class ViewAuctionsMenu extends Menu {
         return new Menu("Edit Auction", this) {
             @Override
             public void execute() {
-                int auctionId = Integer.parseInt(checkInput("Enter auction ID", "(\\d+)"));
+                int auctionId = Integer.parseInt(checkInput("Enter auction ID", "(\\d{1,9})"));
                 if (SellerZone.getAuctionById(auctionId) != null) {
                     String requestDescription = getEditedField(auctionId);
                     SellerZone.sendEditAuctionRequest(auctionId, requestDescription);
@@ -93,12 +93,7 @@ public class ViewAuctionsMenu extends Menu {
         } else {
             requestDescription.append("next,");
         }
-        String description;
-        do {
-            description = checkInput("Enter discount amount or 'next'", "(\\d+)|next");
-        } while (!description.equals("next") &&
-                (Integer.parseInt(description) == 0 || Integer.parseInt(description) >= 100));
-        requestDescription.append(description);
+        requestDescription.append(checkInput("Enter discount amount or 'next'", "(^[1-9][0-9]?$)|next"));
         return requestDescription.toString();
     }
 
@@ -106,7 +101,7 @@ public class ViewAuctionsMenu extends Menu {
         int productId = 0;
         System.out.println("Enter '-1' to end");
         while (productId != -1) {
-            productId = Integer.parseInt(checkInput("Enter product ID", "-?\\d+"));
+            productId = Integer.parseInt(checkInput("Enter product ID", "-?\\d{1,9}"));
             if (AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount()) == null) {
                 System.out.println("invalid product ID.");
             } else {
@@ -123,11 +118,7 @@ public class ViewAuctionsMenu extends Menu {
         newField.append(startDate.getTime()).append(",");
         Date endDate = getDate("end ");
         newField.append(endDate.getTime()).append(",");
-        String description;
-        do {
-            description = checkInput("Enter discount amount", "(\\d+)|next");
-        } while (Integer.parseInt(description) == 0 || Integer.parseInt(description) >= 100);
-        newField.append(description);
+        newField.append(checkInput("Enter discount amount", "(^[1-9][0-9]?$)|next"));
         SellerZone.createAuction(newField.toString());
     }
 }

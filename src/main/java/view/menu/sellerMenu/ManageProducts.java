@@ -27,7 +27,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 System.out.println(SellerZone.viewSellerProduct(productId));
                 this.parentMenu.execute();
             }
@@ -38,7 +38,7 @@ public class ManageProducts extends Menu {
         return new Menu("View Product Buyers", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 System.out.println(SellerZone.viewProductBuyers(productId));
                 this.parentMenu.execute();
             }
@@ -49,7 +49,7 @@ public class ManageProducts extends Menu {
         return new Menu("Edit Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 if (SellerZone.editProduct(productId).equals("Edit")) {
                     getChangedField(productId);
                 } else {
@@ -65,11 +65,9 @@ public class ManageProducts extends Menu {
         System.out.println("Enter the new field or 'next' to skip");
         name = checkInput("Enter name", ".+");
         company = checkInput("Enter company", ".+");
-        price = checkInput("Enter price", "\\d+|next");
-        stockStatus = checkInput("Enter stock status", "\\d+|next");
-        description = checkInput("Enter description", ".+");
-        String requestDescription = productId + "," + name + "," + company + "," + price + "," + stockStatus +
-                "," + description;
+        price = checkInput("Enter price", "\\d{1,18}|next");
+        stockStatus = checkInput("Enter stock status", "\\d{1,9}|next");
+        String requestDescription = productId + "," + name + "," + company + "," + price + "," + stockStatus;
         SellerZone.sendEditProductRequest(requestDescription);
     }
 }

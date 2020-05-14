@@ -8,10 +8,10 @@ public class Category {
 //    private ArrayList<Category> subCategories; this is optional. think about it after ending main things.
     private ArrayList<Product> productList;
 
-    public Category(String name, ArrayList<String> specialFeatures, ArrayList<Product> productList) {
+    public Category(String name, ArrayList<String> specialFeatures) {
         this.name = name;
         this.specialFeatures = new ArrayList<>(specialFeatures);
-        this.productList = new ArrayList<>(productList);
+        this.productList = new ArrayList<>();
         DataBase.getDataBase().setAllCategories(this);
     }
 

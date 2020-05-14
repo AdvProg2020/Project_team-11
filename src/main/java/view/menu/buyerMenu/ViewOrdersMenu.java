@@ -26,7 +26,7 @@ public class ViewOrdersMenu extends Menu {
         return new Menu("Show Order", this) {
            @Override
             public void execute() {
-               int orderId = Integer.parseInt(checkInput("Enter Order ID", "\\d+"));
+               int orderId = Integer.parseInt(checkInput("Enter Order ID", "\\d{1,9}"));
                System.out.println(BuyerZone.getOrderInfo(orderId));
                this.parentMenu.execute();
             }
@@ -37,7 +37,7 @@ public class ViewOrdersMenu extends Menu {
         return new Menu("Rate Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
                 if (BuyerZone.hasUserBoughtProduct(productId)) {
                     int score = Integer.parseInt(checkInput("Enter Score [1-5]", "^[12345]$"));
                     BuyerZone.createRate(productId, score);

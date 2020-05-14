@@ -26,6 +26,7 @@ public class AdminMenu extends Menu {
         return new Menu("Create Discount Code", this) {
             @Override
             public void execute() {
+                // TODO : add discount to buyers account.
                 AdminZone.createDiscount(getDiscountInfo(), getAllowedUsers());
                 System.out.println("Discount created.");
                 this.parentMenu.execute();
@@ -41,8 +42,8 @@ public class AdminMenu extends Menu {
         Date endDate = getDate("end ");
         discountInfo.add(String.valueOf(endDate.getTime()));
         discountInfo.add(checkInput("Enter discount percent", "^[1-9][0-9]?$"));
-        discountInfo.add(checkInput("Enter max discount amount", "\\d+"));
-        discountInfo.add(checkInput("Enter number of times can use this code", "\\d+"));
+        discountInfo.add(checkInput("Enter max discount amount", "\\d{1,18}"));
+        discountInfo.add(checkInput("Enter number of times can use this code", "\\d{1,9}"));
         return discountInfo;
     }
 

@@ -64,12 +64,14 @@ public class ViewDiscountCodesMenu extends Menu {
                         newField = checkInput("Enter discount percent", "^[1-9][0-9]?$");
                         discount.setDiscountPercent(Long.parseLong(newField));
                     } else if (field.equalsIgnoreCase("max discount")) {
-                        newField = checkInput("Enter max discount", "\\d+");
+                        newField = checkInput("Enter max discount", "\\d{1,18}");
                         discount.setMaxDiscount(Long.parseLong(newField));
                     } else if (field.equalsIgnoreCase("num of uses")) {
-                        newField = checkInput("Enter num of uses", "\\d+");
+                        // TODO : change in buyer account
+                        newField = checkInput("Enter num of uses", "\\d{1,9}");
                         discount.setRepeatedTimes(Integer.parseInt(newField));
                     } else if (field.equalsIgnoreCase("allowed users")) {
+                        // TODO : add or remove buyer.
                         ArrayList<Buyer> allowedUsers = new ArrayList<>();
                         String username;
                         System.out.println("'end of inserting usernames' to end");
