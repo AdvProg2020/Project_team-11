@@ -1,6 +1,5 @@
 package view.menu.productsMenu;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

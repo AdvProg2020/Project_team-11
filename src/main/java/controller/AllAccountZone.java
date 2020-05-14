@@ -248,8 +248,8 @@ public class AllAccountZone {
                 break;
             }
         }
-        new Comment(buyer, product, text, "unseen", hasBought);
-        // TODO : new request.
+        Comment comment = new Comment(buyer, product, text, "unseen", hasBought);
+        new Request(buyer, "add comment", String.valueOf(comment.getId()), "unseen");
     }
 
     public static String createAccount(ArrayList<String> info) {

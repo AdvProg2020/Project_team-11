@@ -13,7 +13,7 @@ public class Product {
     private double averageScore;
     private int numOfUsersRated;
     private ArrayList<Comment> comments;
-    private static int numOfAllProducts;
+    private static int numOfAllProducts = 1;
 
     public Product(int id, String status, ProductInfo generalFeature, Category category,
                    HashMap<String, String> specialFeature, String description) {

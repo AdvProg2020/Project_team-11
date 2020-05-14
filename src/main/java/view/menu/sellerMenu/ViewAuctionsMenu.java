@@ -25,6 +25,7 @@ public class ViewAuctionsMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nAuctions : ");
         System.out.println(SellerZone.showSellerAuctions());
         super.execute();
     }

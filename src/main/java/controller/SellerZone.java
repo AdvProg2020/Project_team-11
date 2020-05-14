@@ -62,7 +62,7 @@ public class SellerZone {
     }
 
     public static String editProduct(int productId) {
-        Product product = getProductById(productId);
+        Product product = AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount());
         if (product == null) {
             return "You haven't this product.";
         } else {

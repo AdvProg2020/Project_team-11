@@ -3,12 +3,12 @@ package model;
 public class Request {
     private int Id;
     private static int numOfAllRequest = 1;
-    private Seller sender;
+    private Account sender;
     private String topic;
     private String description;
     private String status;
 
-    public Request(Seller sender, String topic, String description, String status) {
+    public Request(Account sender, String topic, String description, String status) {
         this.Id = numOfAllRequest;
         numOfAllRequest += 1;
         this.sender = sender;
@@ -22,7 +22,7 @@ public class Request {
         return Id;
     }
 
-    public Seller getSender() {
+    public Account getSender() {
         return sender;
     }
 

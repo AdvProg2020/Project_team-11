@@ -27,6 +27,7 @@ public class AdminMenu extends Menu {
             @Override
             public void execute() {
                 AdminZone.createDiscount(getDiscountInfo(), getAllowedUsers());
+                System.out.println("Discount created.");
                 this.parentMenu.execute();
             }
         };

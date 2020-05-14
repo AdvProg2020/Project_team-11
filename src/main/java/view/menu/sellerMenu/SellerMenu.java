@@ -44,6 +44,7 @@ public class SellerMenu extends Menu {
         return new Menu("View Sales History", this) {
             @Override
             public void execute() {
+                System.out.println("\nSales : ");
                 System.out.println(SellerZone.getSellerHistory());
                 this.parentMenu.execute();
             }
@@ -86,6 +87,7 @@ public class SellerMenu extends Menu {
                         categoryFeature.put(feature, checkInput(feature, ".+"));
                     }
                     SellerZone.sendAddProductRequest(0, category, requestDescription, categoryFeature);
+                    System.out.println("Request sent.");
                 }
                 this.parentMenu.execute();
             }

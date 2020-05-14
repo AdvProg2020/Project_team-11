@@ -18,6 +18,7 @@ public class ManageProducts extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nProducts : ");
         System.out.println(SellerZone.getSellerProducts());
         super.execute();
     }
@@ -60,19 +61,13 @@ public class ManageProducts extends Menu {
     }
 
     private void getChangedField(int productId) {
-        String name, company, description;
-        int price, stockStatus;
+        String name, company, description, price, stockStatus;
         System.out.println("Enter the new field or 'next' to skip");
-        System.out.print("name: ");
-        name = scanner.nextLine();
-        System.out.print("company: ");
-        company = scanner.nextLine();
-        System.out.print("price: ");
-        price = Integer.parseInt(scanner.nextLine());//can cause ERROR
-        System.out.print("stock Status: ");
-        stockStatus = Integer.parseInt(scanner.nextLine());//can cause ERROR
-        System.out.print("description: ");
-        description = scanner.nextLine();
+        name = checkInput("Enter name", ".+");
+        company = checkInput("Enter company", ".+");
+        price = checkInput("Enter price", "\\d+|next");
+        stockStatus = checkInput("Enter stock status", "\\d+|next");
+        description = checkInput("Enter description", ".+");
         String requestDescription = productId + "," + name + "," + company + "," + price + "," + stockStatus +
                 "," + description;
         SellerZone.sendEditProductRequest(requestDescription);

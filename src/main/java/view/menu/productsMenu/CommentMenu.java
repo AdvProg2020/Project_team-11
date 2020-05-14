@@ -19,6 +19,7 @@ public class CommentMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nComments : ");
         System.out.println(AllAccountZone.showProductComments(productId));
         super.execute();
     }

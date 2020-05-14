@@ -19,6 +19,7 @@ public class DigestMenu extends Menu {
 
     @Override
     public void execute() {
+        System.out.println("\nProduct info : ");
         System.out.println(AllAccountZone.showProductWithSellers(productId));
         super.execute();
     }

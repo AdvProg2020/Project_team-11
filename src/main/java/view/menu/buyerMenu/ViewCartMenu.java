@@ -2,7 +2,6 @@ package view.menu.buyerMenu;
 
 import controller.BuyerZone;
 import view.menu.Menu;
-import view.menu.productsMenu.ShowProductMenu;
 
 import java.util.ArrayList;
 
@@ -77,12 +76,8 @@ public class ViewCartMenu extends Menu {
     private Menu getReceiveInfoMenu() {
         return new Menu("Receive Information", parentMenu) {
             @Override
-            public void showAvailableMenus() {
-                System.out.println("Enter Receiver Information or 'back'.");
-            }
-
-            @Override
             public void execute() {
+                System.out.println("Enter Receiver Information or 'back'.");
                 String address = receiveInfo("address");
                 String phoneNumber = receiveInfo("phone number");
             }

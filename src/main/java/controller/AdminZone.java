@@ -48,6 +48,8 @@ public class AdminZone {
             acceptRequestAddAuction(request);
         } else if (request.getTopic().equals("edit auction")) {
             acceptRequestEditAuction(request);
+        } else if (request.getTopic().equals("add comment")) {
+            acceptRequestAddComment(request);
         }
         request.setStatus("accepted");
         return "Done";
@@ -64,7 +66,7 @@ public class AdminZone {
     private static void acceptRequestEditProduct(Request request) {
         String info = request.getDescription();
         ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
-        Product product = getProductByIdAndSeller(Integer.parseInt(splitInfo.get(0)), request.getSender());
+        Product product = getProductByIdAndSeller(Integer.parseInt(splitInfo.get(0)), (Seller) request.getSender());
         assert product != null;
         if (!splitInfo.get(1).equals("next"))
             product.getGeneralFeature().setName(splitInfo.get(1));
@@ -88,7 +90,7 @@ public class AdminZone {
     private static void acceptRequestAddProduct(Request request) {
         String info = request.getDescription();
         int productId = Integer.parseInt(info);
-        Product product = getProductByIdAndSeller(productId, request.getSender());
+        Product product = getProductByIdAndSeller(productId, (Seller) request.getSender());
         assert product != null;
         product.setStatus("accepted");
     }
@@ -110,7 +112,7 @@ public class AdminZone {
             ArrayList<String> productsId = new ArrayList<>(Arrays.asList(splitInfo.get(1).split("/")));
             ArrayList<Product> productList = new ArrayList<>();
             for (String productId : productsId) {
-                Product product = getProductByIdAndSeller(Integer.parseInt(productId), request.getSender());
+                Product product = getProductByIdAndSeller(Integer.parseInt(productId), (Seller) request.getSender());
                 productList.add(product);
             }
             auction.setProductList(productList);
@@ -128,6 +130,11 @@ public class AdminZone {
         if (!splitInfo.get(4).equals("next")) {
             auction.setDiscountAmount(Integer.parseInt(splitInfo.get(4)));
         }
+    }
+
+    private static void acceptRequestAddComment(Request request) {
+        Comment comment = Comment.getCommentById(Integer.parseInt(request.getDescription()));
+        comment.setStatus("accepted");
     }
 
     public static Product getProductByIdAndSeller(int productId, Seller seller) {
@@ -150,9 +157,16 @@ public class AdminZone {
         Request request = getRequestById(requestId);
         if (request == null || !request.getStatus().equals("unseen"))
             return "invalid request ID";
+        else if (request.getTopic().equals("add comment"))
+            declineRequestAddComment(request);
         else
             request.setStatus("declined");
         return "Done";
+    }
+
+    private static void declineRequestAddComment(Request request) {
+        Comment comment = Comment.getCommentById(Integer.parseInt(request.getDescription()));
+        comment.setStatus("rejected");
     }
 
     public static String showUsersInfo() {
@@ -174,8 +188,8 @@ public class AdminZone {
                 accountType = "Seller";
             }
             if (account.getUsername().equalsIgnoreCase(username)) {
-                return accountType + " : \nName : " + account.getFirstName() + " " + account.getLastName() + "\n Email : " +
-                        account.getEmailAddress() + "\n Phone number : " + account.getPhoneNumber();
+                return accountType + " : \nName : " + account.getFirstName() + " " + account.getLastName() + "\nEmail : " +
+                        account.getEmailAddress() + "\nPhone number : " + account.getPhoneNumber();
             }
         }
         return "invalid username";
