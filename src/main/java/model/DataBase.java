@@ -13,6 +13,7 @@ public class DataBase {
     private ArrayList<Product> allProducts = new ArrayList<>();
     private ArrayList<Rate> allRates = new ArrayList<>();
     private ArrayList<Request> allRequests = new ArrayList<>();
+    private boolean hasAdminAccountCreated = false;
 
     public DataBase() {
         dataBase = this;
@@ -20,6 +21,14 @@ public class DataBase {
 
     public static DataBase getDataBase() {
         return dataBase;
+    }
+
+    public boolean getHasAdminAccountCreated() {
+        return hasAdminAccountCreated;
+    }
+
+    public void setHasAdminAccountCreated(boolean hasAdminAccountCreated) {
+        this.hasAdminAccountCreated = hasAdminAccountCreated;
     }
 
     //set an array to fields

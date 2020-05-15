@@ -1,5 +1,5 @@
-import view.CommandProcessor;
 import model.DataBase;
+import view.CommandProcessor;
 
 public class Main {
 

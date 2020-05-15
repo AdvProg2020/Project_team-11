@@ -1,6 +1,7 @@
 package view.menu;
 
 import controller.AllAccountZone;
+import controller.FileProcess;
 import controller.SellerZone;
 import view.menu.productsMenu.ShowProductMenu;
 
@@ -73,15 +74,14 @@ public abstract class Menu {
         }
         if (this.parentMenu != null)
             System.out.println("Back");
-        else
-            System.out.println("Exit");
+        System.out.println("Exit");
     }
 
     public void execute() {
         Menu nextMenu = this;
         String chosenMenu = scanner.nextLine().trim();
-        if (chosenMenu.equalsIgnoreCase("exit") && parentMenu == null) {
-            System.exit(1);
+        if (chosenMenu.equalsIgnoreCase("exit")) {
+            getExitMenu().execute();
         } else if (chosenMenu.equalsIgnoreCase("back") && parentMenu != null) {
             nextMenu = this.parentMenu;
         } else if (chosenMenu.equalsIgnoreCase("help")) {
@@ -141,6 +141,16 @@ public abstract class Menu {
                 } else {
                     new ShowProductMenu(parentMenu, productId);
                 }
+            }
+        };
+    }
+
+    private Menu getExitMenu() {
+        return new Menu("Exit", this) {
+            @Override
+            public void execute() {
+                FileProcess.writeDataBaseOnFile();
+                System.exit(1);
             }
         };
     }

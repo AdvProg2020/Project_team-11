@@ -1,6 +1,7 @@
 package view.menu;
 
 import controller.AllAccountZone;
+import model.DataBase;
 
 import java.util.ArrayList;
 
@@ -51,19 +52,19 @@ public class SignInMenu extends Menu {
 
     private ArrayList<String> getAllAccountInformation() {
         ArrayList<String> accountInfo = new ArrayList<>();
-        if (AllAccountZone.getHasAdminAccountCreated()) {
+        if (DataBase.getDataBase().getHasAdminAccountCreated()) {
             getAccountInfo(accountInfo, "Enter account type [buyer - seller]",
-                    "(?i)buyer|seller|back", parentMenu);
+                    "(?i)buyer|seller|back", this);
         } else {
             getAccountInfo(accountInfo, "Enter account type [admin - buyer - seller]",
-                    "(?i)admin|buyer|seller|back", parentMenu);
+                    "(?i)admin|buyer|seller|back", this);
         }
-        getAccountInfo(accountInfo, "Enter first name", ".+", parentMenu);
-        getAccountInfo(accountInfo, "Enter last name", ".+", parentMenu);
-        getAccountInfo(accountInfo, "Enter email", "^.+@.+\\.[a-zA-Z]{2,3}$|back", parentMenu);
-        getAccountInfo(accountInfo, "Enter phone number", "\\d+|back", parentMenu);
+        getAccountInfo(accountInfo, "Enter first name", ".+", this);
+        getAccountInfo(accountInfo, "Enter last name", ".+", this);
+        getAccountInfo(accountInfo, "Enter email", "^.+@.+\\.[a-zA-Z]{2,3}$|back", this);
+        getAccountInfo(accountInfo, "Enter phone number", "\\d+|back", this);
         while (true) {
-            getAccountInfo(accountInfo, "Enter username", ".+", parentMenu);
+            getAccountInfo(accountInfo, "Enter username", ".+", this);
             if (AllAccountZone.isUsernameValid(accountInfo.get(5))) {
                 break;
             } else {
@@ -71,12 +72,12 @@ public class SignInMenu extends Menu {
                 accountInfo.remove(5);
             }
         }
-        getAccountInfo(accountInfo, "Enter password", ".+", parentMenu);
+        getAccountInfo(accountInfo, "Enter password", ".+", this);
         if (accountInfo.get(0).equalsIgnoreCase("seller")) {
-            getAccountInfo(accountInfo, "Enter company name", ".+", parentMenu);
-            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", parentMenu);
+            getAccountInfo(accountInfo, "Enter company name", ".+", this);
+            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", this);
         } else if (accountInfo.get(0).equalsIgnoreCase("buyer")) {
-            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", parentMenu);
+            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", this);
         }
         return accountInfo;
     }

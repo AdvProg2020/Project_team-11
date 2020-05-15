@@ -14,14 +14,9 @@ import java.util.stream.Collectors;
 
 public class AllAccountZone {
     private static Account currentAccount = null;
-    private static boolean hasAdminAccountCreated = false;
 
     public static Account getCurrentAccount() {
         return currentAccount;
-    }
-
-    public static boolean getHasAdminAccountCreated() {
-        return hasAdminAccountCreated;
     }
 
     public static void setCurrentAccount(Account currentAccount) {
@@ -254,7 +249,7 @@ public class AllAccountZone {
 
     public static String createAccount(ArrayList<String> info) {
         if (info.get(0).equalsIgnoreCase("admin")) {
-            hasAdminAccountCreated = true;
+            DataBase.getDataBase().setHasAdminAccountCreated(true);
             new Admin(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
         } else if (info.get(0).equalsIgnoreCase("seller")) {
             StringBuilder requestDescription = new StringBuilder();
