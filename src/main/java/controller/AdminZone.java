@@ -22,9 +22,10 @@ public class AdminZone {
         if (request == null) {
             return "invalid request ID";
         } else {
-            if (request.getSender() != null) {
+            if (request.getSenderName() != null) {
                 return requestId + ". " + request.getTopic() + " : \n" +
-                        request.getSender().getFirstName() + " " + request.getSender().getLastName() + "\n" +
+                        AllAccountZone.getAccountByUsername(request.getSenderName()).getFirstName() + " " +
+                        AllAccountZone.getAccountByUsername(request.getSenderName()).getLastName() + "\n" +
                         request.getDescription();
             } else {
                 return requestId + ". " + request.getTopic() + ": \n" +
@@ -65,7 +66,7 @@ public class AdminZone {
     private static void acceptRequestEditProduct(Request request) {
         String info = request.getDescription();
         ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
-        Product product = getProductByIdAndSeller(Integer.parseInt(splitInfo.get(0)), (Seller) request.getSender());
+        Product product = SellerZone.getProductById(Integer.parseInt(splitInfo.get(0)));
         assert product != null;
         if (!splitInfo.get(1).equals("next"))
             product.getGeneralFeature().setName(splitInfo.get(1));
@@ -87,7 +88,7 @@ public class AdminZone {
     private static void acceptRequestAddProduct(Request request) {
         String info = request.getDescription();
         int productId = Integer.parseInt(info);
-        Product product = getProductByIdAndSeller(productId, (Seller) request.getSender());
+        Product product = SellerZone.getProductById(productId);
         assert product != null;
         Category category = product.getCategory();
         category.addProductList(product);
@@ -111,7 +112,7 @@ public class AdminZone {
             ArrayList<String> productsId = new ArrayList<>(Arrays.asList(splitInfo.get(1).split("/")));
             ArrayList<Product> productList = new ArrayList<>();
             for (String productId : productsId) {
-                Product product = getProductByIdAndSeller(Integer.parseInt(productId), (Seller) request.getSender());
+                Product product = SellerZone.getProductById(Integer.parseInt(productId));
                 productList.add(product);
             }
             auction.setProductList(productList);
@@ -136,14 +137,6 @@ public class AdminZone {
         comment.setStatus("accepted");
     }
 
-    public static Product getProductByIdAndSeller(int productId, Seller seller) {
-        for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getId() == productId && product.getGeneralFeature().getSeller().equals(seller))
-                return product;
-        }
-        return null;
-    }
-
     private static Auction getAuctionById(int auctionId) {
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             if (auction.getId() == auctionId)
@@ -158,7 +151,14 @@ public class AdminZone {
             return "invalid request ID";
         else if (request.getTopic().equals("add comment"))
             declineRequestAddComment(request);
-        else
+        else if (request.getTopic().equals("add product"))
+            declineRequestAddProduct(request);
+        else if (request.getTopic().equals("edit product"))
+            declineRequestEditProduct(request);
+//        else if (request.getTopic().equals("add auction"))
+//            // TODO
+//        else if (request.getTopic().equals("edit auction"))
+            // TODO
             request.setStatus("declined");
         return "Done";
     }
@@ -166,6 +166,16 @@ public class AdminZone {
     private static void declineRequestAddComment(Request request) {
         Comment comment = Comment.getCommentById(Integer.parseInt(request.getDescription()));
         comment.setStatus("rejected");
+    }
+
+    private static void declineRequestAddProduct(Request request) {
+        Product product = SellerZone.getProductById(Integer.parseInt(request.getDescription()));
+        product.setStatus("rejected");
+    }
+
+    private static void declineRequestEditProduct(Request request) {
+        Product product = SellerZone.getProductById(Integer.parseInt(request.getDescription()));
+        product.setStatus("accepted");
     }
 
     public static String showUsersInfo() {
@@ -181,12 +191,12 @@ public class AdminZone {
     public static String showUserInfo(String username) {
         String accountType;
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
-            if (account instanceof  Buyer) {
-                accountType = "Buyer";
-            } else {
-                accountType = "Seller";
-            }
             if (account.getUsername().equalsIgnoreCase(username)) {
+                if (account instanceof  Buyer) {
+                    accountType = "Buyer";
+                } else {
+                    accountType = "Seller";
+                }
                 return accountType + " : \nName : " + account.getFirstName() + " " + account.getLastName() + "\nEmail : " +
                         account.getEmailAddress() + "\nPhone number : " + account.getPhoneNumber();
             }
@@ -203,6 +213,20 @@ public class AdminZone {
                 accountDeleted = account;
             }
         }
+        if (accountDeleted instanceof Seller) {
+            ArrayList<Auction> sellerAuctions = new ArrayList<>();
+            for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
+                if (auction.getSellerName().equals(accountDeleted.getUsername()))
+                    sellerAuctions.add(auction);
+            }
+            DataBase.getDataBase().getAllAuctions().removeAll(sellerAuctions);
+            ArrayList<Product> sellerProducts = new ArrayList<>();
+            for (Product product : DataBase.getDataBase().getAllProducts()) {
+                if (product.getGeneralFeature().getSeller().getUsername().equals(accountDeleted.getUsername()))
+                    sellerProducts.add(product);
+            }
+            DataBase.getDataBase().getAllProducts().removeAll(sellerProducts);
+        }
         DataBase.getDataBase().getAllAccounts().remove(accountDeleted);
         if (output.equals(""))
             output = "invalid username";
@@ -214,14 +238,32 @@ public class AdminZone {
     }
 
     public static String removeProduct(int productId) {
-        ArrayList<Product> products = new ArrayList<>();
+        Product removedProduct = null;
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             if (product.getId() == productId) {
-                products.add(product);
+                removedProduct = product;
             }
         }
-        DataBase.getDataBase().getAllProducts().removeAll(products);
-        if (products.isEmpty())
+        for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
+            auction.getProductList().remove(removedProduct);
+        }
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            category.getProductList().remove(removedProduct);
+        }
+        ArrayList<Comment> comments = new ArrayList<>();
+        for (Comment comment : DataBase.getDataBase().getAllComments()) {
+            if (comment.getProduct().getId() == productId)
+                comments.add(comment);
+        }
+        DataBase.getDataBase().getAllComments().removeAll(comments);
+        ArrayList<Rate> rates = new ArrayList<>();
+        for (Rate rate : DataBase.getDataBase().getAllRates()) {
+            if (rate.getProduct().getId() == productId)
+                rates.add(rate);
+        }
+        DataBase.getDataBase().getAllRates().removeAll(rates);
+        DataBase.getDataBase().getAllProducts().remove(removedProduct);
+        if (removedProduct == null)
             return "invalid product ID.";
         else
             return "product removed successfully.";
@@ -253,7 +295,7 @@ public class AdminZone {
         for (String username : usernames) {
             users.add(getBuyerByUsername(username));
         }
-        Discount discount = new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), users);
+        Discount discount = new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), usernames);
         for (Buyer user : users) {
             user.addDiscountCodes(discount, discount.getRepeatedTimes());
         }
@@ -279,8 +321,8 @@ public class AdminZone {
     public static String showDiscountInfo(String code) {
         Discount discount = getDiscountByCode(code);
         StringBuilder usernames = new StringBuilder();
-        for (Buyer user : discount.getAllowedUsers()) {
-            usernames.append(user.getUsername()).append(", ");
+        for (String user : discount.getAllowedUsers()) {
+            usernames.append(user).append(",");
         }
         return discount.getAmount()[0] + "% discount, at most : " + discount.getAmount()[1] + "$ from \"" +
                 discount.getStartDate() + "\" to \"" + discount.getEndDate() + "\" " + discount.getRepeatedTimes() +
@@ -292,8 +334,9 @@ public class AdminZone {
         if (discount == null) {
             return "invalid code";
         } else {
-            for (Buyer user : discount.getAllowedUsers()) {
-                user.getDiscountCodes().remove(discount);
+            for (String user : discount.getAllowedUsers()) {
+                Buyer buyer = getBuyerByUsername(user);
+                buyer.getDiscountCodes().remove(discount.getCode());
             }
             DataBase.getDataBase().getAllDiscounts().remove(discount);
             return "Done.";
@@ -302,21 +345,21 @@ public class AdminZone {
 
     public static void addNewFeatureToCategory(Category category, String feature) {
         for (Product product : category.getProductList()) {
-            product.getSpecialFeature().put(feature, "");
+            product.getCategoryFeature().put(feature, "");
         }
     }
 
     public static void deleteFeatureFromCategory(Category category, String feature) {
         for (Product product : category.getProductList()) {
-            product.getSpecialFeature().remove(feature);
+            product.getCategoryFeature().remove(feature);
         }
     }
 
     public static void renameFeatureOfCategory(Category category, String lastFeature, String feature) {
         for (Product product : category.getProductList()) {
-            String value = product.getSpecialFeature().get(lastFeature);
-            product.getSpecialFeature().remove(lastFeature);
-            product.getSpecialFeature().put(feature, value);
+            String value = product.getCategoryFeature().get(lastFeature);
+            product.getCategoryFeature().remove(lastFeature);
+            product.getCategoryFeature().put(feature, value);
         }
     }
 

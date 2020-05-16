@@ -41,7 +41,6 @@ public class ManageCategoriesMenu extends Menu {
                         newField = checkInput("Enter name", ".+");
                         category.setName(newField);
                     } else if (field.equalsIgnoreCase("feature")) {
-                        // TODO : edit products in this category.
                         System.out.println("Do you want to [add - remove - rename] a feature?");
                         String state = scanner.nextLine().trim();
                         if (state.equalsIgnoreCase("add")) {

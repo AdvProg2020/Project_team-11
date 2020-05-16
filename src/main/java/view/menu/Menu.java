@@ -134,12 +134,12 @@ public abstract class Menu {
         return new Menu("Show Product", this) {
             @Override
             public void execute() {
-                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d+"));
+                int productId = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                 if (SellerZone.getProductById(productId) == null) {
                     System.out.println("invalid ID");
                     this.parentMenu.execute();
                 } else {
-                    new ShowProductMenu(parentMenu, productId);
+                    new ShowProductMenu(parentMenu, productId).execute();
                 }
             }
         };
@@ -153,5 +153,15 @@ public abstract class Menu {
                 System.exit(1);
             }
         };
+    }
+
+    protected void getInfo(ArrayList<String> accountInfo, String massage, String regex, Menu parentMenu) {
+        String input = checkInput(massage, regex);
+        if (input.equalsIgnoreCase("back")) {
+            System.out.println(parentMenu.getName() + " :");
+            parentMenu.execute();
+        } else {
+            accountInfo.add(input);
+        }
     }
 }

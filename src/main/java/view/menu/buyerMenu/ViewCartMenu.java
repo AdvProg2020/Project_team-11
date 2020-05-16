@@ -66,6 +66,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Purchase", this) {
             @Override
             public void execute() {
+                // TODO : buy nothing :///
                 getReceiveInfoMenu().execute();
                 getCheckDiscountCodeMenu().execute();
                 this.parentMenu.execute();

@@ -36,6 +36,7 @@ public class ShowProductMenu extends Menu {
                 if (SellerZone.getProductById(productId2) == null) {
                     System.out.println("invalid ID");
                 } else {
+                    // TODO : compare product with itself !!
                     String output = AllAccountZone.compareTwoProduct(productId1, productId2);
                     if (output.startsWith("Cannot")) {
                         System.out.println(output);
@@ -47,6 +48,7 @@ public class ShowProductMenu extends Menu {
                             System.out.format("| %-28s | %-18s | %-18s |\n", info.split(",")[0],
                                     info.split(",")[1], info.split(",")[2]);
                         }
+                        System.out.println("+------------------------------+--------------------+--------------------+");
                     }
                 }
                 this.parentMenu.execute();

@@ -34,10 +34,11 @@ public class SortingMenu extends Menu {
             public void execute() {
                 String field = checkInput("Enter an available sort",
                         "(?i)(Price\\(Ascending\\)|Price\\(Descending\\)|Score|Date)").toLowerCase();
-                if (parentMenu.getParentMenu() instanceof ProductsMenu)
-                    ProductsMenu.setSort(field);
-                else
+                if (parentMenu.getParentMenu() instanceof ProductsMenu) {
+                     ProductsMenu.setSort(field);
+                } else {
                     AuctionMenu.setSort(field);
+                }
                 this.parentMenu.execute();
             }
         };

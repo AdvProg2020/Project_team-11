@@ -30,41 +30,31 @@ public class SignInMenu extends Menu {
             @Override
             public void execute() {
                 ArrayList<String> info = new ArrayList<>();
-                getAccountInfo(info, "Enter account type [admin - buyer - seller]",
+                getInfo(info, "Enter account type [admin - buyer - seller]",
                         "(?i)admin|buyer|seller|back", parentMenu);
-                getAccountInfo(info, "Enter username", ".+", parentMenu);
-                getAccountInfo(info, "Enter password", ".+", parentMenu);
+                getInfo(info, "Enter username", ".+", parentMenu);
+                getInfo(info, "Enter password", ".+", parentMenu);
                 System.out.println(AllAccountZone.loginUser(info));
                 this.parentMenu.execute();
             }
         };
     }
 
-    private void getAccountInfo(ArrayList<String> accountInfo, String massage, String regex, Menu parentMenu) {
-        String input = checkInput(massage, regex);
-        if (input.equalsIgnoreCase("back")) {
-            System.out.println(parentMenu.getName() + " :");
-            parentMenu.execute();
-        } else {
-            accountInfo.add(input);
-        }
-    }
-
     private ArrayList<String> getAllAccountInformation() {
         ArrayList<String> accountInfo = new ArrayList<>();
         if (DataBase.getDataBase().getHasAdminAccountCreated()) {
-            getAccountInfo(accountInfo, "Enter account type [buyer - seller]",
+            getInfo(accountInfo, "Enter account type [buyer - seller]",
                     "(?i)buyer|seller|back", this);
         } else {
-            getAccountInfo(accountInfo, "Enter account type [admin - buyer - seller]",
+            getInfo(accountInfo, "Enter account type [admin - buyer - seller]",
                     "(?i)admin|buyer|seller|back", this);
         }
-        getAccountInfo(accountInfo, "Enter first name", ".+", this);
-        getAccountInfo(accountInfo, "Enter last name", ".+", this);
-        getAccountInfo(accountInfo, "Enter email", "^.+@.+\\.[a-zA-Z]{2,3}$|back", this);
-        getAccountInfo(accountInfo, "Enter phone number", "\\d+|back", this);
+        getInfo(accountInfo, "Enter first name", ".+", this);
+        getInfo(accountInfo, "Enter last name", ".+", this);
+        getInfo(accountInfo, "Enter email", "^.+@.+\\.[a-zA-Z]{2,3}$|back", this);
+        getInfo(accountInfo, "Enter phone number", "\\d+|back", this);
         while (true) {
-            getAccountInfo(accountInfo, "Enter username", ".+", this);
+            getInfo(accountInfo, "Enter username", ".+", this);
             if (AllAccountZone.isUsernameValid(accountInfo.get(5))) {
                 break;
             } else {
@@ -72,12 +62,12 @@ public class SignInMenu extends Menu {
                 accountInfo.remove(5);
             }
         }
-        getAccountInfo(accountInfo, "Enter password", ".+", this);
+        getInfo(accountInfo, "Enter password", ".+", this);
         if (accountInfo.get(0).equalsIgnoreCase("seller")) {
-            getAccountInfo(accountInfo, "Enter company name", ".+", this);
-            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", this);
+            getInfo(accountInfo, "Enter company name", ".+", this);
+            getInfo(accountInfo, "Enter your money", "\\d+|back", this);
         } else if (accountInfo.get(0).equalsIgnoreCase("buyer")) {
-            getAccountInfo(accountInfo, "Enter your money", "\\d+|back", this);
+            getInfo(accountInfo, "Enter your money", "\\d+|back", this);
         }
         return accountInfo;
     }

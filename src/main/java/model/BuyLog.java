@@ -6,12 +6,12 @@ import java.util.HashMap;
 public class BuyLog extends ExchangeLog {
     private long paidAmount;
     private long discountAmountApplied;
-    private HashMap<Product, String> purchasedProductionsAndSellers;
+    private HashMap<Integer, String> purchasedProductionsAndSellers;//product ID, seller Username
     private String buyerUsername;
     private String deliveryStatus;
 
     public BuyLog(Date date, long paidAmount, long discountAmountApplied,
-                  HashMap<Product, String> purchasedProductionsAndSellers, String buyerUsername, String deliveryStatus) {
+                  HashMap<Integer, String> purchasedProductionsAndSellers, String buyerUsername, String deliveryStatus) {
         super(date);
         this.paidAmount = paidAmount;
         this.discountAmountApplied = discountAmountApplied;
@@ -28,7 +28,7 @@ public class BuyLog extends ExchangeLog {
         return discountAmountApplied;
     }
 
-    public HashMap<Product, String> getPurchasedProductionsAndSellers() {
+    public HashMap<Integer, String> getPurchasedProductionsAndSellers() {
         return purchasedProductionsAndSellers;
     }
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Buyer extends Account {
     private long wallet;
-    private HashMap<Discount, Integer> discountCodes;
+    private HashMap<String, Integer> discountCodes;//discount code, number
     private ArrayList<BuyLog> buyHistory;
     private HashMap<Product, Integer> cart;
     private Discount activeDiscount;
@@ -23,7 +23,7 @@ public class Buyer extends Account {
         return wallet;
     }
 
-    public HashMap<Discount, Integer> getDiscountCodes() {
+    public HashMap<String, Integer> getDiscountCodes() {
         return discountCodes;
     }
 
@@ -44,11 +44,11 @@ public class Buyer extends Account {
     }
 
     public void addDiscountCodes(Discount discount, int number) {
-        this.discountCodes.put(discount, number);
+        this.discountCodes.put(discount.getCode(), number);
     }
 
     public void removeDiscountCode(Discount discount) {
-        this.discountCodes.remove(discount);
+        this.discountCodes.remove(discount.getCode());
     }
 
     public void addBuyHistory(BuyLog buyHistory) {
@@ -64,8 +64,8 @@ public class Buyer extends Account {
     }
 
     public void decreaseDiscountCode(Discount discount) {
-        int number = this.discountCodes.get(discount);
-        this.discountCodes.replace(discount, number - 1);
+        int number = this.discountCodes.get(discount.getCode());
+        this.discountCodes.replace(discount.getCode(), number - 1);
     }
 
     @Override

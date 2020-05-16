@@ -10,7 +10,7 @@ public class CommentMenu extends Menu {
     private int productId;
 
     public CommentMenu(Menu parentMenu, int productId) {
-        super("Compare", parentMenu);
+        super("Comment", parentMenu);
         this.productId = productId;
         ArrayList<Menu> submenus = new ArrayList<>();
         submenus.add(getAddCommentMenu());

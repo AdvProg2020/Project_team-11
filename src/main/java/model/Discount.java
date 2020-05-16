@@ -9,19 +9,16 @@ public class Discount {
     private Date endDate;
     private long[] amount;
     private int repeatedTimes;
-    private ArrayList<Buyer> allowedUsers;
+    private ArrayList<String> allowedUsers;
 
     public Discount(String code, Date startDate, Date endDate, long[] amount,
-                                int repeatedTimes, ArrayList<Buyer> allowedUsers) {
+                                int repeatedTimes, ArrayList<String> allowedUsers) {
         this.code = code;
         this.startDate = startDate;
         this.endDate = endDate;
         this.amount = amount;//0 -> percent & 1 -> max.
         this.repeatedTimes = repeatedTimes;
         this.allowedUsers = new ArrayList<>(allowedUsers);
-        for (Buyer user : allowedUsers) {
-            user.getDiscountCodes().put(this, repeatedTimes);
-        }
         DataBase.getDataBase().setAllDiscounts(this);
     }
 
@@ -45,7 +42,7 @@ public class Discount {
         return repeatedTimes;
     }
 
-    public ArrayList<Buyer> getAllowedUsers() {
+    public ArrayList<String> getAllowedUsers() {
         return allowedUsers;
     }
 
@@ -73,7 +70,7 @@ public class Discount {
         this.repeatedTimes = repeatedTimes;
     }
 
-    public void setAllowedUsers(ArrayList<Buyer> allowedUsers) {
+    public void setAllowedUsers(ArrayList<String> allowedUsers) {
         this.allowedUsers = allowedUsers;
     }
 }

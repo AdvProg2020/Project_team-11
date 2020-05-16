@@ -32,8 +32,7 @@ public class DigestMenu extends Menu {
                     System.out.println("You should login first.");
                     new SignInMenu(this).execute();
                 } else {
-                    String sellerUsername = checkInput("Enter seller username", ".+");
-                    System.out.println(AllAccountZone.addProductToCart(productId, sellerUsername));
+                    System.out.println(AllAccountZone.addProductToCart(productId));
                 }
                 this.parentMenu.execute();
             }

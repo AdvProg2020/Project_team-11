@@ -8,7 +8,7 @@ public class Product {
     private String status;
     private ProductInfo generalFeature;
     private Category category;
-    private HashMap<String, String> specialFeature;
+    private HashMap<String, String> categoryFeature;
     private String description;
     private double averageScore;
     private int numOfUsersRated;
@@ -16,7 +16,7 @@ public class Product {
     private static int numOfAllProducts = 1;
 
     public Product(int id, String status, ProductInfo generalFeature, Category category,
-                   HashMap<String, String> specialFeature, String description) {
+                   HashMap<String, String> categoryFeature, String description) {
         if (id == 0) {
             this.id = numOfAllProducts;
             numOfAllProducts += 1;
@@ -26,7 +26,7 @@ public class Product {
         this.status = status;
         this.generalFeature = generalFeature;
         this.category = category;
-        this.specialFeature = new HashMap<>(specialFeature);
+        this.categoryFeature = new HashMap<>(categoryFeature);
         this.description = description;
         this.averageScore = 0;
         this.numOfUsersRated = 0;
@@ -50,8 +50,8 @@ public class Product {
         return category;
     }
 
-    public HashMap<String, String> getSpecialFeature() {
-        return specialFeature;
+    public HashMap<String, String> getCategoryFeature() {
+        return categoryFeature;
     }
 
     public String getDescription() {
@@ -94,8 +94,8 @@ public class Product {
         this.category = category;
     }
 
-    public void setSpecialFeature(HashMap<String, String> specialFeature) {
-        this.specialFeature = specialFeature;
+    public void setCategoryFeature(HashMap<String, String> categoryFeature) {
+        this.categoryFeature = categoryFeature;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class Product {
                 ", status = '" + status + '\'' +
                 ", generalFeature = " + generalFeature +
                 ", category = " + category +
-                ", specialFeature = " + specialFeature +
+                ", specialFeature = " + categoryFeature +
                 ", description = '" + description + '\'' +
                 ", averageScore = " + averageScore +
                 ", comments = " + comments +

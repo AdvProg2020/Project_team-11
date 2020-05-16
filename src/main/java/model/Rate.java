@@ -1,19 +1,19 @@
 package model;
 
 public class Rate {
-    private Buyer buyer;
+    private String buyerName;
     private int score;
     private Product product;
 
-    public Rate(Buyer buyer, int score, Product product) {
-        this.buyer = buyer;
+    public Rate(String buyerName, int score, Product product) {
+        this.buyerName = buyerName;
         this.score = score;
         this.product = product;
         DataBase.getDataBase().setAllRates(this);
     }
 
-    public Buyer getBuyer() {
-        return buyer;
+    public String getBuyerName() {
+        return buyerName;
     }
 
     public int getScore() {

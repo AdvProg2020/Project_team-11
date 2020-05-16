@@ -11,8 +11,7 @@ public class SellerZone {
 
     public static Product getProductById(int Id) {
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getId() == Id &&
-                    product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount()))
+            if (product.getId() == Id)
                 return product;
         }
         return null;
@@ -21,7 +20,7 @@ public class SellerZone {
     public static String getSellerProducts() {
         StringBuilder productList = new StringBuilder();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount())) {
+            if (product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
                 productList.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).
                         append(": ").append(product.getGeneralFeature().getPrice()).append("$ ").
                         append(product.getGeneralFeature().getCompany()).append(" Average Score: ").
@@ -62,7 +61,7 @@ public class SellerZone {
     }
 
     public static String editProduct(int productId) {
-        Product product = AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount());
+        Product product = getProductById(productId);
         if (product == null) {
             return "You haven't this product.";
         } else {
@@ -71,7 +70,7 @@ public class SellerZone {
     }
 
     public static void sendEditProductRequest(String description) {
-        Request request = new Request((Seller) AllAccountZone.getCurrentAccount(), "edit product", description,
+        Request request = new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description,
                 "unseen");
         DataBase.getDataBase().setAllRequests(request);
     }
@@ -99,9 +98,9 @@ public class SellerZone {
         return null;
     }
 
-    public static void sendAddProductRequest(int productId, Category category, HashMap<String, String> descriptions,
-                                             HashMap<String, String> categoryFeature) {
-        new Request((Seller) AllAccountZone.getCurrentAccount(), "add existing product",
+    public static void sendAddNewProductRequest(int productId, Category category, HashMap<String, String> descriptions,
+                                                HashMap<String, String> categoryFeature) {
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
                 String.valueOf(productId), "unseen");
         ProductInfo productInfo = new ProductInfo(descriptions.get("name"), descriptions.get("company"),
                 Long.parseLong(descriptions.get("price")), (Seller) AllAccountZone.getCurrentAccount(),
@@ -110,11 +109,22 @@ public class SellerZone {
                 descriptions.get("description"));
     }
 
+    public static void sendAddExistingProductRequest(int productId, Category category, HashMap<String, String> descriptions) {
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
+                String.valueOf(productId), "unseen");
+        Product product = getProductById(productId);
+        ProductInfo productInfo = new ProductInfo(product.getGeneralFeature().getName(),
+                product.getGeneralFeature().getCompany(), Long.parseLong(descriptions.get("price")),
+                (Seller) AllAccountZone.getCurrentAccount(), Integer.parseInt(descriptions.get("stock status")));
+        new Product(productId, "construction", productInfo, category, product.getCategoryFeature(),
+                product.getDescription());
+    }
+
     public static String showSellerAuctions() {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
         StringBuilder output = new StringBuilder();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getSeller().getUsername().equals(seller.getUsername())) {
+            if (auction.getSellerName().equals(seller.getUsername())) {
                 output.append(auction.getId()).append(".").append(" discount : ")
                         .append(auction.getDiscountAmount()).append("%");
             }
@@ -126,17 +136,20 @@ public class SellerZone {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
         StringBuilder output = new StringBuilder();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getId() == auctionId && auction.getSeller().getUsername().equals(seller.getUsername()))
+            if (auction.getId() == auctionId && auction.getSellerName().equals(seller.getUsername()))
                 output.append(auction.getId()).append(". from ").append(auction.getStartDate()).append(" to ")
                         .append(auction.getEndDate()).append(" for ").append(auction.getProductList())
                         .append(" discount : ").append(auction.getDiscountAmount()).append("%");
+        }
+        if (output.length() == 0) {
+            return "invalid ID";
         }
         return output.toString();
     }
 
     public static Auction getAuctionById(int auctionId) {
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getSeller().equals(AllAccountZone.getCurrentAccount()) && auction.getId() == auctionId) {
+            if (auction.getSellerName().equals(AllAccountZone.getCurrentAccount().getUsername()) && auction.getId() == auctionId) {
                 return auction;
             }
         }
@@ -144,7 +157,7 @@ public class SellerZone {
     }
 
     public static void sendEditAuctionRequest(int auctionId, String description) {
-        new Request((Seller) AllAccountZone.getCurrentAccount(), "edit auction", description, "unseen");
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit auction", description, "unseen");
         Auction auction = getAuctionById(auctionId);
         auction.setStatus("editing");
     }
@@ -155,14 +168,14 @@ public class SellerZone {
         ArrayList<String> productsId = new ArrayList<>(Arrays.asList(splitInfo.get(0).split("/")));
         ArrayList<Product> productList = new ArrayList<>();
         for (String productId : productsId) {
-            Product product = AdminZone.getProductByIdAndSeller(Integer.parseInt(productId), seller);
+            Product product = getProductById(Integer.parseInt(productId));
             productList.add(product);
         }
         long startDateMilliSec = Long.parseLong(splitInfo.get(1));
         long endDateMilliSec = Long.parseLong(splitInfo.get(2));
         Auction auction = new Auction(productList, "construction", new Date(startDateMilliSec),
-                new Date(endDateMilliSec), Integer.parseInt(splitInfo.get(3)), seller);
-        new Request((Seller) AllAccountZone.getCurrentAccount(), "add auction", String.valueOf(auction.getId()),
+                new Date(endDateMilliSec), Integer.parseInt(splitInfo.get(3)), seller.getUsername());
+        new Request(seller.getUsername(), "add auction", String.valueOf(auction.getId()),
                 "unseen");
     }
 }

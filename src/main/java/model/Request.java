@@ -3,15 +3,15 @@ package model;
 public class Request {
     private int Id;
     private static int numOfAllRequest = 1;
-    private Account sender;
+    private String senderName;
     private String topic;
     private String description;
     private String status;
 
-    public Request(Account sender, String topic, String description, String status) {
+    public Request(String senderName, String topic, String description, String status) {
         this.Id = numOfAllRequest;
         numOfAllRequest += 1;
-        this.sender = sender;
+        this.senderName = senderName;
         this.topic = topic;
         this.description = description;
         this.status = status;
@@ -22,8 +22,8 @@ public class Request {
         return Id;
     }
 
-    public Account getSender() {
-        return sender;
+    public String getSenderName() {
+        return senderName;
     }
 
     public String getTopic() {

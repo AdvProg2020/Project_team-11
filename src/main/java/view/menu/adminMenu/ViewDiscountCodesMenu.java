@@ -1,6 +1,7 @@
 package view.menu.adminMenu;
 
 import controller.AdminZone;
+import controller.SellerZone;
 import model.Buyer;
 import model.Discount;
 import view.menu.Menu;
@@ -47,14 +48,11 @@ public class ViewDiscountCodesMenu extends Menu {
                 String code = checkInput("Enter code", ".+");
                 Discount discount;
                 if ((discount = AdminZone.getDiscountByCode(code)) != null){
-                    System.out.println("Which field do you want to edit? [code - start date - end date - discount percent" +
+                    System.out.println("Which field do you want to edit? [start date - end date - discount percent" +
                             " - max discount - num of uses - allowed users]");
                     String field = scanner.nextLine().trim();
                     String newField;
-                    if (field.equalsIgnoreCase("code")) {
-                        newField = checkInput("Enter Code", ".+");
-                        discount.setCode(newField);
-                    } else if (field.equalsIgnoreCase("start date")) {
+                    if (field.equalsIgnoreCase("start date")) {
                         Date date = getDate("start ");
                         discount.setStartDate(date);
                     } else if (field.equalsIgnoreCase("end date")) {
@@ -72,7 +70,7 @@ public class ViewDiscountCodesMenu extends Menu {
                         discount.setRepeatedTimes(Integer.parseInt(newField));
                     } else if (field.equalsIgnoreCase("allowed users")) {
                         // TODO : add or remove buyer.
-                        ArrayList<Buyer> allowedUsers = new ArrayList<>();
+                        ArrayList<String> allowedUsers = new ArrayList<>();
                         String username;
                         System.out.println("'end of inserting usernames' to end");
                         do {
@@ -81,7 +79,7 @@ public class ViewDiscountCodesMenu extends Menu {
                             if (user == null && !username.equals("end of inserting usernames"))
                                 System.out.println("invalid username");
                             else if (user != null && !username.equals("end of inserting usernames"))
-                                allowedUsers.add(user);
+                                allowedUsers.add(username);
                         } while (!username.equals("end of inserting usernames"));
                         discount.setAllowedUsers(allowedUsers);
                     }

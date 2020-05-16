@@ -3,6 +3,7 @@ package view.menu.sellerMenu;
 import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
+import model.Product;
 import model.Seller;
 import view.menu.Menu;
 
@@ -102,7 +103,10 @@ public class ViewAuctionsMenu extends Menu {
         System.out.println("Enter '-1' to end");
         while (productId != -1) {
             productId = Integer.parseInt(checkInput("Enter product ID", "-?\\d{1,9}"));
-            if (AdminZone.getProductByIdAndSeller(productId, (Seller) AllAccountZone.getCurrentAccount()) == null) {
+            Product product = SellerZone.getProductById(productId);
+            if ((product == null ||
+                    product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) &&
+                    productId != -1) {
                 System.out.println("invalid product ID.");
             } else {
                 requestDescription.append(productId).append("/");

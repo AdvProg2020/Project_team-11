@@ -2,17 +2,17 @@ package model;
 
 public class Comment {
     int id;
-    private Buyer buyer;
+    private String buyerName;
     private Product product;
     private String commentText;
     private String status;
     private boolean hasUserBoughtProduct;
     private static int numOfAllComments = 1;
 
-    public Comment(Buyer buyer, Product product, String commentText, String status, boolean hasUserBoughtProduct) {
+    public Comment(String buyerName, Product product, String commentText, String status, boolean hasUserBoughtProduct) {
         this.id = numOfAllComments;
         Comment.numOfAllComments += 1;
-        this.buyer = buyer;
+        this.buyerName = buyerName;
         this.product = product;
         this.commentText = commentText;
         this.status = status;
@@ -20,8 +20,8 @@ public class Comment {
         DataBase.getDataBase().setAllComments(this);
     }
 
-    public Buyer getBuyer() {
-        return buyer;
+    public String getBuyerName() {
+        return buyerName;
     }
 
     public Product getProduct() {

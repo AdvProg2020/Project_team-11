@@ -1,6 +1,7 @@
 package view.menu.adminMenu;
 
 import controller.AdminZone;
+import controller.AllAccountZone;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class ManageUsersMenu extends Menu {
         return new Menu("Delete User", this) {
             @Override
             public void execute() {
-                // TODO : delete seller need delete his auctions and products.
                 String username = checkInput("Enter username", ".+");
                 System.out.println(AdminZone.deleteUser(username));
                 this.parentMenu.execute();
@@ -51,12 +51,20 @@ public class ManageUsersMenu extends Menu {
             @Override
             public void execute() {
                 ArrayList<String> info = new ArrayList<>();
-                info.add(checkInput("Enter first name", ".+"));
-                info.add(checkInput("Enter last name", ".+"));
-                info.add(checkInput("Enter email address", "^.+@.+\\.[a-zA-Z]{2,3}$"));
-                info.add(checkInput("Enter phone number", "\\d+"));
-                info.add(checkInput("Enter username", ".+"));
-                info.add(checkInput("Enter password", ".+"));
+                getInfo(info, "Enter first name", ".+", this);
+                getInfo(info, "Enter last name", ".+", this);
+                getInfo(info, "Enter email", "^.+@.+\\.[a-zA-Z]{2,3}$|back", this);
+                getInfo(info, "Enter phone number", "\\d+|back", this);
+                while (true) {
+                    getInfo(info, "Enter username", ".+", this);
+                    if (AllAccountZone.isUsernameValid(info.get(5))) {
+                        break;
+                    } else {
+                        System.out.println("This username is already occupied.");
+                        info.remove(5);
+                    }
+                }
+                getInfo(info, "Enter password", ".+", this);
                 AdminZone.createAdminProfile(info);
                 System.out.println("Admin added.");
                 this.parentMenu.execute();
