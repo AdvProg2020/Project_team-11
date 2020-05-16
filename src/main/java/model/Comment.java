@@ -2,12 +2,12 @@ package model;
 
 public class Comment {
     int id;
-    private String buyerName;
-    private Product product;
-    private String commentText;
+    private final String buyerName;
+    private final Product product;
+    private final String commentText;
     private String status;
-    private boolean hasUserBoughtProduct;
-    private static int numOfAllComments = 1;
+    private final boolean hasUserBoughtProduct;
+    private static int numOfAllComments;
 
     public Comment(String buyerName, Product product, String commentText, String status, boolean hasUserBoughtProduct) {
         this.id = numOfAllComments;
@@ -54,5 +54,9 @@ public class Comment {
                 return comment;
         }
         return null;
+    }
+
+    public static void setNumOfAllComments(int numOfAllComments) {
+        Comment.numOfAllComments = numOfAllComments;
     }
 }

@@ -1,11 +1,11 @@
 package model;
 
 public class Request {
-    private int Id;
-    private static int numOfAllRequest = 1;
-    private String senderName;
-    private String topic;
-    private String description;
+    private final int Id;
+    private static int numOfAllRequest;
+    private final String senderName;
+    private final String topic;
+    private final String description;
     private String status;
 
     public Request(String senderName, String topic, String description, String status) {
@@ -40,5 +40,9 @@ public class Request {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public static void setNumOfAllRequest(int numOfAllRequest) {
+        Request.numOfAllRequest = numOfAllRequest;
     }
 }

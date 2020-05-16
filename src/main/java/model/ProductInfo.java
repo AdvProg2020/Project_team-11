@@ -5,7 +5,7 @@ public class ProductInfo {
     private String company;
     private long price;
     private long auctionPrice;
-    private Seller seller;
+    private final Seller seller;
     private int stockStatus;
 
     public ProductInfo(String name, String company, long price, Seller seller, int stockStatus) {

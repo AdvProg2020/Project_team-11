@@ -65,9 +65,9 @@ public class SignInMenu extends Menu {
         getInfo(accountInfo, "Enter password", ".+", this);
         if (accountInfo.get(0).equalsIgnoreCase("seller")) {
             getInfo(accountInfo, "Enter company name", ".+", this);
-            getInfo(accountInfo, "Enter your money", "\\d+|back", this);
+            getInfo(accountInfo, "Enter your money", "\\d{1,18}|back", this);
         } else if (accountInfo.get(0).equalsIgnoreCase("buyer")) {
-            getInfo(accountInfo, "Enter your money", "\\d+|back", this);
+            getInfo(accountInfo, "Enter your money", "\\d{1,18}|back", this);
         }
         return accountInfo;
     }

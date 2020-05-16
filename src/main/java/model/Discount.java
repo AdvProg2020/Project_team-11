@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Discount {
-    private String code;
+    private final String code;
     private Date startDate;
     private Date endDate;
-    private long[] amount;
+    private final long[] amount;
     private int repeatedTimes;
     private ArrayList<String> allowedUsers;
 
@@ -44,10 +44,6 @@ public class Discount {
 
     public ArrayList<String> getAllowedUsers() {
         return allowedUsers;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public void setStartDate(Date startDate) {

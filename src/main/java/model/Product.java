@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Product {
-    private int id;
+    private final int id;
     private String status;
-    private ProductInfo generalFeature;
+    private final ProductInfo generalFeature;
     private Category category;
     private HashMap<String, String> categoryFeature;
     private String description;
     private double averageScore;
     private int numOfUsersRated;
     private ArrayList<Comment> comments;
-    private static int numOfAllProducts = 1;
+    private static int numOfAllProducts;
 
     public Product(int id, String status, ProductInfo generalFeature, Category category,
                    HashMap<String, String> categoryFeature, String description) {
@@ -96,6 +96,10 @@ public class Product {
 
     public void setCategoryFeature(HashMap<String, String> categoryFeature) {
         this.categoryFeature = categoryFeature;
+    }
+
+    public static void setNumOfAllProducts(int numOfAllProducts) {
+        Product.numOfAllProducts = numOfAllProducts;
     }
 
     @Override

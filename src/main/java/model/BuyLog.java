@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class BuyLog extends ExchangeLog {
-    private long paidAmount;
-    private long discountAmountApplied;
-    private HashMap<Integer, String> purchasedProductionsAndSellers;//product ID, seller Username
-    private String buyerUsername;
+    private final long paidAmount;
+    private final long discountAmountApplied;
+    private final HashMap<Integer, String> purchasedProductionsAndSellers;//product ID, seller Username
+    private final String buyerUsername;
     private String deliveryStatus;
 
     public BuyLog(Date date, long paidAmount, long discountAmountApplied,

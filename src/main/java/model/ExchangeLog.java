@@ -5,7 +5,7 @@ import java.util.Date;
 public abstract class ExchangeLog {
     protected int id;
     protected Date date;
-    protected static int numOfAllLogs = 1;
+    protected static int numOfAllLogs;
 
     public ExchangeLog(Date date) {
         this.id = numOfAllLogs;
@@ -28,5 +28,9 @@ public abstract class ExchangeLog {
                 return log;
         }
         return null;
+    }
+
+    public static void setNumOfAllLogs(int numOfAllLogs) {
+        ExchangeLog.numOfAllLogs = numOfAllLogs;
     }
 }

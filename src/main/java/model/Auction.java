@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Auction {
-    private int id;
+    private final int id;
     private ArrayList<Product> productList;
     private String status;
     private Date startDate;
     private Date endDate;
     private int discountAmount;
-    private String sellerName;
-    private static int numOfAllAuctions = 1;
+    private final String sellerName;
+    private static int numOfAllAuctions;
 
     public Auction(ArrayList<Product> productList, String status, Date startDate, Date endDate,
                    int discountAmount, String sellerName) {
@@ -72,5 +72,9 @@ public class Auction {
 
     public void setDiscountAmount(int discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public static void setNumOfAllAuctions(int numOfAllAuctions) {
+        Auction.numOfAllAuctions = numOfAllAuctions;
     }
 }

@@ -3,11 +3,11 @@ package model;
 import java.util.Date;
 
 public class SellLog extends ExchangeLog {
-    private long receivedAmount;
-    private long reducedAmountForAuction;
-    private Product soldProduct;
-    private String buyerName;
-    private String sellerUsername;
+    private final long receivedAmount;
+    private final long reducedAmountForAuction;
+    private final Product soldProduct;
+    private final String buyerName;
+    private final String sellerUsername;
     private String sendingStatus;
 
     public SellLog(Date date, long receivedAmount, long reducedAmountForAuction,
