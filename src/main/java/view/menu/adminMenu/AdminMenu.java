@@ -26,7 +26,6 @@ public class AdminMenu extends Menu {
         return new Menu("Create Discount Code", this) {
             @Override
             public void execute() {
-                // TODO : add discount to buyers account.
                 AdminZone.createDiscount(getDiscountInfo(), getAllowedUsers());
                 System.out.println("Discount created.");
                 this.parentMenu.execute();

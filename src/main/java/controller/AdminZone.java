@@ -85,11 +85,12 @@ public class AdminZone {
     }
 
     private static void acceptRequestAddProduct(Request request) {
-        // TODO : add product to category.
         String info = request.getDescription();
         int productId = Integer.parseInt(info);
         Product product = getProductByIdAndSeller(productId, (Seller) request.getSender());
         assert product != null;
+        Category category = product.getCategory();
+        category.addProductList(product);
         product.setStatus("accepted");
     }
 
@@ -252,14 +253,17 @@ public class AdminZone {
         for (String username : usernames) {
             users.add(getBuyerByUsername(username));
         }
-        new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), users);
+        Discount discount = new Discount(info.get(0), startDate, endDate, amount, Integer.parseInt(info.get(5)), users);
+        for (Buyer user : users) {
+            user.addDiscountCodes(discount, discount.getRepeatedTimes());
+        }
     }
 
     public static String showDiscounts() {
         StringBuilder output = new StringBuilder();
         for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
             output.append("Code : '").append(discount.getCode()).append("' ").append(discount.getAmount()[0])
-                    .append("% discount, at most : ").append(discount.getAmount()[1]).append("$");
+                    .append("% discount, at most : ").append(discount.getAmount()[1]).append("$").append("\n");
         }
         return output.toString();
     }
