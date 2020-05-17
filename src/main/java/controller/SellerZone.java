@@ -70,9 +70,7 @@ public class SellerZone {
     }
 
     public static void sendEditProductRequest(String description) {
-        Request request = new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description,
-                "unseen");
-        DataBase.getDataBase().setAllRequests(request);
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description, "unseen");
     }
 
     public static String getSellerHistory() {
@@ -100,13 +98,13 @@ public class SellerZone {
 
     public static void sendAddNewProductRequest(int productId, Category category, HashMap<String, String> descriptions,
                                                 HashMap<String, String> categoryFeature) {
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
-                String.valueOf(productId), "unseen");
         ProductInfo productInfo = new ProductInfo(descriptions.get("name"), descriptions.get("company"),
                 Long.parseLong(descriptions.get("price")), (Seller) AllAccountZone.getCurrentAccount(),
                 Integer.parseInt(descriptions.get("stock status")));
-        new Product(productId, "construction", productInfo, category, categoryFeature,
+        Product product = new Product(productId, "construction", productInfo, category.getName(), categoryFeature,
                 descriptions.get("description"));
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
+                String.valueOf(product.getId()), "unseen");
     }
 
     public static void sendAddExistingProductRequest(int productId, Category category, HashMap<String, String> descriptions) {
@@ -116,7 +114,7 @@ public class SellerZone {
         ProductInfo productInfo = new ProductInfo(product.getGeneralFeature().getName(),
                 product.getGeneralFeature().getCompany(), Long.parseLong(descriptions.get("price")),
                 (Seller) AllAccountZone.getCurrentAccount(), Integer.parseInt(descriptions.get("stock status")));
-        new Product(productId, "construction", productInfo, category, product.getCategoryFeature(),
+        new Product(productId, "construction", productInfo, category.getName(), product.getCategoryFeature(),
                 product.getDescription());
     }
 

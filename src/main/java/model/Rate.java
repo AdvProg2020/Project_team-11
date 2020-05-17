@@ -3,12 +3,12 @@ package model;
 public class Rate {
     private final String buyerName;
     private final int score;
-    private final Product product;
+    private final int productId;
 
-    public Rate(String buyerName, int score, Product product) {
+    public Rate(String buyerName, int score, int productId) {
         this.buyerName = buyerName;
         this.score = score;
-        this.product = product;
+        this.productId = productId;
         DataBase.getDataBase().setAllRates(this);
     }
 
@@ -20,7 +20,7 @@ public class Rate {
         return score;
     }
 
-    public Product getProduct() {
-        return product;
+    public int getProductId() {
+        return productId;
     }
 }

@@ -48,11 +48,16 @@ public class ManageCategoriesMenu extends Menu {
                             category.getSpecialFeatures().add(newField);
                             AdminZone.addNewFeatureToCategory(category, newField);
                         } else if (state.equalsIgnoreCase("remove")) {
-                            newField = checkInput("Enter an existing feature", ".+");
+                            do {
+                                newField = checkInput("Enter an existing feature", ".+");
+                            } while (!category.getSpecialFeatures().contains(newField));
                             category.getSpecialFeatures().remove(newField);
                             AdminZone.deleteFeatureFromCategory(category, newField);
                         } else if (state.equalsIgnoreCase("rename")) {
-                            String lastFeature = checkInput("Enter an existing feature", ".+");
+                            String lastFeature;
+                            do {
+                                lastFeature = checkInput("Enter an existing feature", ".+");
+                            } while (!category.getSpecialFeatures().contains(lastFeature));
                             newField = checkInput("Enter renamed feature", ".+");
                             category.getSpecialFeatures().set(category.getSpecialFeatures().indexOf(lastFeature), newField);
                             AdminZone.renameFeatureOfCategory(category, lastFeature, newField);

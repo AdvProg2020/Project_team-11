@@ -160,7 +160,7 @@ public class FilteringMenu extends Menu {
     }
 
     private void setFilterInfoForCategory(String field) {
-        if (parentMenu.getParentMenu() instanceof ProductsMenu) {
+        if (parentMenu instanceof ProductsMenu) {
             if (field.equalsIgnoreCase("min price")) {
                 long minPrice = Long.parseLong(checkInput("Enter minimum Price", "\\d+"));
                 ProductsMenu.getFilter().setMinimumPrice(minPrice);
@@ -169,7 +169,7 @@ public class FilteringMenu extends Menu {
                 ProductsMenu.getFilter().setMaximumPrice(maxPrice);
             } else {
                 ProductsMenu.getFilter().setCategory(field);
-                AllAccountZone.setFilterCategoryFeature(field, parentMenu.getParentMenu());
+                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
             }
         } else {
             if (field.equalsIgnoreCase("min price")) {
@@ -180,13 +180,13 @@ public class FilteringMenu extends Menu {
                 AuctionMenu.getFilter().setMaximumPrice(maxPrice);
             } else {
                 AuctionMenu.getFilter().setCategory(field);
-                AllAccountZone.setFilterCategoryFeature(field, parentMenu.getParentMenu());
+                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
             }
         }
     }
 
     private void setFilterInfoForCategoryFeature(String field) {
-        if (parentMenu.getParentMenu() instanceof ProductsMenu) {
+        if (parentMenu instanceof ProductsMenu) {
             if (field.equalsIgnoreCase("min price")) {
                 long minPrice = Long.parseLong(checkInput("Enter minimum Price", "\\d+"));
                 ProductsMenu.getFilter().setMinimumPrice(minPrice);

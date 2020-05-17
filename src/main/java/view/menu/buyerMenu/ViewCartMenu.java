@@ -56,7 +56,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Show Total Price", this) {
             @Override
             public void execute() {
-                System.out.println(BuyerZone.calculatePriceWithAuctions());
+                System.out.println(BuyerZone.calculatePriceWithAuctions() + "$");
                 this.parentMenu.execute();
             }
         };

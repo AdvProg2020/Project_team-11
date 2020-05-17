@@ -105,7 +105,7 @@ public class AllAccountZone {
         return products.stream()
                 .filter(product -> {
                     if (!filterInfo.getCategory().equals("") &&
-                            !filterInfo.getCategory().equals(product.getCategory().getName()))
+                            !filterInfo.getCategory().equals(product.getCategoryName()))
                         return false;
                     if (filterInfo.getMinimumPrice() > product.getGeneralFeature().getAuctionPrice())
                         return false;
@@ -163,11 +163,11 @@ public class AllAccountZone {
         StringBuilder output = new StringBuilder();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             if (product.getId() == productId)
-                output.append("Seller : ").append(product.getGeneralFeature().getSeller().getUsername()).append(" ")
+                output.append("Seller : ").append(product.getGeneralFeature().getSeller().getUsername()).append("\n")
                         .append(product.getGeneralFeature().getName()).append(" ")
-                        .append(product.getGeneralFeature().getAuctionPrice()).append(" $ ")
+                        .append(product.getGeneralFeature().getAuctionPrice()).append("$ ")
                         .append(product.getGeneralFeature().getCompany()).append(" ")
-                        .append(product.getCategory().getName()).append(" Score : ")
+                        .append(product.getCategoryName()).append(" Score : ")
                         .append(product.getAverageScore()).append(" ").append(product.getDescription()).append("\n");
         }
         return output.toString();
@@ -199,16 +199,16 @@ public class AllAccountZone {
         for (Map.Entry<String, String> entry : product.getCategoryFeature().entrySet()) {
             feature += entry.getKey() + " : " + entry.getValue() + "\n";
         }
-        return "Category : " + product.getCategory().getName() + "\n" + feature + product.getDescription() +
+        return "Category : " + product.getCategoryName() + "\n" + feature + product.getDescription() +
                 "\nscore : " + product.getAverageScore() + " from " + product.getNumOfUsersRated() + " person";
     }
 
     public static String compareTwoProduct(int productId1, int productId2) {
         Product product1 = SellerZone.getProductById(productId1);
         Product product2 = SellerZone.getProductById(productId2);
-        Category category = product1.getCategory();
-        if (!category.getName().equals(product2.getCategory().getName())) {
-            return "Cannot compared! You should enter a product in " + product1.getCategory().getName() + " category";
+        Category category = SellerZone.getCategoryByName(product1.getCategoryName());
+        if (!category.getName().equals(product2.getCategoryName())) {
+            return "Cannot compared! You should enter a product in " + product1.getCategoryName() + " category";
         } else {
             StringBuilder output = new StringBuilder();
             for (String feature : category.getSpecialFeatures()) {
@@ -238,7 +238,7 @@ public class AllAccountZone {
                 break;
             }
         }
-        Comment comment = new Comment(buyer.getUsername(), product, text, "unseen", hasBought);
+        Comment comment = new Comment(buyer.getUsername(), product.getId(), text, "unseen", hasBought);
         new Request(buyer.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
     }
 

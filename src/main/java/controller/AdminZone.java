@@ -89,8 +89,7 @@ public class AdminZone {
         String info = request.getDescription();
         int productId = Integer.parseInt(info);
         Product product = SellerZone.getProductById(productId);
-        assert product != null;
-        Category category = product.getCategory();
+        Category category = SellerZone.getCategoryByName(product.getCategoryName());
         category.addProductList(product);
         product.setStatus("accepted");
     }
@@ -252,13 +251,13 @@ public class AdminZone {
         }
         ArrayList<Comment> comments = new ArrayList<>();
         for (Comment comment : DataBase.getDataBase().getAllComments()) {
-            if (comment.getProduct().getId() == productId)
+            if (comment.getProductId() == productId)
                 comments.add(comment);
         }
         DataBase.getDataBase().getAllComments().removeAll(comments);
         ArrayList<Rate> rates = new ArrayList<>();
         for (Rate rate : DataBase.getDataBase().getAllRates()) {
-            if (rate.getProduct().getId() == productId)
+            if (rate.getProductId() == productId)
                 rates.add(rate);
         }
         DataBase.getDataBase().getAllRates().removeAll(rates);

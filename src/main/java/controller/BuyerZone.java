@@ -55,7 +55,7 @@ public class BuyerZone {
         if (buyer == null) {
             return "You can't use this code.";
         }
-        if (buyer.getDiscountCodes().get(discount) == 0) {
+        if (buyer.getDiscountCodes().get(discount.getCode()) == 0) {
             return "You can't use this code anymore.";
         }
         Date currentDate = AllAccountZone.getCurrentDate();
@@ -223,7 +223,7 @@ public class BuyerZone {
                 }
             }
         }
-        new Rate(AllAccountZone.getCurrentAccount().getUsername(), score, product);
+        new Rate(AllAccountZone.getCurrentAccount().getUsername(), score, product.getId());
         double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getAverageScore() + 1);
         product.setAverageScore(newScore);
         product.addNumOfUsersRated();
@@ -234,9 +234,9 @@ public class BuyerZone {
         for (Map.Entry<String, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getDiscountCodes().entrySet()) {
             Discount discount = getDiscountByCode(entry.getKey());
             output.append(discount.getCode()).append(" : ").append(entry.getValue())
-                    .append(" times").append(discount.getAmount()[0]).append("% Max discount = ")
-                    .append(discount.getAmount()[1]).append(" from ").append(discount.getStartDate())
-                    .append(" to ").append(discount.getEndDate());
+                    .append(" times ").append(discount.getAmount()[0]).append("% discount Max = ")
+                    .append(discount.getAmount()[1]).append("$ from '").append(discount.getStartDate())
+                    .append("' to '").append(discount.getEndDate()).append("'\n");
         }
         return output.toString();
     }

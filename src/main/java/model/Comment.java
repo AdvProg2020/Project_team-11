@@ -3,17 +3,17 @@ package model;
 public class Comment {
     int id;
     private final String buyerName;
-    private final Product product;
+    private final int productId;
     private final String commentText;
     private String status;
     private final boolean hasUserBoughtProduct;
     private static int numOfAllComments;
 
-    public Comment(String buyerName, Product product, String commentText, String status, boolean hasUserBoughtProduct) {
+    public Comment(String buyerName, int productId, String commentText, String status, boolean hasUserBoughtProduct) {
         this.id = numOfAllComments;
         Comment.numOfAllComments += 1;
         this.buyerName = buyerName;
-        this.product = product;
+        this.productId = productId;
         this.commentText = commentText;
         this.status = status;
         this.hasUserBoughtProduct = hasUserBoughtProduct;
@@ -24,8 +24,8 @@ public class Comment {
         return buyerName;
     }
 
-    public Product getProduct() {
-        return product;
+    public int getProductId() {
+        return productId;
     }
 
     public String getCommentText() {
