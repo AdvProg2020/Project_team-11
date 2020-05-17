@@ -173,7 +173,7 @@ public class AdminZone {
     }
 
     private static void declineRequestEditProduct(Request request) {
-        Product product = SellerZone.getProductById(Integer.parseInt(request.getDescription()));
+        Product product = SellerZone.getProductById(Integer.parseInt(request.getDescription().split(",")[0]));
         product.setStatus("accepted");
     }
 
@@ -208,10 +208,12 @@ public class AdminZone {
         Account accountDeleted = null;
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account.getUsername().equalsIgnoreCase(username)) {
-                output = username + "deleted.";
+                output = username + " deleted.";
                 accountDeleted = account;
             }
         }
+        if (output.equals(""))
+            return  "invalid username";
         if (accountDeleted instanceof Seller) {
             ArrayList<Auction> sellerAuctions = new ArrayList<>();
             for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
@@ -227,8 +229,6 @@ public class AdminZone {
             DataBase.getDataBase().getAllProducts().removeAll(sellerProducts);
         }
         DataBase.getDataBase().getAllAccounts().remove(accountDeleted);
-        if (output.equals(""))
-            output = "invalid username";
         return output;
     }
 
@@ -243,6 +243,8 @@ public class AdminZone {
                 removedProduct = product;
             }
         }
+        if (removedProduct == null)
+            return "invalid product ID.";
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             auction.getProductList().remove(removedProduct);
         }
@@ -262,10 +264,7 @@ public class AdminZone {
         }
         DataBase.getDataBase().getAllRates().removeAll(rates);
         DataBase.getDataBase().getAllProducts().remove(removedProduct);
-        if (removedProduct == null)
-            return "invalid product ID.";
-        else
-            return "product removed successfully.";
+        return "product removed successfully.";
     }
 
     public static String showAllProducts() {
@@ -368,8 +367,8 @@ public class AdminZone {
 
     public static void removeCategory(String name) {
         Category category = Category.getCategoryByName(name);
-        for (Product product : category.getProductList()) {
-            removeProduct(product.getId());
+        while (!category.getProductList().isEmpty()) {
+            removeProduct(category.getProductList().get(0).getId());
         }
         DataBase.getDataBase().getAllCategories().remove(category);
     }

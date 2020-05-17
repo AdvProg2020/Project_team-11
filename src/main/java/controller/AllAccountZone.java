@@ -225,12 +225,12 @@ public class AllAccountZone {
         Product product = SellerZone.getProductById(productId);
         boolean hasBought = false;
         for (BuyLog buyLog : buyer.getBuyHistory()) {
-            if (buyLog.getPurchasedProductionsAndSellers().containsKey(product.getId())) {
+            if (buyLog.getPurchasedProductionsAndSellers().containsKey(productId)) {
                 hasBought = true;
                 break;
             }
         }
-        Comment comment = new Comment(buyer.getUsername(), product.getId(), text, "unseen", hasBought);
+        Comment comment = new Comment(buyer.getUsername(), productId, text, "unseen", hasBought);
         new Request(buyer.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
     }
 
