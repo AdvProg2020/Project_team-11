@@ -43,7 +43,7 @@ public class AllAccountZone {
         for (Category category : DataBase.getDataBase().getAllCategories()) {
             categories.append(category.getName()).append(" | ");
         }
-        return String.valueOf(categories);
+        return categories.toString();
     }
 
     public static String getCategoriesRegex() {
@@ -51,7 +51,7 @@ public class AllAccountZone {
         for (Category category : DataBase.getDataBase().getAllCategories()) {
             regex.append(category.getName()).append("|");
         }
-        return String.valueOf(regex);
+        return regex.toString();
     }
 
     public static void setFilterCategoryFeature(String categoryName, Menu menu) {
@@ -75,7 +75,7 @@ public class AllAccountZone {
                     .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
                     .append(product.getAverageScore()).append("\n");
         }
-        return String.valueOf(output);
+        return output.toString();
     }
 
     public static String getAuctionProductsInSortAndFiltered(Menu menu) {
@@ -93,7 +93,7 @@ public class AllAccountZone {
                     .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
                     .append(product.getAverageScore()).append("\n");
         }
-        return String.valueOf(output);
+        return output.toString();
     }
 
     private static List<Product> getFilteredProduct(List<Product> products, Menu menu) {
@@ -168,7 +168,7 @@ public class AllAccountZone {
                         .append(product.getGeneralFeature().getAuctionPrice()).append("$ ")
                         .append(product.getGeneralFeature().getCompany()).append(" ")
                         .append(product.getCategoryName()).append(" Score : ")
-                        .append(product.getAverageScore()).append(" ").append(product.getDescription()).append("\n");
+                        .append(product.getAverageScore()).append(" ").append(product.getDescription());
         }
         return output.toString();
     }
@@ -177,14 +177,6 @@ public class AllAccountZone {
         Product product = SellerZone.getProductById(productId);
         ((Buyer) AllAccountZone.getCurrentAccount()).setCart(product);
         return "Done.";
-    }
-
-    public static Seller getSellerByUsername(String username) {
-        for (Account account : DataBase.getDataBase().getAllAccounts()) {
-            if (account instanceof Seller && account.getUsername().equalsIgnoreCase(username))
-                return (Seller) account;
-        }
-        return null;
     }
 
     public static String showProductAttribute(int productId) {
@@ -233,7 +225,7 @@ public class AllAccountZone {
         Product product = SellerZone.getProductById(productId);
         boolean hasBought = false;
         for (BuyLog buyLog : buyer.getBuyHistory()) {
-            if (buyLog.getPurchasedProductionsAndSellers().containsKey(product)) {
+            if (buyLog.getPurchasedProductionsAndSellers().containsKey(product.getId())) {
                 hasBought = true;
                 break;
             }

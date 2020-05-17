@@ -66,7 +66,7 @@ public class SellerMenu extends Menu {
                 for (String feature : category.getSpecialFeatures()) {
                     categoryFeature.put(feature, checkInput(feature, ".+"));
                 }
-                SellerZone.sendAddNewProductRequest(0, category, requestDescription, categoryFeature);
+                SellerZone.sendAddNewProductRequest(category, requestDescription, categoryFeature);
                 System.out.println("Request sent.");
                 this.parentMenu.execute();
             }
