@@ -176,4 +176,13 @@ public class SellerZone {
         new Request(seller.getUsername(), "add auction", String.valueOf(auction.getId()),
                 "unseen");
     }
+    public static String showRequestsAndStatusByUsername(String userName) {
+        StringBuilder sellerRequest = new StringBuilder();
+        for (Request request : DataBase.getDataBase().getAllRequests()) {
+            if (request.getSenderName().equals(userName)) {
+                sellerRequest.append(request.getTopic()).append(" -> ").append(request.getStatus()).append("\n");
+            }
+        }
+        return String.valueOf(sellerRequest);
+    }
 }

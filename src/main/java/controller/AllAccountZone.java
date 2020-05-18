@@ -251,8 +251,7 @@ public class AllAccountZone {
             for (int i = 1; i <= 8; i++) {
                 requestDescription.append(info.get(i)).append(",");
             }
-            new Request(null, "create seller account", requestDescription.toString(), "unseen");
-            // TODO : username may be taken.
+            new Request(info.get(5), "create seller account", requestDescription.toString(), "unseen");
             return "Request sent. Wait for Admin agreement.";
         } else {
             new Buyer(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6),
@@ -264,6 +263,10 @@ public class AllAccountZone {
     public static boolean isUsernameValid(String username) {
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account.getUsername().equalsIgnoreCase(username))
+                return false;
+        }
+        for (Request request : DataBase.getDataBase().getAllRequests()) {
+            if (request.getSenderName().equals(username))
                 return false;
         }
         return true;

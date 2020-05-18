@@ -27,7 +27,18 @@ public class SellerMenu extends Menu {
         submenus.add(getShowCategories());
         submenus.add(new ViewAuctionsMenu(this));
         submenus.add(getViewBalanceMenu());
+        submenus.add(getShowSellerRequests());
         this.setSubmenus(submenus);
+    }
+
+    private Menu getShowSellerRequests() {
+        return new Menu("Show Seller Requests", this) {
+            @Override
+            public void execute() {
+                System.out.println(SellerZone.showRequestsAndStatusByUsername(AllAccountZone.getCurrentAccount().getUsername()));
+                this.parentMenu.execute();
+            }
+        };
     }
 
     private Menu getViewCompanyInfoMenu() {

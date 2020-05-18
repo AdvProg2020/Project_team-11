@@ -38,17 +38,17 @@ public class AdminZone {
         Request request = getRequestById(requestId);
         if (request == null || !request.getStatus().equals("unseen")) {
             return "invalid request ID";
-        } else if (request.getTopic().equals("create seller account")) {
+        } else if (request.getTopic().equalsIgnoreCase("create seller account")) {
             acceptRequestCreateSellerAccount(request);
-        } else if (request.getTopic().equals("edit product")) {
+        } else if (request.getTopic().equalsIgnoreCase("edit product")) {
             acceptRequestEditProduct(request);
-        } else if (request.getTopic().equals("add product")) {
+        } else if (request.getTopic().equalsIgnoreCase("add product")) {
             acceptRequestAddProduct(request);
-        } else if (request.getTopic().equals("add auction")) {
+        } else if (request.getTopic().equalsIgnoreCase("add auction")) {
             acceptRequestAddAuction(request);
-        } else if (request.getTopic().equals("edit auction")) {
+        } else if (request.getTopic().equalsIgnoreCase("edit auction")) {
             acceptRequestEditAuction(request);
-        } else if (request.getTopic().equals("add comment")) {
+        } else if (request.getTopic().equalsIgnoreCase("add comment")) {
             acceptRequestAddComment(request);
         }
         request.setStatus("accepted");
@@ -148,18 +148,24 @@ public class AdminZone {
         Request request = getRequestById(requestId);
         if (request == null || !request.getStatus().equals("unseen"))
             return "invalid request ID";
-        else if (request.getTopic().equals("add comment"))
+        else if (request.getTopic().equalsIgnoreCase("create account"))
+            declineRequestCreateSellerAccount(request);
+        else if (request.getTopic().equalsIgnoreCase("add comment"))
             declineRequestAddComment(request);
-        else if (request.getTopic().equals("add product"))
+        else if (request.getTopic().equalsIgnoreCase("add product"))
             declineRequestAddProduct(request);
-        else if (request.getTopic().equals("edit product"))
+        else if (request.getTopic().equalsIgnoreCase("edit product"))
             declineRequestEditProduct(request);
-//        else if (request.getTopic().equals("add auction"))
-//            // TODO
-//        else if (request.getTopic().equals("edit auction"))
-            // TODO
+        else if (request.getTopic().equalsIgnoreCase("add auction"))
+            declineRequestAddAuction(request);
+        else if (request.getTopic().equalsIgnoreCase("edit auction"))
+            declineRequestEditAuction(request);
             request.setStatus("declined");
         return "Done";
+    }
+
+    private static void declineRequestCreateSellerAccount(Request sellerRequest) {
+        DataBase.getDataBase().getAllRequests().remove(sellerRequest.getId() - 1);
     }
 
     private static void declineRequestAddComment(Request request) {
@@ -175,6 +181,16 @@ public class AdminZone {
     private static void declineRequestEditProduct(Request request) {
         Product product = SellerZone.getProductById(Integer.parseInt(request.getDescription()));
         product.setStatus("accepted");
+    }
+
+    private static void declineRequestAddAuction(Request request) {
+        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription()));
+        auction.setStatus("rejected");
+    }
+
+    private static void declineRequestEditAuction(Request request) {
+        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription()));
+        auction.setStatus("accepted");
     }
 
     public static String showUsersInfo() {

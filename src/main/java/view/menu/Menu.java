@@ -66,8 +66,7 @@ public abstract class Menu {
         if (AllAccountZone.getCurrentAccount() == null && !this.getName().equals("Sign in") &&
                 !this.getName().equals("Logout"))
             System.out.println("Sign in");
-        else if (AllAccountZone.getCurrentAccount() != null && !this.getName().equals("Logout") &&
-                !this.getName().equals("Logout"))
+        else if (AllAccountZone.getCurrentAccount() != null && !this.getName().equals("Logout"))
             System.out.println("Logout");
         for (Menu menu : submenus) {
             System.out.println(menu.getName());
