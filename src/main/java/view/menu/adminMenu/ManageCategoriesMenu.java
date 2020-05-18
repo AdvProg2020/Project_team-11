@@ -88,6 +88,7 @@ public class ManageCategoriesMenu extends Menu {
                         this.parentMenu.execute();
                     }
                 }
+
                 ArrayList<String> features = new ArrayList<>();
                 String feature;
                 System.out.println("Enter 'end of features' to end.");
