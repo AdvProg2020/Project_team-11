@@ -8,8 +8,6 @@ import java.util.*;
 
 public class BuyerZoneTest {
     private final DataBase dataBase = new DataBase();
-    private final Admin admin = new Admin("ali", "mohamadi", "ali@gmail.com",
-            "09135467595", "alimamad", "1234");
     private final Buyer buyer = new Buyer("ali", "mohamadi", "ali@gmail.com",
             "09135467595", "ali", "1234", 500);
     private final Seller seller1 = new Seller("jafar", "mohamadi", "ali@gmail.com",

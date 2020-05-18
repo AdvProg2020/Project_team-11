@@ -27,7 +27,7 @@ public class SellerZone {
                         append(product.getAverageScore()).append("\n");
             }
         }
-        return String.valueOf(productList);
+        return productList.toString();
     }
 
     private static String getProductBuyers(Product product) {
@@ -35,11 +35,11 @@ public class SellerZone {
         for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
             if (log instanceof SellLog) {
                 if (((SellLog) log).getSoldProducts().equals(product)) {
-                    buyersList.append(((SellLog) log).getBuyerName());
+                    buyersList.append(((SellLog) log).getBuyerName()).append("\n");
                 }
             }
         }
-        return String.valueOf(buyersList);
+        return buyersList.toString();
     }
 
     public static String viewSellerProduct(int productId) {
@@ -62,7 +62,7 @@ public class SellerZone {
 
     public static String editProduct(int productId) {
         Product product = getProductById(productId);
-        if (product == null) {
+        if (product == null || !product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount())) {
             return "You haven't this product.";
         } else {
             return "Edit";
