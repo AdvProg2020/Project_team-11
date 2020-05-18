@@ -15,14 +15,10 @@ public class Product {
     private ArrayList<Comment> comments;
     private static int numOfAllProducts;
 
-    public Product(int id, String status, ProductInfo generalFeature, String categoryName,
+    public Product(String status, ProductInfo generalFeature, String categoryName,
                    HashMap<String, String> categoryFeature, String description) {
-        if (id == 0) {
-            this.id = numOfAllProducts;
-            numOfAllProducts += 1;
-        } else {
-            this.id = id;
-        }
+        this.id = numOfAllProducts;
+        numOfAllProducts += 1;
         this.status = status;
         this.generalFeature = generalFeature;
         this.categoryName = categoryName;

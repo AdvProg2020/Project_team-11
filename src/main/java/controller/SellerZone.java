@@ -27,7 +27,7 @@ public class SellerZone {
                         append(product.getAverageScore()).append("\n");
             }
         }
-        return String.valueOf(productList);
+        return productList.toString();
     }
 
     private static String getProductBuyers(Product product) {
@@ -35,11 +35,11 @@ public class SellerZone {
         for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
             if (log instanceof SellLog) {
                 if (((SellLog) log).getSoldProducts().equals(product)) {
-                    buyersList.append(((SellLog) log).getBuyerName());
+                    buyersList.append(((SellLog) log).getBuyerName()).append("\n");
                 }
             }
         }
-        return String.valueOf(buyersList);
+        return buyersList.toString();
     }
 
     public static String viewSellerProduct(int productId) {
@@ -62,7 +62,7 @@ public class SellerZone {
 
     public static String editProduct(int productId) {
         Product product = getProductById(productId);
-        if (product == null) {
+        if (product == null || !product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount())) {
             return "You haven't this product.";
         } else {
             return "Edit";
@@ -96,26 +96,15 @@ public class SellerZone {
         return null;
     }
 
-    public static void sendAddNewProductRequest(int productId, Category category, HashMap<String, String> descriptions,
+    public static void sendAddNewProductRequest(Category category, HashMap<String, String> descriptions,
                                                 HashMap<String, String> categoryFeature) {
         ProductInfo productInfo = new ProductInfo(descriptions.get("name"), descriptions.get("company"),
                 Long.parseLong(descriptions.get("price")), (Seller) AllAccountZone.getCurrentAccount(),
                 Integer.parseInt(descriptions.get("stock status")));
-        Product product = new Product(productId, "construction", productInfo, category.getName(), categoryFeature,
+        Product product = new Product("construction", productInfo, category.getName(), categoryFeature,
                 descriptions.get("description"));
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
                 String.valueOf(product.getId()), "unseen");
-    }
-
-    public static void sendAddExistingProductRequest(int productId, Category category, HashMap<String, String> descriptions) {
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
-                String.valueOf(productId), "unseen");
-        Product product = getProductById(productId);
-        ProductInfo productInfo = new ProductInfo(product.getGeneralFeature().getName(),
-                product.getGeneralFeature().getCompany(), Long.parseLong(descriptions.get("price")),
-                (Seller) AllAccountZone.getCurrentAccount(), Integer.parseInt(descriptions.get("stock status")));
-        new Product(productId, "construction", productInfo, category.getName(), product.getCategoryFeature(),
-                product.getDescription());
     }
 
     public static String showSellerAuctions() {

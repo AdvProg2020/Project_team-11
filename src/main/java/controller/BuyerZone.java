@@ -87,8 +87,8 @@ public class BuyerZone {
     public static long calculatePriceWithAuctions() {
         setAuctionPrice();
         long totalPrice = 0;
-        for (Product product : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
-            totalPrice += product.getGeneralFeature().getAuctionPrice();
+        for (Map.Entry<Product, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+            totalPrice += entry.getKey().getGeneralFeature().getAuctionPrice() * entry.getValue();
         }
         return totalPrice;
     }
@@ -112,8 +112,8 @@ public class BuyerZone {
         Buyer buyer = ((Buyer) AllAccountZone.getCurrentAccount());
         decreaseBuyerMoney(buyer);
         increaseSellerMoney(buyer);
-        removeActiveDiscount(buyer);
         createLogs(buyer);
+        removeActiveDiscount(buyer);
         buyer.getCart().clear();
     }
 
@@ -162,7 +162,7 @@ public class BuyerZone {
     public static void setAuctionPrice() {
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             for (Product product : auction.getProductList()) {
-                double discountPercent = 1;
+                double discountPercent = 0;
                 if (AllAccountZone.getCurrentDate().after(auction.getStartDate()) &&
                     AllAccountZone.getCurrentDate().before(auction.getEndDate()) &&
                     auction.getStatus().equals("accepted")) {
