@@ -35,8 +35,9 @@ public class ShowProductMenu extends Menu {
                 int productId2 = Integer.parseInt(checkInput("Enter product ID", "\\d{1,9}"));
                 if (SellerZone.getProductById(productId2) == null) {
                     System.out.println("invalid ID");
+                } else if (productId1 == productId2) {
+                    System.out.println("Choose a different product");
                 } else {
-                    // TODO : compare product with itself !!
                     String output = AllAccountZone.compareTwoProduct(productId1, productId2);
                     if (output.startsWith("Cannot")) {
                         System.out.println(output);
