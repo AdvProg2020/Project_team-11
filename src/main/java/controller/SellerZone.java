@@ -107,6 +107,27 @@ public class SellerZone {
                 String.valueOf(product.getId()), "unseen");
     }
 
+    public static void removeProduct(Product product) {
+
+        for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
+            if (auction.getProductList().contains(product))
+                auction.getProductList().remove(product);
+        }
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            if (category.getProductList().contains(product))
+                category.getProductList().remove(product);
+        }
+        for (Comment comment : DataBase.getDataBase().getAllComments()) {
+            if (comment.getProductId() == product.getId())
+                DataBase.getDataBase().getAllComments().remove(comment);
+        }
+        for (Rate rate : DataBase.getDataBase().getAllRates()) {
+            if (rate.getProductId() == product.getId())
+                DataBase.getDataBase().getAllRates().remove(rate);
+        }
+        DataBase.getDataBase().getAllProducts().remove(product);
+    }
+
     public static String showSellerAuctions() {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
         StringBuilder output = new StringBuilder();

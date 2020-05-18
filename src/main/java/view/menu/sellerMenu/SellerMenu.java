@@ -3,10 +3,7 @@ package view.menu.sellerMenu;
 import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
-import model.Category;
-import model.DataBase;
-import model.Product;
-import model.Seller;
+import model.*;
 import view.menu.Menu;
 import view.menu.ViewPersonalInfoMenu;
 
@@ -93,8 +90,7 @@ public class SellerMenu extends Menu {
                 if (product == null) {
                     System.out.println("You haven't this product.");
                 } else {
-                    // TODO : remove from auctions, category and delete its comment & Rate.
-                    DataBase.getDataBase().getAllProducts().remove(product);
+                    SellerZone.removeProduct(product);
                     System.out.println("Product removed from your products.");
                 }
                 this.parentMenu.execute();
