@@ -36,7 +36,7 @@ public class Comment {
         return status;
     }
 
-    public boolean isHasUserBoughtProduct() {
+    public boolean hasUserBoughtProduct() {
         return hasUserBoughtProduct;
     }
 
