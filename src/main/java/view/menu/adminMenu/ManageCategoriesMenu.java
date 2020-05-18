@@ -3,6 +3,7 @@ package view.menu.adminMenu;
 import controller.AdminZone;
 import controller.AllAccountZone;
 import model.Category;
+import model.DataBase;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -37,8 +38,13 @@ public class ManageCategoriesMenu extends Menu {
                     String field = scanner.nextLine().trim();
                     String newField;
                     if (field.equalsIgnoreCase("name")) {
-                        // TODO : category name is specific.
                         newField = checkInput("Enter name", ".+");
+                        for (Category category1 : DataBase.getDataBase().getAllCategories()) {
+                            if (category1.getName().equals(newField)){
+                                System.out.println("Category's name must be specific");
+                                this.parentMenu.execute();
+                            }
+                        }
                         category.setName(newField);
                     } else if (field.equalsIgnoreCase("feature")) {
                         System.out.println("Do you want to [add - remove - rename] a feature?");
@@ -75,8 +81,13 @@ public class ManageCategoriesMenu extends Menu {
         return new Menu("Add Category", this) {
             @Override
             public void execute() {
-                // TODO : category name is specific.
                 String name = checkInput("Enter category name", ".+");
+                for (Category category : DataBase.getDataBase().getAllCategories()) {
+                    if (category.getName().equals(name)){
+                        System.out.println("Category's name must be specific");
+                        this.parentMenu.execute();
+                    }
+                }
                 ArrayList<String> features = new ArrayList<>();
                 String feature;
                 System.out.println("Enter 'end of features' to end.");
