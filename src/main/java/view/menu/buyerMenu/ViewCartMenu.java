@@ -1,6 +1,9 @@
 package view.menu.buyerMenu;
 
+import controller.AllAccountZone;
 import controller.BuyerZone;
+import model.Buyer;
+import model.DataBase;
 import view.menu.Menu;
 
 import java.util.ArrayList;
@@ -66,7 +69,10 @@ public class ViewCartMenu extends Menu {
         return new Menu("Purchase", this) {
             @Override
             public void execute() {
-                // TODO : buy nothing :///
+                if (((Buyer) AllAccountZone.getCurrentAccount()).getCart().isEmpty()) {
+                    System.out.println("Your cart is empty");
+                    this.parentMenu.execute();
+                }
                 getReceiveInfoMenu().execute();
                 getCheckDiscountCodeMenu().execute();
                 this.parentMenu.execute();
