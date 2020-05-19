@@ -12,6 +12,7 @@ public class BuyLogTest {
 
     @Test
     public void classTest() {
+        ExchangeLog.setNumOfAllLogs(1);
         BuyLog buyLog = new BuyLog(new Date(),
                 450,
                 150,
@@ -19,7 +20,7 @@ public class BuyLogTest {
                 "mamad",
                 "sending");
         Assert.assertFalse(dataBase.getAllLogs().isEmpty());
-        Assert.assertEquals(0, buyLog.getId());
+        Assert.assertEquals(1, buyLog.getId());
         Assert.assertTrue(new Date().getTime() - buyLog.getDate().getTime() < 10);
         Assert.assertEquals(450, buyLog.getPaidAmount());
         Assert.assertEquals(150, buyLog.getDiscountAmountApplied());

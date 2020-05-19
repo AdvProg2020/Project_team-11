@@ -258,7 +258,7 @@ public class AllAccountZone {
                 return false;
         }
         for (Request request : DataBase.getDataBase().getAllRequests()) {
-            if (request.getSenderName().equals(username))
+            if (request.getSenderName().equals(username) && request.getStatus().equals("unseen"))
                 return false;
         }
         return true;

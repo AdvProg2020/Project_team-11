@@ -1,6 +1,5 @@
 package view.menu.sellerMenu;
 
-import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
 import model.*;
@@ -24,15 +23,15 @@ public class SellerMenu extends Menu {
         submenus.add(getShowCategories());
         submenus.add(new ViewAuctionsMenu(this));
         submenus.add(getViewBalanceMenu());
-        submenus.add(getShowSellerRequests());
+        submenus.add(getShowSellerRequestsMenu());
         this.setSubmenus(submenus);
     }
 
-    private Menu getShowSellerRequests() {
+    private Menu getShowSellerRequestsMenu() {
         return new Menu("Show Seller Requests", this) {
             @Override
             public void execute() {
-                System.out.println(SellerZone.showRequestsAndStatusByUsername(AllAccountZone.getCurrentAccount().getUsername()));
+                System.out.println(SellerZone.showSellerRequests());
                 this.parentMenu.execute();
             }
         };

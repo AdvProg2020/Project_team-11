@@ -44,7 +44,7 @@ public class AdminZoneTest {
             ",iphone11,orange,240,2", "unseen");
     private final Request request4 = new Request("jafar", "edit auction", auction2.getId() +
             ",1,1266543132,8952474654312,35", "unseen");
-    private final Request request5 = new Request("mamad", "add auction", String.valueOf(auction1.getId()),
+    private final Request request5 = new Request("mamad", "add auction", String.valueOf(auction2.getId()),
             "unseen");
     private final Request request6 = new Request("ali", "add comment", String.valueOf(comment.getId()),
             "unseen");
@@ -79,6 +79,7 @@ public class AdminZoneTest {
 
     @Test
     public void declineRequestTest() {
+        AllAccountZone.setCurrentAccount(seller1);
         Assert.assertEquals("invalid request ID", AdminZone.declineRequest(-2));
         Assert.assertEquals("Done", AdminZone.declineRequest(request1.getId()));
         Assert.assertEquals("Done", AdminZone.declineRequest(request2.getId()));
@@ -198,5 +199,11 @@ public class AdminZoneTest {
         category2.addProductList(product2);
         AdminZone.removeCategory("mobile");
         Assert.assertNull(SellerZone.getCategoryByName("mobile"));
+    }
+
+    @Test
+    public void isCategoryNameValidTest() {
+        Assert.assertTrue(AdminZone.isCategoryNameValid("Car"));
+        Assert.assertFalse(AdminZone.isCategoryNameValid("PC"));
     }
 }

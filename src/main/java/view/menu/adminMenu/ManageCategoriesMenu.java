@@ -38,13 +38,9 @@ public class ManageCategoriesMenu extends Menu {
                     String field = scanner.nextLine().trim();
                     String newField;
                     if (field.equalsIgnoreCase("name")) {
-                        newField = checkInput("Enter name", ".+");
-                        for (Category category1 : DataBase.getDataBase().getAllCategories()) {
-                            if (category1.getName().equals(newField)){
-                                System.out.println("Category's name must be specific");
-                                this.parentMenu.execute();
-                            }
-                        }
+                        do {
+                            newField = checkInput("Enter name", ".+");
+                        } while (!AdminZone.isCategoryNameValid(newField));
                         category.setName(newField);
                     } else if (field.equalsIgnoreCase("feature")) {
                         System.out.println("Do you want to [add - remove - rename] a feature?");
@@ -81,14 +77,10 @@ public class ManageCategoriesMenu extends Menu {
         return new Menu("Add Category", this) {
             @Override
             public void execute() {
-                String name = checkInput("Enter category name", ".+");
-                for (Category category : DataBase.getDataBase().getAllCategories()) {
-                    if (category.getName().equals(name)){
-                        System.out.println("Category's name must be specific");
-                        this.parentMenu.execute();
-                    }
-                }
-
+                String name;
+                do {
+                    name = checkInput("Enter category name", ".+");
+                } while (!AdminZone.isCategoryNameValid(name));
                 ArrayList<String> features = new ArrayList<>();
                 String feature;
                 System.out.println("Enter 'end of features' to end.");

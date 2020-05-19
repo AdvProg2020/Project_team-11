@@ -36,6 +36,8 @@ public class SellerZoneTest {
     private final Comment comment = new Comment("ali", product2.getId(), "good", "construction",
             true);
     private final Rate rate = new Rate("ali", 4, product2.getId());
+    private final Request request2 = new Request("mamad", "add product", String.valueOf(product1.getId()),
+            "unseen");
 
     @Test
     public void getSellerProductsTest() {
@@ -94,6 +96,12 @@ public class SellerZoneTest {
     }
 
     @Test
+    public void removeProductTest() {
+        SellerZone.removeProduct(product2);
+        Assert.assertFalse(dataBase.getAllProducts().contains(product2));
+    }
+
+    @Test
     public void showSellerAuctionsTest() {
         AllAccountZone.setCurrentAccount(seller1);
         Assert.assertEquals(auction2.getId() + ". discount : 20%", SellerZone.showSellerAuctions());
@@ -125,5 +133,11 @@ public class SellerZoneTest {
         AllAccountZone.setCurrentAccount(seller1);
         SellerZone.createAuction("1/2,21346487987,9845432189523,20");
         Assert.assertFalse(DataBase.getDataBase().getAllRequests().isEmpty());
+    }
+
+    @Test
+    public void showSellerRequestsTest() {
+        AllAccountZone.setCurrentAccount(seller2);
+        Assert.assertEquals("add product -> unseen\n", SellerZone.showSellerRequests());
     }
 }

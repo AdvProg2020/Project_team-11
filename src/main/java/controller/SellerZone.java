@@ -108,23 +108,14 @@ public class SellerZone {
     }
 
     public static void removeProduct(Product product) {
-
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getProductList().contains(product))
-                auction.getProductList().remove(product);
+            auction.getProductList().remove(product);
         }
         for (Category category : DataBase.getDataBase().getAllCategories()) {
-            if (category.getProductList().contains(product))
-                category.getProductList().remove(product);
+            category.getProductList().remove(product);
         }
-        for (Comment comment : DataBase.getDataBase().getAllComments()) {
-            if (comment.getProductId() == product.getId())
-                DataBase.getDataBase().getAllComments().remove(comment);
-        }
-        for (Rate rate : DataBase.getDataBase().getAllRates()) {
-            if (rate.getProductId() == product.getId())
-                DataBase.getDataBase().getAllRates().remove(rate);
-        }
+        DataBase.getDataBase().getAllComments().removeIf(comment -> comment.getProductId() == product.getId());
+        DataBase.getDataBase().getAllRates().removeIf(rate -> rate.getProductId() == product.getId());
         DataBase.getDataBase().getAllProducts().remove(product);
     }
 
@@ -186,13 +177,13 @@ public class SellerZone {
         new Request(seller.getUsername(), "add auction", String.valueOf(auction.getId()),
                 "unseen");
     }
-    public static String showRequestsAndStatusByUsername(String userName) {
+    public static String showSellerRequests() {
         StringBuilder sellerRequest = new StringBuilder();
         for (Request request : DataBase.getDataBase().getAllRequests()) {
-            if (request.getSenderName().equals(userName)) {
+            if (request.getSenderName().equals(AllAccountZone.getCurrentAccount().getUsername())) {
                 sellerRequest.append(request.getTopic()).append(" -> ").append(request.getStatus()).append("\n");
             }
         }
-        return String.valueOf(sellerRequest);
+        return sellerRequest.toString();
     }
 }

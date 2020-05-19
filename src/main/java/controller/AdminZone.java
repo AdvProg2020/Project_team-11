@@ -22,15 +22,10 @@ public class AdminZone {
         if (request == null) {
             return "invalid request ID";
         } else {
-            if (request.getSenderName() != null) {
-                return requestId + ". " + request.getTopic() + " : \n" +
-                        AllAccountZone.getAccountByUsername(request.getSenderName()).getFirstName() + " " +
-                        AllAccountZone.getAccountByUsername(request.getSenderName()).getLastName() + "\n" +
-                        request.getDescription();
-            } else {
-                return requestId + ". " + request.getTopic() + ": \n" +
-                        request.getDescription();
-            }
+            return requestId + ". " + request.getTopic() + " : \n" +
+                    AllAccountZone.getAccountByUsername(request.getSenderName()).getFirstName() + " " +
+                    AllAccountZone.getAccountByUsername(request.getSenderName()).getLastName() + "\n" +
+                    request.getDescription();
         }
     }
 
@@ -148,7 +143,7 @@ public class AdminZone {
         Request request = getRequestById(requestId);
         if (request == null || !request.getStatus().equals("unseen"))
             return "invalid request ID";
-        else if (request.getTopic().equalsIgnoreCase("create account"))
+        else if (request.getTopic().equalsIgnoreCase("create seller account"))
             declineRequestCreateSellerAccount(request);
         else if (request.getTopic().equalsIgnoreCase("add comment"))
             declineRequestAddComment(request);
@@ -164,8 +159,8 @@ public class AdminZone {
         return "Done";
     }
 
-    private static void declineRequestCreateSellerAccount(Request sellerRequest) {
-        DataBase.getDataBase().getAllRequests().remove(sellerRequest.getId() - 1);
+    private static void declineRequestCreateSellerAccount(Request request) {
+        request.setStatus("declined");
     }
 
     private static void declineRequestAddComment(Request request) {
@@ -189,7 +184,7 @@ public class AdminZone {
     }
 
     private static void declineRequestEditAuction(Request request) {
-        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription()));
+        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription().split(",")[0]));
         auction.setStatus("accepted");
     }
 
@@ -387,5 +382,14 @@ public class AdminZone {
             removeProduct(category.getProductList().get(0).getId());
         }
         DataBase.getDataBase().getAllCategories().remove(category);
+    }
+
+    public static boolean isCategoryNameValid(String categoryName) {
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            if (category.getName().equals(categoryName)){
+                return false;
+            }
+        }
+        return true;
     }
 }
