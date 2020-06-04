@@ -1,7 +1,6 @@
 package view.menu.adminMenu;
 
 import controller.AdminZone;
-import controller.SellerZone;
 import model.Buyer;
 import model.Discount;
 import view.menu.Menu;
@@ -53,11 +52,17 @@ public class ViewDiscountCodesMenu extends Menu {
                     String field = scanner.nextLine().trim();
                     String newField;
                     if (field.equalsIgnoreCase("start date")) {
-                        Date date = getDate("start ");
-                        discount.setStartDate(date);
+                        Date startDate;
+                        do {
+                            startDate = getDate("start ");
+                        } while (discount.getEndDate().before(startDate));
+                        discount.setStartDate(startDate);
                     } else if (field.equalsIgnoreCase("end date")) {
-                        Date date = getDate("end ");
-                        discount.setEndDate(date);
+                        Date endDate;
+                        do {
+                            endDate = getDate("end ");
+                        } while (discount.getStartDate().after(endDate));
+                        discount.setEndDate(endDate);
                     } else if (field.equalsIgnoreCase("discount percent")) {
                         newField = checkInput("Enter discount percent", "^[1-9][0-9]?$");
                         discount.setDiscountPercent(Long.parseLong(newField));

@@ -1,15 +1,11 @@
 package view.menu.sellerMenu;
 
-import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
 import model.Product;
-import model.Seller;
 import view.menu.Menu;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 public class ViewAuctionsMenu extends Menu {
@@ -81,7 +77,9 @@ public class ViewAuctionsMenu extends Menu {
         System.out.println("Do you want to change start date? [yes-no]");
         String changeStartDateState = scanner.nextLine().trim();
         if (changeStartDateState.equalsIgnoreCase("yes")) {
-            startDate = getDate("");
+            do {
+                startDate = getDate("start ");
+            } while (SellerZone.getAuctionById(auctionId).getEndDate().before(startDate));
             requestDescription.append(startDate.getTime()).append(",");
         } else {
             requestDescription.append("next,");
@@ -89,7 +87,9 @@ public class ViewAuctionsMenu extends Menu {
         System.out.println("Do you want to change end date? [yes-no]");
         String changeEndDateState = scanner.nextLine().trim();
         if (changeEndDateState.equalsIgnoreCase("yes")) {
-            endDate = getDate("");
+            do {
+                endDate = getDate("start ");
+            } while (SellerZone.getAuctionById(auctionId).getStartDate().after(endDate));
             requestDescription.append(endDate.getTime()).append(",");
         } else {
             requestDescription.append("next,");

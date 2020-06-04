@@ -38,7 +38,10 @@ public class AdminMenu extends Menu {
         discountInfo.add(checkInput("Enter Code", ".+"));
         Date startDate = getDate("start ");
         discountInfo.add(String.valueOf(startDate.getTime()));
-        Date endDate = getDate("end ");
+        Date endDate;
+        do {
+             endDate = getDate("end ");
+        } while (startDate.after(endDate));
         discountInfo.add(String.valueOf(endDate.getTime()));
         discountInfo.add(checkInput("Enter discount percent", "^[1-9][0-9]?$"));
         discountInfo.add(checkInput("Enter max discount amount", "\\d{1,18}"));
