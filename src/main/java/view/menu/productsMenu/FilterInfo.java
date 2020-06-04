@@ -7,13 +7,22 @@ public class FilterInfo {
     private String category;
     private long minimumPrice;
     private long maximumPrice;
+    private String productName;
+    private String sellerName;
+    private String company;
+    private int minimumStockStatus;
     private HashMap<String, String> feature;
 
-    public FilterInfo(String category, long minimumPrice, long maximumPrice, HashMap<String, String> feature) {
+    public FilterInfo(String category, long minimumPrice, long maximumPrice, String productName, String sellerName,
+                      String company, int minimumStockStatus, HashMap<String, String> feature) {
         this.category = category;
         this.minimumPrice = minimumPrice;
         this.maximumPrice = maximumPrice;
-        this.feature = new HashMap<>(feature);
+        this.productName = productName;
+        this.sellerName = sellerName;
+        this.company = company;
+        this.minimumStockStatus = minimumStockStatus;
+        this.feature = feature;
     }
 
     public String getCategory() {
@@ -32,6 +41,22 @@ public class FilterInfo {
         return feature;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public int getMinimumStockStatus() {
+        return minimumStockStatus;
+    }
+
     public void setCategory(String category) {
         this.category = category;
     }
@@ -48,12 +73,32 @@ public class FilterInfo {
         this.feature = feature;
     }
 
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setMinimumStockStatus(int minimumStockStatus) {
+        this.minimumStockStatus = minimumStockStatus;
+    }
+
     @Override
     public String toString() {
-        return  "category = '" + category + "'\n" +
-                "feature = " + getFeatureString() + "\n" +
-                "minimumPrice = " + minimumPrice + "\n" +
-                "maximumPrice = " + maximumPrice;
+        return "category='" + category + "'\n" +
+                "feature=" + getFeatureString() + "\n" +
+                "minimumPrice=" + minimumPrice + "\n" +
+                "maximumPrice=" + maximumPrice + "\n" +
+                "productName='" + productName + "'\n" +
+                "sellerName='" + sellerName + "'\n" +
+                "company='" + company + "'\n" +
+                "minimumStockStatus=" + minimumStockStatus;
     }
 
     private String getFeatureString() {

@@ -24,24 +24,26 @@ public class FilteringMenu extends Menu {
             public void execute() {
                 if (parentMenu.getParentMenu() instanceof ProductsMenu) {
                     if (ProductsMenu.getFilter().getCategory().equals("")) {
-                        System.out.println(AllAccountZone.getCategoriesForFilter() + "min price | max price");
+                        System.out.println(AllAccountZone.getCategoriesForFilter() + "min price | max price |" +
+                                " product name | seller name | company | min stock status");
                     } else {
                         String features = "";
                         for (String feature : ProductsMenu.getFilter().getFeature().keySet()) {
                             features += feature + " | ";
                         }
-                        features += "min price | max price";
+                        features += "min price | max price | product name | seller name | company | min stock status";
                         System.out.println(features);
                     }
                 } else {
                     if (AuctionMenu.getFilter().getCategory().equals("")) {
-                        System.out.println(AllAccountZone.getCategoriesForFilter() + "min price | max price");
+                        System.out.println(AllAccountZone.getCategoriesForFilter() + "min price | max price | " +
+                                "product name | seller name | company | min stock status");
                     } else {
                         String features = "";
                         for (String feature : AuctionMenu.getFilter().getFeature().keySet()) {
                             features += feature + " | ";
                         }
-                        features += "min price | max price";
+                        features += "min price | max price | product name | seller name | company | min stock status";
                         System.out.println(features);
                     }
                 }
@@ -57,28 +59,30 @@ public class FilteringMenu extends Menu {
                 if (parentMenu.getParentMenu() instanceof ProductsMenu) {
                     if (ProductsMenu.getFilter().getCategory().equals("")) {
                         String field = checkInput("Enter an available filter",
-                                AllAccountZone.getCategoriesRegex() + "min price|max price)");
+                                AllAccountZone.getCategoriesRegex() + "min price|max price|product name|" +
+                                        "seller name|company|min stock status)");
                         setFilterInfoForCategory(field);
                     } else {
                         String featureRegex = "(?i)(";
                         for (String feature : ProductsMenu.getFilter().getFeature().keySet()) {
                             featureRegex += feature + "|";
                         }
-                        featureRegex += "min price|max price)";
+                        featureRegex += "min price|max price|product name|seller name|company|min stock status)";
                         String field = checkInput("Enter an available filter", featureRegex);
                         setFilterInfoForCategoryFeature(field);
                     }
                 } else {
                     if (AuctionMenu.getFilter().getCategory().equals("")) {
                         String field = checkInput("Enter an available filter",
-                                AllAccountZone.getCategoriesRegex() + "min price|max price)");
+                                AllAccountZone.getCategoriesRegex() + "min price|max price|product name|" +
+                                        "seller name|company|min stock status)");
                         setFilterInfoForCategory(field);
                     } else {
                         String featureRegex = "(?i)(";
                         for (String feature : AuctionMenu.getFilter().getFeature().keySet()) {
                             featureRegex += feature + "|";
                         }
-                        featureRegex += "min price|max price)";
+                        featureRegex += "min price|max price|product name|seller name|company|min stock status)";
                         String field = checkInput("Enter an available filter", featureRegex);
                         setFilterInfoForCategoryFeature(field);
                     }
@@ -109,46 +113,80 @@ public class FilteringMenu extends Menu {
             public void execute() {
                 if (parentMenu.getParentMenu() instanceof ProductsMenu) {
                     if (ProductsMenu.getFilter().getCategory().equals("")) {
-                        String field = checkInput("Enter a selected filter", "(?i)(min price|max price)");
+                        String field = checkInput("Enter a selected filter", "(?i)(min price|max price|" +
+                                "product name|seller name|company|min stock status)");
                         if (field.equalsIgnoreCase("min price")) {
                             ProductsMenu.getFilter().setMinimumPrice(0);
                         } else if (field.equalsIgnoreCase("max price")) {
                             ProductsMenu.getFilter().setMaximumPrice(Long.MAX_VALUE);
+                        } else if (field.equalsIgnoreCase("product name")) {
+                            ProductsMenu.getFilter().setProductName("");
+                        } else if (field.equalsIgnoreCase("seller name")) {
+                            ProductsMenu.getFilter().setSellerName("");
+                        } else if (field.equalsIgnoreCase("company")) {
+                            ProductsMenu.getFilter().setCompany("");
+                        } else if (field.equalsIgnoreCase("min stock status")) {
+                            ProductsMenu.getFilter().setMinimumStockStatus(0);
                         }
                     } else {
                         String featureRegex = "(?i)(";
                         for (String feature : ProductsMenu.getFilter().getFeature().keySet()) {
                             featureRegex += feature + "|";
                         }
-                        featureRegex += "min price|max price)";
+                        featureRegex += "min price|max price|product name|seller name|company|min stock status)";
                         String field = checkInput("Enter a selected filter", featureRegex);
                         if (field.equalsIgnoreCase("min price")) {
                             ProductsMenu.getFilter().setMinimumPrice(0);
                         } else if (field.equalsIgnoreCase("max price")) {
                             ProductsMenu.getFilter().setMaximumPrice(Long.MAX_VALUE);
+                        } else if (field.equalsIgnoreCase("product name")) {
+                            ProductsMenu.getFilter().setProductName("");
+                        } else if (field.equalsIgnoreCase("seller name")) {
+                            ProductsMenu.getFilter().setSellerName("");
+                        } else if (field.equalsIgnoreCase("company")) {
+                            ProductsMenu.getFilter().setCompany("");
+                        } else if (field.equalsIgnoreCase("min stock status")) {
+                            ProductsMenu.getFilter().setMinimumStockStatus(0);
                         } else {
                             ProductsMenu.getFilter().getFeature().replace(field, "");
                         }
                     }
                 } else {
                     if (AuctionMenu.getFilter().getCategory().equals("")) {
-                        String field = checkInput("Enter a selected filter", "(?i)(min price|max price)");
+                        String field = checkInput("Enter a selected filter", "(?i)(min price|max price|" +
+                                "product name|seller name|company|min stock status)");
                         if (field.equalsIgnoreCase("min price")) {
                             AuctionMenu.getFilter().setMinimumPrice(0);
                         } else if (field.equalsIgnoreCase("max price")) {
                             AuctionMenu.getFilter().setMaximumPrice(Long.MAX_VALUE);
+                        } else if (field.equalsIgnoreCase("product name")) {
+                            ProductsMenu.getFilter().setProductName("");
+                        } else if (field.equalsIgnoreCase("seller name")) {
+                            ProductsMenu.getFilter().setSellerName("");
+                        } else if (field.equalsIgnoreCase("company")) {
+                            ProductsMenu.getFilter().setCompany("");
+                        } else if (field.equalsIgnoreCase("min stock status")) {
+                            ProductsMenu.getFilter().setMinimumStockStatus(0);
                         }
                     } else {
                         String featureRegex = "(?i)(";
                         for (String feature : AuctionMenu.getFilter().getFeature().keySet()) {
                             featureRegex += feature + "|";
                         }
-                        featureRegex += "min price|max price)";
+                        featureRegex += "min price|max price|product name|seller name|company|min stock status)";
                         String field = checkInput("Enter a selected filter", featureRegex);
                         if (field.equalsIgnoreCase("min price")) {
                             AuctionMenu.getFilter().setMinimumPrice(0);
                         } else if (field.equalsIgnoreCase("max price")) {
                             AuctionMenu.getFilter().setMaximumPrice(Long.MAX_VALUE);
+                        } else if (field.equalsIgnoreCase("product name")) {
+                            ProductsMenu.getFilter().setProductName("");
+                        } else if (field.equalsIgnoreCase("seller name")) {
+                            ProductsMenu.getFilter().setSellerName("");
+                        } else if (field.equalsIgnoreCase("company")) {
+                            ProductsMenu.getFilter().setCompany("");
+                        } else if (field.equalsIgnoreCase("min stock status")) {
+                            ProductsMenu.getFilter().setMinimumStockStatus(0);
                         } else {
                             AuctionMenu.getFilter().getFeature().replace(field, "");
                         }
@@ -167,6 +205,18 @@ public class FilteringMenu extends Menu {
             } else if (field.equalsIgnoreCase("max price")) {
                 long maxPrice = Long.parseLong(checkInput("Enter maximum Price", "\\d+"));
                 ProductsMenu.getFilter().setMaximumPrice(maxPrice);
+            } else if (field.equalsIgnoreCase("product name")) {
+                String productName = checkInput("Enter product name", ".+");
+                ProductsMenu.getFilter().setProductName(productName);
+            } else if (field.equalsIgnoreCase("seller name")) {
+                String sellerName = checkInput("Enter seller name", ".+");
+                ProductsMenu.getFilter().setSellerName(sellerName);
+            } else if (field.equalsIgnoreCase("company")) {
+                String company = checkInput("Enter company", ".+");
+                ProductsMenu.getFilter().setCompany(company);
+            } else if (field.equalsIgnoreCase("min stock status")) {
+                int minStockStatus = Integer.parseInt(checkInput("Enter min stock status", "\\d+"));
+                ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 ProductsMenu.getFilter().setCategory(field);
                 AllAccountZone.setFilterCategoryFeature(field, parentMenu);
@@ -178,6 +228,18 @@ public class FilteringMenu extends Menu {
             } else if (field.equalsIgnoreCase("max price")) {
                 long maxPrice = Long.parseLong(checkInput("Enter maximum Price", "\\d+"));
                 AuctionMenu.getFilter().setMaximumPrice(maxPrice);
+            } else if (field.equalsIgnoreCase("product name")) {
+                String productName = checkInput("Enter product name", ".+");
+                ProductsMenu.getFilter().setProductName(productName);
+            } else if (field.equalsIgnoreCase("seller name")) {
+                String sellerName = checkInput("Enter seller name", ".+");
+                ProductsMenu.getFilter().setSellerName(sellerName);
+            } else if (field.equalsIgnoreCase("company")) {
+                String company = checkInput("Enter company", ".+");
+                ProductsMenu.getFilter().setCompany(company);
+            } else if (field.equalsIgnoreCase("min stock status")) {
+                int minStockStatus = Integer.parseInt(checkInput("Enter min stock status", "\\d+"));
+                ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 AuctionMenu.getFilter().setCategory(field);
                 AllAccountZone.setFilterCategoryFeature(field, parentMenu);
@@ -193,6 +255,18 @@ public class FilteringMenu extends Menu {
             } else if (field.equalsIgnoreCase("max price")) {
                 long maxPrice = Long.parseLong(checkInput("Enter maximum Price", "\\d+"));
                 ProductsMenu.getFilter().setMaximumPrice(maxPrice);
+            } else if (field.equalsIgnoreCase("product name")) {
+                String productName = checkInput("Enter product name", ".+");
+                ProductsMenu.getFilter().setProductName(productName);
+            } else if (field.equalsIgnoreCase("seller name")) {
+                String sellerName = checkInput("Enter seller name", ".+");
+                ProductsMenu.getFilter().setSellerName(sellerName);
+            } else if (field.equalsIgnoreCase("company")) {
+                String company = checkInput("Enter company", ".+");
+                ProductsMenu.getFilter().setCompany(company);
+            } else if (field.equalsIgnoreCase("min stock status")) {
+                int minStockStatus = Integer.parseInt(checkInput("Enter min stock status", "\\d+"));
+                ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 String filter = checkInput("Enter " + field, ".+");
                 ProductsMenu.getFilter().getFeature().replace(field, filter);
@@ -204,6 +278,18 @@ public class FilteringMenu extends Menu {
             } else if (field.equalsIgnoreCase("max price")) {
                 long maxPrice = Long.parseLong(checkInput("Enter maximum Price", "\\d+"));
                 AuctionMenu.getFilter().setMaximumPrice(maxPrice);
+            } else if (field.equalsIgnoreCase("product name")) {
+                String productName = checkInput("Enter product name", ".+");
+                ProductsMenu.getFilter().setProductName(productName);
+            } else if (field.equalsIgnoreCase("seller name")) {
+                String sellerName = checkInput("Enter seller name", ".+");
+                ProductsMenu.getFilter().setSellerName(sellerName);
+            } else if (field.equalsIgnoreCase("company")) {
+                String company = checkInput("Enter company", ".+");
+                ProductsMenu.getFilter().setCompany(company);
+            } else if (field.equalsIgnoreCase("min stock status")) {
+                int minStockStatus = Integer.parseInt(checkInput("Enter min stock status", "\\d+"));
+                ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 String filter = checkInput("Enter " + field, ".+");
                 AuctionMenu.getFilter().getFeature().replace(field, filter);

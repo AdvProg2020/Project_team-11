@@ -109,7 +109,15 @@ public class AllAccountZone {
                         return false;
                     if (filterInfo.getMinimumPrice() > product.getGeneralFeature().getAuctionPrice())
                         return false;
-                    if ((filterInfo.getMaximumPrice() < product.getGeneralFeature().getAuctionPrice()))
+                    if (filterInfo.getMaximumPrice() < product.getGeneralFeature().getAuctionPrice())
+                        return false;
+                    if (!product.getGeneralFeature().getName().toLowerCase().contains(filterInfo.getProductName().toLowerCase()))
+                        return false;
+                    if (!product.getGeneralFeature().getSeller().getUsername().toLowerCase().contains(filterInfo.getSellerName().toLowerCase()))
+                        return false;
+                    if (!product.getGeneralFeature().getCompany().toLowerCase().contains(filterInfo.getCompany().toLowerCase()))
+                        return false;
+                    if (filterInfo.getMinimumStockStatus() > product.getGeneralFeature().getStockStatus())
                         return false;
                     for (Map.Entry<String, String> entry : filterInfo.getFeature().entrySet()) {
                         if (!entry.getValue().equals("") &&

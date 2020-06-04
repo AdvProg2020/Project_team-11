@@ -8,7 +8,8 @@ import java.util.HashMap;
 
 public class ProductsMenu extends Menu {
     private static String sort = "date";
-    private static FilterInfo filter = new FilterInfo("", 0, Long.MAX_VALUE, new HashMap<>());
+    private static FilterInfo filter = new FilterInfo("", 0, Long.MAX_VALUE, "",
+            "", "", 0, new HashMap<>());
 
     public static String getSort() {
         return sort;
