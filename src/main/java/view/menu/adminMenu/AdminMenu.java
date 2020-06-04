@@ -36,6 +36,9 @@ public class AdminMenu extends Menu {
     private ArrayList<String> getDiscountInfo() {
         ArrayList<String> discountInfo = new ArrayList<>();
         discountInfo.add(checkInput("Enter Code", ".+"));
+        do {
+            discountInfo.add(checkInput("Enter Code", ".+"));
+        } while (AdminZone.getDiscountByCode(discountInfo.get(0)) != null);
         Date startDate = getDate("start ");
         discountInfo.add(String.valueOf(startDate.getTime()));
         Date endDate;
