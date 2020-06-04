@@ -55,7 +55,7 @@ public class BuyerZone {
         if (buyer == null) {
             return "You can't use this code.";
         }
-        if (buyer.getDiscountCodes().get(discount.getCode()) == 0) {
+        if (buyer.getDiscountCodes().get(discount.getCode()) <= 0) {
             return "You can't use this code anymore.";
         }
         Date currentDate = AllAccountZone.getCurrentDate();

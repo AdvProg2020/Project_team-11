@@ -1,6 +1,7 @@
 package view.menu.adminMenu;
 
 import controller.AdminZone;
+import controller.AllAccountZone;
 import model.Buyer;
 import model.Discount;
 import view.menu.Menu;
@@ -70,23 +71,31 @@ public class ViewDiscountCodesMenu extends Menu {
                         newField = checkInput("Enter max discount", "\\d{1,18}");
                         discount.setMaxDiscount(Long.parseLong(newField));
                     } else if (field.equalsIgnoreCase("num of uses")) {
-                        // TODO : change in buyer account
                         newField = checkInput("Enter num of uses", "\\d{1,9}");
+                        int different = discount.getRepeatedTimes() - Integer.parseInt(newField);
+                        for (String user : discount.getAllowedUsers()) {
+                            AdminZone.getBuyerByUsername(user).getDiscountCodes().replace(discount.getCode(),
+                                    AdminZone.getBuyerByUsername(user).getDiscountCodes().get(discount.getCode()) - different);
+                        }
                         discount.setRepeatedTimes(Integer.parseInt(newField));
                     } else if (field.equalsIgnoreCase("allowed users")) {
-                        // TODO : add or remove buyer.
-                        ArrayList<String> allowedUsers = new ArrayList<>();
+                        System.out.println();
+                        String state = checkInput("Do you want to add or remove buyer? [add - remove]",
+                                "(?i)(add|remove)");
                         String username;
-                        System.out.println("'end of inserting usernames' to end");
-                        do {
-                            username = checkInput("Enter username", ".+");
-                            Buyer user = AdminZone.getBuyerByUsername(username);
-                            if (user == null && !username.equals("end of inserting usernames"))
-                                System.out.println("invalid username");
-                            else if (user != null && !username.equals("end of inserting usernames"))
-                                allowedUsers.add(username);
-                        } while (!username.equals("end of inserting usernames"));
-                        discount.setAllowedUsers(allowedUsers);
+                        if (state.equalsIgnoreCase("add")) {
+                            do {
+                                username = checkInput("Enter Username", ".+");
+                            } while (AdminZone.getBuyerByUsername(username) == null);
+                            discount.getAllowedUsers().add(username);
+                            AdminZone.getBuyerByUsername(username).addDiscountCodes(discount, discount.getRepeatedTimes());
+                        } else {
+                            do {
+                                username = checkInput("Enter Username", ".+");
+                            } while (AdminZone.getBuyerByUsername(username) == null);
+                            discount.getAllowedUsers().remove(username);
+                            AdminZone.getBuyerByUsername(username).getDiscountCodes().remove(discount.getCode());
+                        }
                     }
                 } else {
                     System.out.println("invalid code");
