@@ -1,13 +1,13 @@
 package controller;
 
 import model.*;
-import view.menu.Menu;
-import view.menu.adminMenu.AdminMenu;
-import view.menu.auctionMenu.AuctionMenu;
-import view.menu.buyerMenu.BuyerMenu;
-import view.menu.productsMenu.FilterInfo;
-import view.menu.productsMenu.ProductsMenu;
-import view.menu.sellerMenu.SellerMenu;
+import consoleView.menu.Menu;
+import consoleView.menu.adminMenu.AdminMenu;
+import consoleView.menu.auctionMenu.AuctionMenu;
+import consoleView.menu.buyerMenu.BuyerMenu;
+import consoleView.menu.productsMenu.FilterInfo;
+import consoleView.menu.productsMenu.ProductsMenu;
+import consoleView.menu.sellerMenu.SellerMenu;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -3,10 +3,10 @@ package controller;
 import model.*;
 import org.junit.Assert;
 import org.junit.Test;
-import view.menu.MainMenu;
-import view.menu.Menu;
-import view.menu.auctionMenu.AuctionMenu;
-import view.menu.productsMenu.ProductsMenu;
+import consoleView.menu.MainMenu;
+import consoleView.menu.Menu;
+import consoleView.menu.auctionMenu.AuctionMenu;
+import consoleView.menu.productsMenu.ProductsMenu;
 
 import java.util.*;
 

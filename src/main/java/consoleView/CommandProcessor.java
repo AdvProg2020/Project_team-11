@@ -1,37 +1,23 @@
-package view;
+package consoleView;
 
 import controller.FileProcess;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import model.*;
+import consoleView.menu.MainMenu;
+import consoleView.menu.Menu;
 
-import java.io.File;
+import java.io.*;
 import java.util.Comparator;
 
-public class CommandProcessor extends Application {
+public class CommandProcessor {
 
-    public static void runMenus(String[] args) {
+    public static void runMenus() {
         if (new File("resources\\admins.json").exists()) {
             FileProcess.initialize();
         }
         setStaticValues();
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        Stage stage = new Stage();
-        stage.setTitle("Store");
-        Scene scene;
-        if (DataBase.getDataBase().getHasAdminAccountCreated()) {
-            scene = Scenes.getMainMenuScene();
-        } else {
-            scene = Scenes.getRegisterAdminScene();
-        }
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        Menu currentMenu = new MainMenu();
+        Menu.setMainMenu(currentMenu);
+        currentMenu.execute();
     }
 
     private static void setStaticValues() {
