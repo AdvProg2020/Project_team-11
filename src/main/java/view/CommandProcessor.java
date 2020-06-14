@@ -10,6 +10,11 @@ import java.io.File;
 import java.util.Comparator;
 
 public class CommandProcessor extends Application {
+    private static Stage stage;
+
+    public static Stage getStage() {
+        return stage;
+    }
 
     public static void runMenus(String[] args) {
         if (new File("resources\\admins.json").exists()) {
@@ -22,11 +27,11 @@ public class CommandProcessor extends Application {
     @Override
     public void start(Stage primaryStage) {
         Stage stage = new Stage();
+        CommandProcessor.stage = stage;
         stage.setTitle("Store");
         Scene scene;
-        if (DataBase.getDataBase().getHasAdminAccountCreated()) {
-            scene = Scenes.getMainMenuScene();
-        } else {
+        scene = Scenes.getMainMenuScene();
+        if (!DataBase.getDataBase().getHasAdminAccountCreated()) {
             scene = Scenes.getRegisterAdminScene();
         }
         stage.setScene(scene);

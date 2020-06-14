@@ -1,15 +1,20 @@
 package controller;
 
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import model.*;
 import consoleView.menu.Menu;
-import consoleView.menu.adminMenu.AdminMenu;
 import consoleView.menu.auctionMenu.AuctionMenu;
 import consoleView.menu.buyerMenu.BuyerMenu;
 import consoleView.menu.productsMenu.FilterInfo;
 import consoleView.menu.productsMenu.ProductsMenu;
 import consoleView.menu.sellerMenu.SellerMenu;
+import view.CommandProcessor;
+import view.Scenes;
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AllAccountZone {
@@ -248,9 +253,11 @@ public class AllAccountZone {
             new Admin(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
         } else if (info.get(0).equalsIgnoreCase("seller")) {
             StringBuilder requestDescription = new StringBuilder();
-            for (int i = 1; i <= 8; i++) {
+            for (int i = 1; i <= 6; i++) {
                 requestDescription.append(info.get(i)).append(",");
             }
+            requestDescription.append(info.get(8)).append(",");
+            requestDescription.append(info.get(7)).append(",");
             new Request(info.get(5), "create seller account", requestDescription.toString(), "unseen");
             return "Request sent. Wait for Admin agreement.";
         } else {
@@ -278,7 +285,16 @@ public class AllAccountZone {
                 if (account instanceof Admin && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
-                        Menu.getMainMenu().addSubmenus(new AdminMenu(Menu.getMainMenu()));
+                        Button button = new Button("Admin");
+                        button.setOnMouseClicked(e -> {
+                            CommandProcessor.getStage().setScene(Scenes.getAdminScene());
+                            CommandProcessor.getStage().setMaximized(false);
+                            CommandProcessor.getStage().setMaximized(true);
+                        });
+                        button.setMinWidth(100);
+                        button.setAlignment(Pos.CENTER);
+                        Scenes.setAccountButton(button);
+                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -287,7 +303,16 @@ public class AllAccountZone {
                 if (account instanceof Seller && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
-                        Menu.getMainMenu().addSubmenus(new SellerMenu(Menu.getMainMenu()));
+                        Button button = new Button("Seller");
+                        button.setOnMouseClicked(e -> {
+                            CommandProcessor.getStage().setScene(Scenes.getSellerScene());
+                            CommandProcessor.getStage().setMaximized(false);
+                            CommandProcessor.getStage().setMaximized(true);
+                        });
+                        button.setMinWidth(100);
+                        button.setAlignment(Pos.CENTER);
+                        Scenes.setAccountButton(button);
+                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -296,7 +321,16 @@ public class AllAccountZone {
                 if (account instanceof Buyer && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
-                        Menu.getMainMenu().addSubmenus(new BuyerMenu(Menu.getMainMenu()));
+                        Button button = new Button("Buyer");
+                        button.setOnMouseClicked(e -> {
+                            CommandProcessor.getStage().setScene(Scenes.getBuyerScene());
+                            CommandProcessor.getStage().setMaximized(false);
+                            CommandProcessor.getStage().setMaximized(true);
+                        });
+                        button.setMinWidth(100);
+                        button.setAlignment(Pos.CENTER);
+                        Scenes.setAccountButton(button);
+                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
