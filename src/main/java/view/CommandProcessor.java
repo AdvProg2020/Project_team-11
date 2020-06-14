@@ -30,9 +30,9 @@ public class CommandProcessor extends Application {
         CommandProcessor.stage = stage;
         stage.setTitle("Store");
         Scene scene;
-        scene = Scenes.getMainMenuScene();
+        scene = MainScenes.getMainMenuScene();
         if (!DataBase.getDataBase().getHasAdminAccountCreated()) {
-            scene = Scenes.getRegisterAdminScene();
+            scene = MainScenes.getRegisterAdminScene();
         }
         stage.setScene(scene);
         stage.setMaximized(true);

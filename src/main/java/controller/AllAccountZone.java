@@ -6,12 +6,11 @@ import javafx.scene.layout.VBox;
 import model.*;
 import consoleView.menu.Menu;
 import consoleView.menu.auctionMenu.AuctionMenu;
-import consoleView.menu.buyerMenu.BuyerMenu;
 import consoleView.menu.productsMenu.FilterInfo;
 import consoleView.menu.productsMenu.ProductsMenu;
-import consoleView.menu.sellerMenu.SellerMenu;
+import view.AdminScene;
 import view.CommandProcessor;
-import view.Scenes;
+import view.MainScenes;
 
 import java.util.*;
 import java.util.List;
@@ -163,12 +162,10 @@ public class AllAccountZone {
             return ((Seller) account).getWallet();
     }
 
-    public static String getPersonalInfo() {
+    public static ArrayList<String> getPersonalInfo() {
         Account account = AllAccountZone.getCurrentAccount();
-        return "name : " + account.getFirstName() + " " + account.getLastName() +
-                "\nemail address : " + account.getEmailAddress() + "\nphone number : " +
-                account.getPhoneNumber() + "\nusername : " + account.getUsername() +
-                "\npassword : " + account.getPassword();
+        return new ArrayList<>(Arrays.asList(account.getFirstName(), account.getLastName(), account.getEmailAddress(),
+                account.getPhoneNumber(), account.getUsername(), account.getPassword()));
     }
 
     public static String showProductWithSellers(int productId) {
@@ -287,14 +284,14 @@ public class AllAccountZone {
                         setCurrentAccount(account);
                         Button button = new Button("Admin");
                         button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(Scenes.getAdminScene());
+                            CommandProcessor.getStage().setScene(AdminScene.getAdminScene());
                             CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        Scenes.setAccountButton(button);
-                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
+                        MainScenes.setAccountButton(button);
+                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -305,14 +302,14 @@ public class AllAccountZone {
                         setCurrentAccount(account);
                         Button button = new Button("Seller");
                         button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(Scenes.getSellerScene());
+                            CommandProcessor.getStage().setScene(MainScenes.getSellerScene());
                             CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        Scenes.setAccountButton(button);
-                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
+                        MainScenes.setAccountButton(button);
+                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -323,14 +320,14 @@ public class AllAccountZone {
                         setCurrentAccount(account);
                         Button button = new Button("Buyer");
                         button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(Scenes.getBuyerScene());
+                            CommandProcessor.getStage().setScene(MainScenes.getBuyerScene());
                             CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        Scenes.setAccountButton(button);
-                        ((VBox) Scenes.getMainScene().getRoot()).getChildren().add(button);
+                        MainScenes.setAccountButton(button);
+                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -346,5 +343,19 @@ public class AllAccountZone {
                 return account;
         }
         return null;
+    }
+
+    public static void editPersonalInfo(String field, String value) {
+        if (field.equalsIgnoreCase("first name")) {
+            currentAccount.setFirstName(value);
+        } else if (field.equalsIgnoreCase("last name")) {
+            currentAccount.setLastName(value);
+        } else if (field.equalsIgnoreCase("email")) {
+            currentAccount.setEmailAddress(value);
+        } else if (field.equalsIgnoreCase("phone Number")) {
+            currentAccount.setPhoneNumber(value);
+        } else if (field.equalsIgnoreCase("password")) {
+            currentAccount.setPassword(value);
+        }
     }
 }

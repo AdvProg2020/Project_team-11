@@ -2,6 +2,8 @@ package view;
 
 import controller.AllAccountZone;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -42,10 +44,10 @@ public class Actions {
             alert.show();
         } else {
             AllAccountZone.createAccount(info);
-            if (Scenes.getLastScene() == null)
-                CommandProcessor.getStage().setScene(Scenes.getMainScene());
+            if (MainScenes.getLastScene() == null)
+                CommandProcessor.getStage().setScene(MainScenes.getMainScene());
             else
-                CommandProcessor.getStage().setScene(Scenes.getLastScene());
+                CommandProcessor.getStage().setScene(MainScenes.getLastScene());
             CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         }
@@ -62,32 +64,67 @@ public class Actions {
         } else {
             String result = AllAccountZone.loginUser(info);
             if (result.equals("Login successfully.")) {
-                Scenes.getSignInOrOut().setText("Logout");
+                MainScenes.getSignInOrOut().setText("Logout");
 
-                Scenes.getSignInOrOut().setOnMouseClicked(e -> {
-                    ((VBox) Scenes.getMainScene().getRoot()).getChildren().remove(Scenes.getAccountButton());
-                    AllAccountZone.setCurrentAccount(null);
+                MainScenes.getSignInOrOut().setOnMouseClicked(e -> logout());
 
-                    Scenes.getSignInOrOut().setText("Sign In");
-                    Scenes.getSignInOrOut().setOnMouseClicked(event -> {
-                        Scenes.setLastScene(CommandProcessor.getStage().getScene());
-                        CommandProcessor.getStage().setScene(Scenes.getSignInScene());
-                        CommandProcessor.getStage().setMaximized(false);
-                        CommandProcessor.getStage().setMaximized(true);
-                    });
-
-                    CommandProcessor.getStage().setScene(Scenes.getMainScene());
-                    CommandProcessor.getStage().setMaximized(false);
-                    CommandProcessor.getStage().setMaximized(true);
-                });
-
-                CommandProcessor.getStage().setScene(Scenes.getLastScene());
+                CommandProcessor.getStage().setScene(MainScenes.getLastScene());
                 CommandProcessor.getStage().setMaximized(false);
                 CommandProcessor.getStage().setMaximized(true);
             } else {
                 alert.setContentText(result);
                 alert.show();
             }
+        }
+    }
+
+    public static void logout() {
+        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().remove(MainScenes.getAccountButton());
+        AllAccountZone.setCurrentAccount(null);
+
+        MainScenes.getSignInOrOut().setText("Sign In");
+        MainScenes.getSignInOrOut().setOnMouseClicked(event -> {
+            MainScenes.setLastScene(CommandProcessor.getStage().getScene());
+            CommandProcessor.getStage().setScene(MainScenes.getSignInScene());
+            CommandProcessor.getStage().setMaximized(false);
+            CommandProcessor.getStage().setMaximized(true);
+        });
+
+        CommandProcessor.getStage().setScene(MainScenes.getMainScene());
+        CommandProcessor.getStage().setMaximized(false);
+        CommandProcessor.getStage().setMaximized(true);
+    }
+
+    public static void editPersonalInfo(Button button, TextField textField) {
+        {
+            button.setText("Save");
+            textField.setDisable(false);
+            button.setOnMouseClicked(event -> {
+                boolean isValid = false;
+                switch (textField.getPromptText()) {
+                    case "First Name":
+                    case "Last Name":
+                    case "Password":
+                        isValid = Validation.validateNames(textField.getText());
+                        break;
+                    case "Email":
+                        isValid = Validation.validateEmail(textField.getText());
+                        break;
+                    case "Phone Number":
+                        isValid = Validation.validateLong(textField.getText());
+                        break;
+                }
+                if (isValid) {
+                    button.setText("Edit");
+                    textField.setDisable(true);
+                    AllAccountZone.editPersonalInfo(textField.getPromptText(), textField.getText());
+                    button.setOnMouseClicked(e -> editPersonalInfo(button, textField));
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Invalid format.");
+                    alert.show();
+                }
+            });
         }
     }
 }

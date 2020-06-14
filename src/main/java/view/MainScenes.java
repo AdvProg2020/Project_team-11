@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Scenes {
+public class MainScenes {
     private static Scene lastScene;
     private static Button accountButton;
     private static Scene mainScene;
@@ -20,11 +20,11 @@ public class Scenes {
     }
 
     public static void setLastScene(Scene lastScene) {
-        Scenes.lastScene = lastScene;
+        MainScenes.lastScene = lastScene;
     }
 
     public static void setAccountButton(Button accountButton) {
-        Scenes.accountButton = accountButton;
+        MainScenes.accountButton = accountButton;
     }
 
     public static Button getAccountButton() {
@@ -37,6 +37,28 @@ public class Scenes {
 
     public static Button getSignInOrOut() {
         return signInOrOut;
+    }
+
+    public static TextField createTextField(String text, int maxWidth) {
+        TextField textField = new TextField();
+        textField.setPromptText(text);
+        textField.setMaxWidth(maxWidth);
+        textField.setAlignment(Pos.CENTER);
+        return textField;
+    }
+
+    public static Button createButton(String text, int minWidth) {
+        Button button = new Button(text);
+        button.setAlignment(Pos.CENTER);
+        button.setMinWidth(minWidth);
+        return button;
+    }
+
+    public static Label createLabel(String text, int minWidth) {
+        Label label = new Label(text);
+        label.setAlignment(Pos.CENTER);
+        label.setMinWidth(minWidth);
+        return label;
     }
 
     public static Scene getRegisterAdminScene() {
@@ -65,40 +87,25 @@ public class Scenes {
         return new Scene(vBox, 600, 550);
     }
 
-    private static TextField createTextField(String text, int minWidth) {
-        TextField textField = new TextField();
-        textField.setPromptText(text);
-        textField.setMaxWidth(minWidth);
-        textField.setAlignment(Pos.CENTER);
-        return textField;
-    }
-
-    private static Button createButton(String text, int minWidth) {
-        Button button = new Button(text);
-        button.setAlignment(Pos.CENTER);
-        button.setPrefWidth(minWidth);
-        return button;
-    }
-
     public static Scene getMainMenuScene() {
         Button signIn;
         signIn = createButton("Sign in", 100);
         signIn.setOnMouseClicked(e -> {
-            Scenes.setLastScene(CommandProcessor.getStage().getScene());
-            CommandProcessor.getStage().setScene(Scenes.getSignInScene());
+            MainScenes.setLastScene(CommandProcessor.getStage().getScene());
+            CommandProcessor.getStage().setScene(MainScenes.getSignInScene());
             CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
         signInOrOut = signIn;
         Button products = createButton("Products", 100);
         products.setOnMouseClicked(e -> {
-            CommandProcessor.getStage().setScene(Scenes.getProductsScene());
+            CommandProcessor.getStage().setScene(MainScenes.getProductsScene());
             CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
         Button auctions = createButton("Auction", 100);
         auctions.setOnMouseClicked(e -> {
-            CommandProcessor.getStage().setScene(Scenes.getAuctionsScene());
+            CommandProcessor.getStage().setScene(MainScenes.getAuctionsScene());
             CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
@@ -145,19 +152,6 @@ public class Scenes {
         //products
 
         VBox vBox = new VBox(25, signInOrLogout, sort, filter);
-        vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
-    }
-
-    public static Scene getAdminScene() {
-        Button personalInfo = createButton("View Personal Info", 200);
-        Button users = createButton("Manage Users", 200);
-        Button products = createButton("Manage Products", 200);
-        Button discountCodes = createButton("Manage Discount Codes", 200);
-        Button requests = createButton("Manage Requests", 200);
-        Button categories = createButton("Manage Categories", 200);
-
-        VBox vBox = new VBox(25, personalInfo, users, products, discountCodes, requests, categories);
         vBox.setAlignment(Pos.CENTER);
         return new Scene(vBox, 600, 550);
     }
@@ -211,7 +205,7 @@ public class Scenes {
 
         Hyperlink createAccount = new Hyperlink("Create Account");
         createAccount.setOnMouseClicked(e -> {
-            CommandProcessor.getStage().setScene(Scenes.getCreateAccountScene());
+            CommandProcessor.getStage().setScene(MainScenes.getCreateAccountScene());
             CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
