@@ -10,16 +10,16 @@ import java.util.ArrayList;
 
 public class Actions {
 
-    public static void register(ArrayList<String> info) {
+    public static boolean register(ArrayList<String> info) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         if (info.get(0) == null) {
             alert.setContentText("Choose a type");
             alert.show();
         } else if (!Validation.validateNames(info.get(1))) {
-            alert.setContentText("Enter your first name.");
+            alert.setContentText("Enter first name.");
             alert.show();
         } else if (!Validation.validateNames(info.get(2))) {
-            alert.setContentText("Enter your last name.");
+            alert.setContentText("Enter last name.");
             alert.show();
         } else if (!Validation.validateEmail(info.get(3))) {
             alert.setContentText("Email address is not valid.");
@@ -31,7 +31,7 @@ public class Actions {
             alert.setContentText("Enter username.");
             alert.show();
         } else if (!Validation.validateNames(info.get(6))) {
-            alert.setContentText("Enter your password.");
+            alert.setContentText("Enter password.");
             alert.show();
         } else if (!info.get(0).equals("admin") && !Validation.validateLong(info.get(7))) {
             alert.setContentText("Balance format is not valid.");
@@ -44,13 +44,9 @@ public class Actions {
             alert.show();
         } else {
             AllAccountZone.createAccount(info);
-            if (MainScenes.getLastScene() == null)
-                CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-            else
-                CommandProcessor.getStage().setScene(MainScenes.getLastScene());
-            CommandProcessor.getStage().setMaximized(false);
-            CommandProcessor.getStage().setMaximized(true);
+            return true;
         }
+        return false;
     }
 
     public static void signIn(ArrayList<String> info) {

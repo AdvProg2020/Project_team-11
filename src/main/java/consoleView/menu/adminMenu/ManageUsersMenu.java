@@ -20,7 +20,7 @@ public class ManageUsersMenu extends Menu {
     @Override
     public void execute() {
         System.out.println("\nUsers : ");
-        System.out.println(AdminZone.showUsersInfo());
+        System.out.println(AdminZone.getUsers());
         super.execute();
     }
 
@@ -29,7 +29,7 @@ public class ManageUsersMenu extends Menu {
             @Override
             public void execute() {
                 String username = checkInput("Enter username", ".+");
-                System.out.println(AdminZone.showUserInfo(username));
+//                System.out.println(AdminZone.showUserInfo(username));
                 this.parentMenu.execute();
             }
         };
@@ -40,7 +40,7 @@ public class ManageUsersMenu extends Menu {
             @Override
             public void execute() {
                 String username = checkInput("Enter username", ".+");
-                System.out.println(AdminZone.deleteUser(username));
+//                System.out.println(AdminZone.deleteUser(username));
                 this.parentMenu.execute();
             }
         };

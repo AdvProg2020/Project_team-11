@@ -1,17 +1,23 @@
 package view;
 
+import controller.AdminZone;
 import controller.AllAccountZone;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import view.tableViewData.Account;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static view.MainScenes.*;
 
@@ -22,6 +28,7 @@ public class AdminScene {
         personalInfo.setOnMouseClicked(e -> getPersonalInfo());
 
         Button users = createButton("Manage Users", 200);
+        users.setOnMouseClicked(e -> showUsers());
 
         Button products = createButton("Manage Products", 200);
 
@@ -100,9 +107,100 @@ public class AdminScene {
         gridPane.setHgap(20);
         gridPane.setVgap(20);
 
-        Scene scene = new Scene(gridPane, 600, 550);
+        openStage(gridPane, "Personal Info", 600, 550);
+    }
+
+    private static void showUsers() {
+        TableColumn<Account, String> typeColumn = new TableColumn<>("Account Type");
+        typeColumn.setMinWidth(100);
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("accountType"));
+
+        TableColumn<Account, String> firstNameColumn = new TableColumn<>("First Name");
+        firstNameColumn.setMinWidth(100);
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+
+        TableColumn<Account, String> lastNameColumn = new TableColumn<>("LastName");
+        lastNameColumn.setMinWidth(100);
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+
+        TableColumn<Account, String> emailColumn = new TableColumn<>("Email");
+        emailColumn.setMinWidth(100);
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        TableColumn<Account, String> phoneNumberColumn = new TableColumn<>("Phone Number");
+        phoneNumberColumn.setMinWidth(100);
+        phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+
+        TableColumn<Account, String> usernameColumn = new TableColumn<>("Username");
+        usernameColumn.setMinWidth(100);
+        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+
+        TableColumn<Account, String> passwordColumn = new TableColumn<>("Password");
+        passwordColumn.setMinWidth(100);
+        passwordColumn.setCellValueFactory(new PropertyValueFactory<>("password"));
+
+        TableColumn<Account, String> balanceColumn = new TableColumn<>("Wallet");
+        balanceColumn.setMinWidth(100);
+        balanceColumn.setCellValueFactory(new PropertyValueFactory<>("wallet"));
+
+        TableColumn<Account, String> companyColumn = new TableColumn<>("Company");
+        companyColumn.setMinWidth(100);
+        companyColumn.setCellValueFactory(new PropertyValueFactory<>("companyName"));
+
+        TableView<Account> tableView = new TableView<>();
+        tableView.setItems(Account.getAccounts());
+        tableView.getColumns().addAll(typeColumn, firstNameColumn, lastNameColumn, emailColumn, phoneNumberColumn,
+                usernameColumn, passwordColumn, balanceColumn, companyColumn);
+
+        TextField firstName = createTextField("First Name", 100);
+        TextField lastName = createTextField("Last Name", 100);
+        TextField email = createTextField("Email", 100);
+        TextField phoneNumber = createTextField("Phone Number", 100);
+        TextField username = createTextField("Username", 100);
+        TextField password = createTextField("Password", 100);
+
+        Button addButton = createButton("Add Admin", 100);
+        addButton.setOnMouseClicked(e -> {
+            ArrayList<String> info = new ArrayList<>(Arrays.asList("admin", firstName.getText(),
+                    lastName.getText(), email.getText(), phoneNumber.getText(), username.getText(), password.getText()));
+            if (Actions.register(info)) {
+                tableView.setItems(Account.getAccounts());
+                firstName.clear();
+                lastName.clear();
+                email.clear();
+                phoneNumber.clear();
+                username.clear();
+                password.clear();
+            }
+        });
+        Button removeButton = createButton("Remove", 100);
+        removeButton.setOnMouseClicked(e -> {
+            ObservableList<Account> accountSelected, allAccounts;
+            allAccounts = tableView.getItems();
+            accountSelected = tableView.getSelectionModel().getSelectedItems();
+
+            accountSelected.forEach(account -> {
+                if (!account.getAccountType().equals("Admin")) {
+                    allAccounts.remove(account);
+                    AdminZone.deleteUser(account.getUsername());
+                }
+            });
+        });
+
+        HBox hBox = new HBox(10);
+        hBox.getChildren().addAll(firstName, lastName, email, phoneNumber, username, password, addButton, removeButton);
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(tableView, hBox);
+
+        openStage(vBox, "Users", 900, 500);
+    }
+
+    private static void openStage(Parent root, String title, int width, int height) {
+        Scene scene = new Scene(root, width, height);
         Stage stage = new Stage();
-        stage.setTitle("Personal Info");
+        stage.setTitle(title);
         stage.setScene(scene);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(CommandProcessor.getStage());

@@ -79,7 +79,11 @@ public class MainScenes {
             ArrayList<String> info = new ArrayList(Arrays.asList("admin",
                     firstName.getText(), lastName.getText(), email.getText(),
                     phoneNumber.getText(), username.getText(), password.getText()));
-            Actions.register(info);
+            if (Actions.register(info)) {
+                CommandProcessor.getStage().setScene(MainScenes.getMainScene());
+                CommandProcessor.getStage().setMaximized(false);
+                CommandProcessor.getStage().setMaximized(true);
+            }
         });
 
         VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, register);
@@ -243,7 +247,11 @@ public class MainScenes {
                 ArrayList<String> info = new ArrayList<>(Arrays.asList(type.getValue().toLowerCase(), firstName.getText(),
                         lastName.getText(), email.getText(), phoneNumber.getText(), username.getText(), password.getText(),
                         balance.getText(), company.getText()));
-                Actions.register(info);
+                if (Actions.register(info)) {
+                    CommandProcessor.getStage().setScene(MainScenes.getLastScene());
+                    CommandProcessor.getStage().setMaximized(false);
+                    CommandProcessor.getStage().setMaximized(true);
+                }
         });
 
         VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, balance, register);

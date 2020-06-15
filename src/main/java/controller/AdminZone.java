@@ -188,43 +188,35 @@ public class AdminZone {
         auction.setStatus("accepted");
     }
 
-    public static String showUsersInfo() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<view.tableViewData.Account> getUsers() {
+        ArrayList<view.tableViewData.Account> accounts = new ArrayList<>();
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
-            if (account instanceof Buyer || account instanceof Seller) {
-                output.append(account.getUsername()).append("\n");
+            if (account instanceof  Buyer) {
+                accounts.add(new view.tableViewData.Account("Buyer", account.getFirstName(),
+                        account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
+                        account.getUsername(), account.getPassword(), ((Buyer) account).getWallet(), ""));
+            } else if (account instanceof Seller) {
+                accounts.add(new view.tableViewData.Account("Seller", account.getFirstName(),
+                        account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(), account.getUsername(),
+                        account.getPassword(), ((Seller) account).getWallet(), ((Seller) account).getCompanyName()));
+            } else {
+                accounts.add(new view.tableViewData.Account("Admin", account.getFirstName(),
+                        account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
+                        account.getUsername(), account.getPassword(), 0, ""));
             }
         }
-        return output.toString();
+        return accounts;
     }
 
-    public static String showUserInfo(String username) {
-        String accountType;
-        for (Account account : DataBase.getDataBase().getAllAccounts()) {
-            if (account.getUsername().equalsIgnoreCase(username)) {
-                if (account instanceof  Buyer) {
-                    accountType = "Buyer";
-                } else {
-                    accountType = "Seller";
-                }
-                return accountType + " : \nName : " + account.getFirstName() + " " + account.getLastName() + "\nEmail : " +
-                        account.getEmailAddress() + "\nPhone number : " + account.getPhoneNumber();
-            }
-        }
-        return "invalid username";
-    }
-
-    public static String deleteUser(String username) {
-        String output = "";
+    public static void deleteUser(String username) {
         Account accountDeleted = null;
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account.getUsername().equalsIgnoreCase(username)) {
-                output = username + " deleted.";
                 accountDeleted = account;
             }
         }
-        if (output.equals(""))
-            return  "invalid username";
+        if (accountDeleted == null)
+            return;
         if (accountDeleted instanceof Seller) {
             ArrayList<Auction> sellerAuctions = new ArrayList<>();
             for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
@@ -240,7 +232,6 @@ public class AdminZone {
             DataBase.getDataBase().getAllProducts().removeAll(sellerProducts);
         }
         DataBase.getDataBase().getAllAccounts().remove(accountDeleted);
-        return output;
     }
 
     public static void createAdminProfile(ArrayList<String> info) {
