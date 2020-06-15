@@ -98,6 +98,14 @@ public class Product {
         Product.numOfAllProducts = numOfAllProducts;
     }
 
+    public void setNumOfUsersRated(int numOfUsersRated) {
+        this.numOfUsersRated = numOfUsersRated;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
+    }
+
     @Override
     public String toString() {
         return "id = " + id +

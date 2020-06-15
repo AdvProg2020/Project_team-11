@@ -271,12 +271,15 @@ public class AdminZone {
         return "product removed successfully.";
     }
 
-    public static String showAllProducts() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<view.tableViewData.Product> getAllProducts() {
+        ArrayList<view.tableViewData.Product> products = new ArrayList<>();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n");
+            products.add(new view.tableViewData.Product(product.getId(), product.getStatus(),
+                    product.getGeneralFeature().getName(), product.getGeneralFeature().getPrice(),
+                    product.getGeneralFeature().getSeller(), product.getGeneralFeature().getStockStatus(),
+                    product.getCategoryName(), product.getCategoryFeature(), product.getAverageScore()));
         }
-        return output.toString();
+        return products;
     }
 
     public static Buyer getBuyerByUsername(String username) {

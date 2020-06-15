@@ -126,7 +126,7 @@ public class AdminZoneTest {
     @Test
     public void showAllProductsTest() {
         Assert.assertEquals(product1.getId() + ". A50\n" + product2.getId() + ". iphoneX\n" + product3.getId() +
-                ". k56C\n", AdminZone.showAllProducts());
+                ". k56C\n", AdminZone.getAllProducts());
     }
 
     @Test

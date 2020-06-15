@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import view.tableViewData.Account;
+import view.tableViewData.Product;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class AdminScene {
         users.setOnMouseClicked(e -> showUsers());
 
         Button products = createButton("Manage Products", 200);
+        products.setOnMouseClicked(e -> manageProducts());
 
         Button discountCodes = createButton("Manage Discount Codes", 200);
         discountCodes.setOnMouseClicked(e -> manageDiscounts());
@@ -438,6 +440,67 @@ public class AdminScene {
         ScrollPane scrollPane = new ScrollPane(vBox);
 
         openedStage = openStage(scrollPane, "Discount Codes", 1100, 550);
+    }
+
+    public static void manageProducts() {
+        TableColumn<Product, String> idColumn = new TableColumn<>("ID");
+        idColumn.setMinWidth(100);
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<Product, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setMinWidth(100);
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        TableColumn<Product, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setMinWidth(100);
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Product, String> priceColumn = new TableColumn<>("Price");
+        priceColumn.setMinWidth(100);
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        TableColumn<Product, String> sellerColumn = new TableColumn<>("Seller");
+        sellerColumn.setMinWidth(100);
+        sellerColumn.setCellValueFactory(new PropertyValueFactory<>("seller"));
+
+        TableColumn<Product, String> stockStatusColumn = new TableColumn<>("Stock Status");
+        stockStatusColumn.setMinWidth(100);
+        stockStatusColumn.setCellValueFactory(new PropertyValueFactory<>("stockStatus"));
+
+        TableColumn<Product, String> categoryColumn = new TableColumn<>("Category");
+        categoryColumn.setMinWidth(100);
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+
+        TableColumn<Product, String> featureColumn = new TableColumn<>("Feature");
+        featureColumn.setMinWidth(100);
+        featureColumn.setCellValueFactory(new PropertyValueFactory<>("categoryFeature"));
+
+        TableColumn<Product, String> scoreColumn = new TableColumn<>("Average Score");
+        scoreColumn.setMinWidth(100);
+        scoreColumn.setCellValueFactory(new PropertyValueFactory<>("averageScore"));
+
+        TableView<Product> tableView = new TableView<>();
+        tableView.setItems(Product.getProducts());
+        tableView.getColumns().addAll(idColumn, statusColumn, nameColumn, priceColumn, sellerColumn, stockStatusColumn,
+                categoryColumn, featureColumn, scoreColumn);
+
+        Button removeButton = createButton("Remove", 100);
+        removeButton.setOnMouseClicked(e -> {
+            ObservableList<Product> productSelected, allProducts;
+            allProducts = tableView.getItems();
+            productSelected = tableView.getSelectionModel().getSelectedItems();
+
+            productSelected.forEach(allProducts::removeAll);
+        });
+
+        HBox hBox = new HBox(10);
+        hBox.getChildren().addAll(removeButton);
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(tableView, hBox);
+
+        openStage(vBox, "Users", 900, 500);
     }
 
     private static Stage openStage(Parent root, String title, int width, int height) {
