@@ -2,6 +2,8 @@ package controller;
 
 import model.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -301,13 +303,12 @@ public class AdminZone {
         }
     }
 
-    public static String showDiscounts() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<String> getDiscountCodes() {
+        ArrayList<String> discountCodes = new ArrayList<>();
         for (Discount discount : DataBase.getDataBase().getAllDiscounts()) {
-            output.append("Code : '").append(discount.getCode()).append("' ").append(discount.getAmount()[0])
-                    .append("% discount, at most : ").append(discount.getAmount()[1]).append("$").append("\n");
+            discountCodes.add(discount.getCode());
         }
-        return output.toString();
+        return discountCodes;
     }
 
     public static Discount getDiscountByCode(String code) {
@@ -318,29 +319,22 @@ public class AdminZone {
         return null;
     }
 
-    public static String showDiscountInfo(String code) {
+    public static ArrayList<String> getDiscountInfo(String code) {
         Discount discount = getDiscountByCode(code);
-        StringBuilder usernames = new StringBuilder();
-        for (String user : discount.getAllowedUsers()) {
-            usernames.append(user).append(",");
-        }
-        return discount.getAmount()[0] + "% discount, at most : " + discount.getAmount()[1] + "$ from \"" +
-                discount.getStartDate() + "\" to \"" + discount.getEndDate() + "\" " + discount.getRepeatedTimes() +
-                " times for " + usernames;
+        ArrayList<String> info = new ArrayList<>(Arrays.asList(discount.getCode(), discount.getStartDate().toString(),
+                discount.getEndDate().toString(), String.valueOf(discount.getAmount()[0]),
+                String.valueOf(discount.getAmount()[1]), String.valueOf(discount.getRepeatedTimes())));
+        info.addAll(discount.getAllowedUsers());
+        return info;
     }
 
-    public static String removeDiscount(String code) {
+    public static void removeDiscount(String code) {
         Discount discount = getDiscountByCode(code);
-        if (discount == null) {
-            return "invalid code";
-        } else {
-            for (String user : discount.getAllowedUsers()) {
-                Buyer buyer = getBuyerByUsername(user);
-                buyer.getDiscountCodes().remove(discount.getCode());
-            }
-            DataBase.getDataBase().getAllDiscounts().remove(discount);
-            return "Done.";
+        for (String user : discount.getAllowedUsers()) {
+            Buyer buyer = getBuyerByUsername(user);
+            buyer.getDiscountCodes().remove(discount.getCode());
         }
+        DataBase.getDataBase().getAllDiscounts().remove(discount);
     }
 
     public static void addNewFeatureToCategory(Category category, String feature) {
@@ -382,5 +376,36 @@ public class AdminZone {
             }
         }
         return true;
+    }
+
+    public static void editDiscount(String field, String value, String code) throws ParseException {
+        Discount discount = getDiscountByCode(code);
+        assert discount != null;
+        if (field.equals("Max Discount")) {
+            discount.setMaxDiscount(Long.parseLong(value));
+        } else if (field.equals("Discount Percent")) {
+            discount.setDiscountPercent(Integer.parseInt(value));
+        } else if (field.equals("Repeated Times")) {
+            int different = discount.getRepeatedTimes() - Integer.parseInt(value);
+            for (String user : discount.getAllowedUsers()) {
+                AdminZone.getBuyerByUsername(user).getDiscountCodes().replace(discount.getCode(),
+                        AdminZone.getBuyerByUsername(user).getDiscountCodes().get(discount.getCode()) - different);
+            }
+            discount.setRepeatedTimes(Integer.parseInt(value));
+        } else if (field.startsWith("Start Date")) {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = format.parse(value);
+            discount.setStartDate(date);
+        } else if (field.startsWith("End Date")) {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = format.parse(value);
+            discount.setEndDate(date);
+        } else if (field.equals("remove user")) {
+            discount.getAllowedUsers().remove(value);
+            AdminZone.getBuyerByUsername(value).getDiscountCodes().remove(discount.getCode());
+        } else if (field.equals("add user")) {
+            discount.getAllowedUsers().add(value);
+            AdminZone.getBuyerByUsername(value).addDiscountCodes(discount, discount.getRepeatedTimes());
+        }
     }
 }

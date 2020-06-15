@@ -2,9 +2,11 @@ package view;
 
 import controller.AllAccountZone;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ public class MainScenes {
         TextField textField = new TextField();
         textField.setPromptText(text);
         textField.setMaxWidth(maxWidth);
+        textField.setMinWidth(maxWidth);
         textField.setAlignment(Pos.CENTER);
         return textField;
     }
@@ -81,14 +84,16 @@ public class MainScenes {
                     phoneNumber.getText(), username.getText(), password.getText()));
             if (Actions.register(info)) {
                 CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-                CommandProcessor.getStage().setMaximized(false);
                 CommandProcessor.getStage().setMaximized(true);
             }
         });
 
         VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, register);
         vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 
     public static Scene getMainMenuScene() {
@@ -97,26 +102,26 @@ public class MainScenes {
         signIn.setOnMouseClicked(e -> {
             MainScenes.setLastScene(CommandProcessor.getStage().getScene());
             CommandProcessor.getStage().setScene(MainScenes.getSignInScene());
-            CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
         signInOrOut = signIn;
         Button products = createButton("Products", 100);
         products.setOnMouseClicked(e -> {
             CommandProcessor.getStage().setScene(MainScenes.getProductsScene());
-            CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
         Button auctions = createButton("Auction", 100);
         auctions.setOnMouseClicked(e -> {
             CommandProcessor.getStage().setScene(MainScenes.getAuctionsScene());
-            CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
 
         VBox vBox = new VBox(25, signIn, products, auctions);
         vBox.setAlignment(Pos.CENTER);
-        mainScene = new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        mainScene = new Scene(vBox, bound.getWidth(), bound.getHeight());
         return mainScene;
     }
 
@@ -170,7 +175,10 @@ public class MainScenes {
 
         VBox vBox = new VBox(25, personalInfo, salesHistory, products, categories, auctions, balance);
         vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 
     public static Scene getBuyerScene() {
@@ -182,7 +190,10 @@ public class MainScenes {
 
         VBox vBox = new VBox(25, personalInfo, cart, orders, balance, discountCodes);
         vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 
     public static Scene getSignInScene() {
@@ -210,7 +221,6 @@ public class MainScenes {
         Hyperlink createAccount = new Hyperlink("Create Account");
         createAccount.setOnMouseClicked(e -> {
             CommandProcessor.getStage().setScene(MainScenes.getCreateAccountScene());
-            CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
 
@@ -218,7 +228,10 @@ public class MainScenes {
 
         VBox vBox = new VBox(25, type, username, password, signIn, createAccount);
         vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 
     public static Scene getCreateAccountScene() {
@@ -249,7 +262,6 @@ public class MainScenes {
                         balance.getText(), company.getText()));
                 if (Actions.register(info)) {
                     CommandProcessor.getStage().setScene(MainScenes.getLastScene());
-                    CommandProcessor.getStage().setMaximized(false);
                     CommandProcessor.getStage().setMaximized(true);
                 }
         });
@@ -270,6 +282,8 @@ public class MainScenes {
             }
         });
 
-        return new Scene(vBox, 600, 550);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 }

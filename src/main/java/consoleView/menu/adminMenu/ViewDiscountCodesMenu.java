@@ -21,7 +21,7 @@ public class ViewDiscountCodesMenu extends Menu {
     @Override
     public void execute() {
         System.out.println("\nDiscounts : ");
-        System.out.println(AdminZone.showDiscounts());
+        System.out.println(AdminZone.getDiscountCodes());
         super.execute();
     }
 
@@ -33,7 +33,7 @@ public class ViewDiscountCodesMenu extends Menu {
                 if (AdminZone.getDiscountByCode(code) == null)
                     System.out.println("invalid code");
                 else
-                    System.out.println(AdminZone.showDiscountInfo(code));
+                    System.out.println(AdminZone.getDiscountInfo(code));
                 this.parentMenu.execute();
             }
         };
@@ -108,7 +108,7 @@ public class ViewDiscountCodesMenu extends Menu {
             @Override
             public void execute() {
                 String code = checkInput("Enter code", ".+");
-                System.out.println(AdminZone.removeDiscount(code));
+//                System.out.println(AdminZone.removeDiscount(code));
                 this.parentMenu.execute();
             }
         };

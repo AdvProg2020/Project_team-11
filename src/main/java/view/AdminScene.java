@@ -5,6 +5,7 @@ import controller.AllAccountZone;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,15 +14,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import view.tableViewData.Account;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static view.MainScenes.*;
 
 public class AdminScene {
+    private static Stage openedStage;
+    private static Scene discountScene;
 
     public static Scene getAdminScene() {
         Button personalInfo = createButton("View Personal Info", 200);
@@ -33,6 +38,7 @@ public class AdminScene {
         Button products = createButton("Manage Products", 200);
 
         Button discountCodes = createButton("Manage Discount Codes", 200);
+        discountCodes.setOnMouseClicked(e -> manageDiscounts());
 
         Button requests = createButton("Manage Requests", 200);
 
@@ -44,13 +50,15 @@ public class AdminScene {
         Button back = createButton("Back", 200);
         back.setOnMouseClicked(e -> {
             CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-            CommandProcessor.getStage().setMaximized(false);
             CommandProcessor.getStage().setMaximized(true);
         });
 
         VBox vBox = new VBox(25, personalInfo, users, products, discountCodes, requests, categories, logout, back);
         vBox.setAlignment(Pos.CENTER);
-        return new Scene(vBox, 600, 550);
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        return new Scene(vBox, bound.getWidth(), bound.getHeight());
     }
 
     private static void getPersonalInfo() {
@@ -63,27 +71,27 @@ public class AdminScene {
 
         ArrayList<String> personalInfo = new ArrayList<>(AllAccountZone.getPersonalInfo());
 
-        TextField firstNameText = createTextField("First Name", 500);
+        TextField firstNameText = createTextField("First Name", 200);
         firstNameText.setText(personalInfo.get(0));
         firstNameText.setDisable(true);
 
-        TextField lastNameText = createTextField("Last Name", 500);
+        TextField lastNameText = createTextField("Last Name", 200);
         lastNameText.setText(personalInfo.get(1));
         lastNameText.setDisable(true);
 
-        TextField emailText = createTextField("Email", 500);
+        TextField emailText = createTextField("Email", 200);
         emailText.setText(personalInfo.get(2));
         emailText.setDisable(true);
 
-        TextField phoneNumberText = createTextField("Phone Number", 500);
+        TextField phoneNumberText = createTextField("Phone Number", 200);
         phoneNumberText.setText(personalInfo.get(3));
         phoneNumberText.setDisable(true);
 
-        TextField usernameText = createTextField("Username", 500);
+        TextField usernameText = createTextField("Username", 200);
         usernameText.setText(personalInfo.get(4));
         usernameText.setDisable(true);
 
-        TextField passwordText = createTextField("Password", 500);
+        TextField passwordText = createTextField("Password", 200);
         passwordText.setText(personalInfo.get(5));
         passwordText.setDisable(true);
 
@@ -197,13 +205,250 @@ public class AdminScene {
         openStage(vBox, "Users", 900, 500);
     }
 
-    private static void openStage(Parent root, String title, int width, int height) {
+    public static void manageDiscounts() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        ArrayList<String> discounts = new ArrayList<>(AdminZone.getDiscountCodes());
+        for (String code : discounts) {
+            Hyperlink hyperlink = new Hyperlink(code);
+
+            hyperlink.setOnMouseClicked(e -> {
+                GridPane gridPane = new GridPane();
+                gridPane.setAlignment(Pos.CENTER);
+                gridPane.setHgap(20);
+                gridPane.setVgap(20);
+
+                Label codeLabel = createLabel("Code : ", 150);
+                Label startLabel = createLabel("Start Date : ", 150);
+                Label endLabel = createLabel("End Date : ", 150);
+                Label percentLabel = createLabel("Discount Percent : ", 150);
+                Label maxLabel = createLabel("Max Discount : ", 150);
+                Label repeatLabel = createLabel("Repeated Times : ", 150);
+                Label usersLabel = createLabel("Allowed Users : ", 150);
+
+                ArrayList<String> info = new ArrayList<>(AdminZone.getDiscountInfo(hyperlink.getText()));
+
+                TextField codeText = createTextField("Discount Code", 500);
+                codeText.setText(info.get(0));
+                codeText.setDisable(true);
+
+                TextField startText = createTextField("Start Date [dd/mm/yyyy hh:mm:ss]", 500);
+                startText.setText(info.get(1));
+                startText.setDisable(true);
+
+                TextField endText = createTextField("End Date [dd/mm/yyyy hh:mm:ss]", 500);
+                endText.setText(info.get(2));
+                endText.setDisable(true);
+
+                TextField percentText = createTextField("Discount Percent", 500);
+                percentText.setText(info.get(3));
+                percentText.setDisable(true);
+
+                TextField maxText = createTextField("Max Discount", 500);
+                maxText.setText(info.get(4));
+                maxText.setDisable(true);
+
+                TextField repeatText = createTextField("Repeated Times", 500);
+                repeatText.setText(info.get(5));
+                repeatText.setDisable(true);
+
+                for (int i = 6; i < info.size(); i++) {
+                    TextField userText = createTextField("Username", 500);
+                    userText.setText(info.get(i));
+                    userText.setDisable(true);
+
+                    Button userButton = createButton("Remove", 100);
+                    userButton.setOnMouseClicked(event -> {
+                        try {
+                            AdminZone.editDiscount("remove user", userText.getText(), info.get(0));
+                            gridPane.getChildren().removeAll(userText, userButton);
+                        } catch (ParseException ex) {
+                            ex.printStackTrace();
+                        }
+                        info.remove(userText.getText());
+                    });
+
+                    gridPane.add(userText, 1, i);
+                    gridPane.add(userButton, 2, i);
+                }
+
+                Button startButton = createButton("Edit", 100);
+                startButton.setOnMouseClicked(event -> {
+                    Actions.editDiscount(startButton, startText, hyperlink.getText());
+                    startText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(1));
+                });
+                Button endButton = createButton("Edit", 100);
+                endButton.setOnMouseClicked(event -> {
+                    Actions.editDiscount(endButton, endText, hyperlink.getText());
+                    endText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(2));
+                });
+                Button percentButton = createButton("Edit", 100);
+                percentButton.setOnMouseClicked(event -> Actions.editDiscount(percentButton, percentText, hyperlink.getText()));
+                Button maxButton = createButton("Edit", 100);
+                maxButton.setOnMouseClicked(event -> Actions.editDiscount(maxButton, maxText, hyperlink.getText()));
+                Button repeatButton = createButton("Edit", 100);
+                repeatButton.setOnMouseClicked(event -> Actions.editDiscount(repeatButton, repeatText, hyperlink.getText()));
+
+                Button back = createButton("Back", 300);
+                back.setOnMouseClicked(event -> openedStage.setScene(discountScene));
+
+                TextField addUserText = createTextField("Username", 500);
+                Button addUserButton = createButton("Add", 100);
+                addUserButton.setOnMouseClicked(event -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    if (AdminZone.getBuyerByUsername(addUserText.getText()) != null) {
+                        if (info.contains(addUserText.getText())) {
+                            alert.setContentText("Already exist.");
+                            alert.show();
+                        } else {
+                            try {
+                                AdminZone.editDiscount("add user", addUserText.getText(), info.get(0));
+                            } catch (ParseException ex) {
+                                ex.printStackTrace();
+                            }
+                            gridPane.getChildren().removeAll(back, addUserText, addUserButton);
+                            TextField userText = createTextField("Username", 500);
+                            userText.setText(addUserText.getText());
+                            userText.setDisable(true);
+
+                            Button userButton = createButton("Remove", 100);
+                            userButton.setOnMouseClicked(ev -> {
+                                try {
+                                    AdminZone.editDiscount("remove user", userText.getText(), info.get(0));
+                                    gridPane.getChildren().removeAll(userText, userButton);
+                                } catch (ParseException ex) {
+                                    ex.printStackTrace();
+                                }
+                                info.remove(userText.getText());
+                            });
+
+                            gridPane.add(userText, 1, info.size());
+                            gridPane.add(userButton, 2, info.size());
+                            gridPane.add(back, 1, info.size() + 3);
+                            gridPane.add(addUserText, 1, info.size() + 2);
+                            gridPane.add(addUserButton, 2, info.size() + 2);
+                            addUserText.clear();
+                            info.add(addUserText.getText());
+                        }
+                    } else {
+                        alert.setContentText("There is no user with this username.");
+                        alert.show();
+                    }
+                });
+
+                gridPane.addColumn(0, codeLabel, startLabel, endLabel, percentLabel, maxLabel, repeatLabel, usersLabel);
+                gridPane.add(codeText, 1, 0);
+                gridPane.add(startText, 1, 1);
+                gridPane.add(endText, 1, 2);
+                gridPane.add(percentText, 1, 3);
+                gridPane.add(maxText, 1, 4);
+                gridPane.add(repeatText, 1, 5);
+                gridPane.add(startButton, 2, 1);
+                gridPane.add(endButton, 2, 2);
+                gridPane.add(percentButton, 2, 3);
+                gridPane.add(maxButton, 2, 4);
+                gridPane.add(repeatButton, 2, 5);
+                gridPane.add(back, 1, info.size() + 2);
+                gridPane.add(addUserText, 1, info.size() + 1);
+                gridPane.add(addUserButton, 2, info.size() + 1);
+
+                openedStage.setScene(new Scene(gridPane, 1100, 550));
+            });
+
+            vBox.getChildren().add(hyperlink);
+        }
+
+        TextField code = createTextField("Code", 150);
+        TextField removeCode = createTextField("Code", 150);
+        TextField startDate = createTextField("Start [dd/mm/yyyy hh:mm:ss]", 300);
+        TextField endDate = createTextField("End [dd/mm/yyyy hh:mm:ss]", 300);
+        TextField percent = createTextField("Percent", 100);
+        TextField max = createTextField("Max Discount", 100);
+        TextField repeat = createTextField("Repeated Times", 100);
+        TextField user = createTextField("username", 200);
+
+        //delete discount
+        Button delete = createButton("Delete", 100);
+        delete.setOnMouseClicked(e -> {
+            if (Actions.deleteDiscount(removeCode.getText())) {
+                openedStage.close();
+                manageDiscounts();
+            }
+        });
+
+        HBox discountCodeHBox = new HBox(20);
+        discountCodeHBox.setPadding(new Insets(10, 10, 10, 10));
+        discountCodeHBox.getChildren().addAll(removeCode, delete);
+
+        Button deleteDiscount = createButton("Delete Discount", 200);
+        deleteDiscount.setOnMouseClicked(e -> {
+            if (!vBox.getChildren().contains(discountCodeHBox))
+                vBox.getChildren().add(discountCodeHBox);
+        });
+
+        //create discount
+        ArrayList<String> discountInfo = new ArrayList<>();
+        ArrayList<String> allowedUsers = new ArrayList<>();
+
+        Button create = createButton("Create", 100);
+        Button add = createButton("Add", 200);
+        Button finish = createButton("Finish", 200);
+
+        HBox discountFieldHBox = new HBox(20);
+        discountFieldHBox.setPadding(new Insets(10, 10, 10, 10));
+        discountFieldHBox.getChildren().addAll(code, startDate, endDate, percent, max, repeat, create);
+
+        HBox allowedUserHBox = new HBox(20);
+        allowedUserHBox.setPadding(new Insets(10, 10, 10, 10));
+        allowedUserHBox.getChildren().addAll(user, add, finish);
+
+        create.setOnMouseClicked(e -> {
+            ArrayList<String> info = new ArrayList<>(Arrays.asList(code.getText(), startDate.getText(),
+                    endDate.getText(), percent.getText(), max.getText(), repeat.getText()));
+            if (Actions.createDiscount(info)) {
+                discountInfo.addAll(info);
+                vBox.getChildren().remove(discountFieldHBox);
+                vBox.getChildren().add(allowedUserHBox);
+            }
+        });
+
+        add.setOnMouseClicked(e -> {
+            if (Actions.addUserToDiscount(user.getText())) {
+                allowedUsers.add(user.getText());
+                user.clear();
+            }
+        });
+
+        finish.setOnMouseClicked(e -> {
+            vBox.getChildren().remove(allowedUserHBox);
+            AdminZone.createDiscount(discountInfo, allowedUsers);
+            openedStage.close();
+            manageDiscounts();
+        });
+
+        Button addDiscount = createButton("Create Discount", 200);
+        addDiscount.setOnMouseClicked(e -> {
+            if (!vBox.getChildren().contains(discountFieldHBox))
+                vBox.getChildren().add(discountFieldHBox);
+        });
+
+        vBox.getChildren().addAll(addDiscount, deleteDiscount);
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+
+        openedStage = openStage(scrollPane, "Discount Codes", 1100, 550);
+    }
+
+    private static Stage openStage(Parent root, String title, int width, int height) {
         Scene scene = new Scene(root, width, height);
+        discountScene = scene;
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(CommandProcessor.getStage());
         stage.show();
+        return stage;
     }
 }
