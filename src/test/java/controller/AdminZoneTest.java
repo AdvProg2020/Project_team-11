@@ -56,7 +56,7 @@ public class AdminZoneTest {
         Assert.assertEquals(request1.getId() + ". create seller account -> unseen\n" + request2.getId() +
                 ". add product -> unseen\n" + request3.getId() + ". edit product -> unseen\n" + request4.getId() +
                 ". edit auction -> unseen\n" + request5.getId() + ". add auction -> unseen\n" +
-                request6.getId() + ". add comment -> unseen\n", AdminZone.showAllRequests());
+                request6.getId() + ". add comment -> unseen\n", AdminZone.getAllRequests());
     }
 
     @Test

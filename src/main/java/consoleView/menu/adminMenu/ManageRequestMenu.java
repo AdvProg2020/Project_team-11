@@ -19,7 +19,7 @@ public class ManageRequestMenu extends Menu {
     @Override
     public void execute() {
         System.out.println("\nRequests :");
-        System.out.println(AdminZone.showAllRequests());
+        System.out.println(AdminZone.getAllRequests());
         super.execute();
     }
 

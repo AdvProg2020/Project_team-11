@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.Request;
 import view.tableViewData.Account;
 import view.tableViewData.Product;
 
@@ -27,7 +28,7 @@ import static view.MainScenes.*;
 
 public class AdminScene {
     private static Stage openedStage;
-    private static Scene discountScene;
+    private static Scene lastScene;
 
     public static Scene getAdminScene() {
         Button personalInfo = createButton("View Personal Info", 200);
@@ -43,6 +44,7 @@ public class AdminScene {
         discountCodes.setOnMouseClicked(e -> manageDiscounts());
 
         Button requests = createButton("Manage Requests", 200);
+        requests.setOnMouseClicked(e -> manageRequests());
 
         Button categories = createButton("Manage Categories", 200);
 
@@ -200,6 +202,7 @@ public class AdminScene {
         HBox hBox = new HBox(10);
         hBox.getChildren().addAll(firstName, lastName, email, phoneNumber, username, password, addButton, removeButton);
         hBox.setPadding(new Insets(10, 10, 10, 10));
+        hBox.setAlignment(Pos.CENTER);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(tableView, hBox);
@@ -293,7 +296,7 @@ public class AdminScene {
                 repeatButton.setOnMouseClicked(event -> Actions.editDiscount(repeatButton, repeatText, hyperlink.getText()));
 
                 Button back = createButton("Back", 300);
-                back.setOnMouseClicked(event -> openedStage.setScene(discountScene));
+                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
 
                 TextField addUserText = createTextField("Username", 500);
                 Button addUserButton = createButton("Add", 100);
@@ -355,7 +358,11 @@ public class AdminScene {
                 gridPane.add(addUserText, 1, info.size() + 1);
                 gridPane.add(addUserButton, 2, info.size() + 1);
 
-                openedStage.setScene(new Scene(gridPane, 1100, 550));
+                ScrollPane scrollPane = new ScrollPane(gridPane);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                openedStage.setScene(new Scene(scrollPane, 1100, 550));
             });
 
             vBox.getChildren().add(hyperlink);
@@ -382,6 +389,7 @@ public class AdminScene {
         HBox discountCodeHBox = new HBox(20);
         discountCodeHBox.setPadding(new Insets(10, 10, 10, 10));
         discountCodeHBox.getChildren().addAll(removeCode, delete);
+        discountCodeHBox.setAlignment(Pos.CENTER);
 
         Button deleteDiscount = createButton("Delete Discount", 200);
         deleteDiscount.setOnMouseClicked(e -> {
@@ -400,10 +408,12 @@ public class AdminScene {
         HBox discountFieldHBox = new HBox(20);
         discountFieldHBox.setPadding(new Insets(10, 10, 10, 10));
         discountFieldHBox.getChildren().addAll(code, startDate, endDate, percent, max, repeat, create);
+        discountFieldHBox.setAlignment(Pos.CENTER);
 
         HBox allowedUserHBox = new HBox(20);
         allowedUserHBox.setPadding(new Insets(10, 10, 10, 10));
         allowedUserHBox.getChildren().addAll(user, add, finish);
+        allowedUserHBox.setAlignment(Pos.CENTER);
 
         create.setOnMouseClicked(e -> {
             ArrayList<String> info = new ArrayList<>(Arrays.asList(code.getText(), startDate.getText(),
@@ -438,6 +448,8 @@ public class AdminScene {
         vBox.getChildren().addAll(addDiscount, deleteDiscount);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
         openedStage = openStage(scrollPane, "Discount Codes", 1100, 550);
     }
@@ -496,6 +508,7 @@ public class AdminScene {
         HBox hBox = new HBox(10);
         hBox.getChildren().addAll(removeButton);
         hBox.setPadding(new Insets(10, 10, 10, 10));
+        hBox.setAlignment(Pos.CENTER_RIGHT);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(tableView, hBox);
@@ -503,9 +516,74 @@ public class AdminScene {
         openStage(vBox, "Users", 900, 500);
     }
 
+    private static void manageRequests() {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(20);
+        gridPane.setVgap(20);
+
+        int i = 0;
+        for (Request request : AdminZone.getAllRequests()) {
+            Hyperlink idHyperlink = new Hyperlink(String.valueOf(request.getId()));
+            idHyperlink.setOnMouseClicked(e -> {
+                GridPane requestGridPane = new GridPane();
+                requestGridPane.setAlignment(Pos.CENTER);
+                requestGridPane.setHgap(20);
+                requestGridPane.setVgap(20);
+
+                Label topicLabel = createLabel("Topic", 100);
+                Label senderLabel = createLabel("Sender", 100);
+                Label statusLabel = createLabel("Status", 100);
+                Label descriptionLabel = createLabel("Description", 100);
+
+                Label topic = createLabel(request.getTopic(), 500);
+                Label sender = createLabel(request.getSenderName(), 500);
+                Label status = createLabel(request.getStatus(), 500);
+                Label description = createLabel(request.getDescription(), 500);
+
+                Button back = createButton("Back", 150);
+                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+
+                requestGridPane.addColumn(0, topicLabel, senderLabel, statusLabel, descriptionLabel);
+                requestGridPane.addColumn(1, topic, sender, status, description, back);
+
+                openedStage.setScene(new Scene(requestGridPane, 800, 600));
+            });
+
+            Label topic = createLabel(request.getTopic(), 150);
+            Label sender = createLabel(request.getSenderName(), 150);
+
+            Button acceptButton = createButton("Accept", 100);
+            Button declineButton = createButton("Decline", 100);
+
+            if (request.getStatus().equals("unseen")) {
+                gridPane.add(acceptButton, 3, i);
+                gridPane.add(declineButton, 4, i);
+                acceptButton.setOnMouseClicked(e -> {
+                    AdminZone.acceptRequest(request.getId());
+                    gridPane.getChildren().removeAll(acceptButton, declineButton);
+                });
+                declineButton.setOnMouseClicked(e -> {
+                    AdminZone.declineRequest(request.getId());
+                    gridPane.getChildren().removeAll(acceptButton, declineButton);
+                });
+            }
+
+            gridPane.add(idHyperlink, 0, i);
+            gridPane.add(topic, 1, i);
+            gridPane.add(sender, 2, i++);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openedStage = openStage(gridPane, "Requests", 800, 600);
+    }
+
     private static Stage openStage(Parent root, String title, int width, int height) {
         Scene scene = new Scene(root, width, height);
-        discountScene = scene;
+        lastScene = scene;
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);

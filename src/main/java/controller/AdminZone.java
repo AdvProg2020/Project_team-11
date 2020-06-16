@@ -7,16 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 public class AdminZone {
 
-    public static String showAllRequests() {
-        StringBuilder allRequests = new StringBuilder();
-        for (Request request : DataBase.getDataBase().getAllRequests()) {
-                allRequests.append(request.getId()).append(". ").append(request.getTopic()).append(" -> ")
-                        .append(request.getStatus()).append("\n");
-        }
-        return String.valueOf(allRequests);
+    public static ArrayList<Request> getAllRequests() {
+        return DataBase.getDataBase().getAllRequests();
     }
 
     public static String viewRequestDetails(int requestId) {

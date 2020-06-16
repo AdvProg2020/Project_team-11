@@ -226,7 +226,13 @@ public class MainScenes {
 
         type.setOnAction(e -> signIn.setDisable(false));
 
-        VBox vBox = new VBox(25, type, username, password, signIn, createAccount);
+        Button back = createButton("Back", 150);
+        back.setOnMouseClicked(e -> {
+            CommandProcessor.getStage().setScene(MainScenes.getMainScene());
+            CommandProcessor.getStage().setMaximized(true);
+        });
+
+        VBox vBox = new VBox(25, type, username, password, signIn, createAccount, back);
         vBox.setAlignment(Pos.CENTER);
 
         Screen screen = Screen.getPrimary();
@@ -266,7 +272,13 @@ public class MainScenes {
                 }
         });
 
-        VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, balance, register);
+        Button back = createButton("Back", 150);
+        back.setOnMouseClicked(e -> {
+            CommandProcessor.getStage().setScene(MainScenes.getMainScene());
+            CommandProcessor.getStage().setMaximized(true);
+        });
+
+        VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, balance, register, back);
         vBox.setAlignment(Pos.CENTER);
 
         ArrayList<TextField> addedTextFields = new ArrayList<>();
@@ -276,8 +288,8 @@ public class MainScenes {
                 vBox.getChildren().removeAll(addedTextFields);
             } else if (type.getValue().equals("Seller")) {
                 vBox.getChildren().removeAll(addedTextFields);
-                vBox.getChildren().remove(register);
-                vBox.getChildren().addAll(company, register);
+                vBox.getChildren().removeAll(register, back);
+                vBox.getChildren().addAll(company, register, back);
                 addedTextFields.add(company);
             }
         });
