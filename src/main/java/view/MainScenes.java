@@ -165,22 +165,6 @@ public class MainScenes {
         return new Scene(vBox, 600, 550);
     }
 
-    public static Scene getSellerScene() {
-        Button personalInfo = createButton("View Personal Info", 200);
-        Button salesHistory = createButton("View Sales History", 200);
-        Button products = createButton("Manage Products", 200);
-        Button categories = createButton("show Categories", 200);
-        Button auctions = createButton("View Auctions", 200);
-        Button balance = createButton("View Balance", 200);
-
-        VBox vBox = new VBox(25, personalInfo, salesHistory, products, categories, auctions, balance);
-        vBox.setAlignment(Pos.CENTER);
-
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        return new Scene(vBox, bound.getWidth(), bound.getHeight());
-    }
-
     public static Scene getBuyerScene() {
         Button personalInfo = createButton("View Personal Info", 200);
         Button cart = createButton("View Cart", 200);

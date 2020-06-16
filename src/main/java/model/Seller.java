@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class Seller extends Account {
-    private final String companyName;
+    private String companyName;
     private long wallet;
     private final ArrayList<SellLog> sellHistory;
 
@@ -21,6 +21,10 @@ public class Seller extends Account {
 
     public long getWallet() {
         return wallet;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public ArrayList<SellLog> getSellHistory() {

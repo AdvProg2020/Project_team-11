@@ -102,12 +102,14 @@ public class Actions {
                 case "First Name":
                 case "Last Name":
                 case "Password":
+                case "Company":
                     isValid = Validation.validateNames(textField.getText());
                     break;
                 case "Email":
                     isValid = Validation.validateEmail(textField.getText());
                     break;
                 case "Phone Number":
+                case "Wallet":
                     isValid = Validation.validateLong(textField.getText());
                     break;
             }

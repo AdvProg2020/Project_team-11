@@ -11,6 +11,7 @@ import consoleView.menu.productsMenu.ProductsMenu;
 import view.AdminScene;
 import view.CommandProcessor;
 import view.MainScenes;
+import view.SellerScene;
 
 import java.util.*;
 import java.util.List;
@@ -163,9 +164,20 @@ public class AllAccountZone {
     }
 
     public static ArrayList<String> getPersonalInfo() {
-        Account account = AllAccountZone.getCurrentAccount();
-        return new ArrayList<>(Arrays.asList(account.getFirstName(), account.getLastName(), account.getEmailAddress(),
-                account.getPhoneNumber(), account.getUsername(), account.getPassword()));
+        if (getCurrentAccount() instanceof Admin) {
+            Admin admin = (Admin) AllAccountZone.getCurrentAccount();
+            return new ArrayList<>(Arrays.asList(admin.getFirstName(), admin.getLastName(), admin.getEmailAddress(),
+                    admin.getPhoneNumber(), admin.getUsername(), admin.getPassword()));
+        } else if (getCurrentAccount() instanceof Seller) {
+            Seller seller = (Seller) AllAccountZone.getCurrentAccount();
+            return new ArrayList<>(Arrays.asList(seller.getFirstName(), seller.getLastName(), seller.getEmailAddress(),
+                    seller.getPhoneNumber(), seller.getUsername(), seller.getPassword(), seller.getCompanyName(),
+                    String.valueOf(seller.getWallet())));
+        } else {
+            Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
+            return new ArrayList<>(Arrays.asList(buyer.getFirstName(), buyer.getLastName(), buyer.getEmailAddress(),
+                    buyer.getPhoneNumber(), buyer.getUsername(), buyer.getPassword(), String.valueOf(buyer.getWallet())));
+        }
     }
 
     public static String showProductWithSellers(int productId) {
@@ -302,7 +314,7 @@ public class AllAccountZone {
                         setCurrentAccount(account);
                         Button button = new Button("Seller");
                         button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(MainScenes.getSellerScene());
+                            CommandProcessor.getStage().setScene(SellerScene.getSellerScene());
                             CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
@@ -356,6 +368,14 @@ public class AllAccountZone {
             currentAccount.setPhoneNumber(value);
         } else if (field.equalsIgnoreCase("password")) {
             currentAccount.setPassword(value);
+        } else if (field.equalsIgnoreCase("company")) {
+            ((Seller) currentAccount).setCompanyName(value);
+        } else if (field.equalsIgnoreCase("wallet")) {
+            try {
+                ((Seller) currentAccount).setWallet(Long.parseLong(value));
+            } catch (Exception ex) {
+                ((Buyer) currentAccount).setWallet(Long.parseLong(value));
+            }
         }
     }
 }

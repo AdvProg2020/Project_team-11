@@ -786,7 +786,7 @@ public class AdminScene {
         openedStage = openStage(scrollPane, "Categories", 1100, 550);
     }
 
-    private static Stage openStage(Parent root, String title, int width, int height) {
+    public static Stage openStage(Parent root, String title, int width, int height) {
         Scene scene = new Scene(root, width, height);
         lastScene = scene;
         Stage stage = new Stage();
