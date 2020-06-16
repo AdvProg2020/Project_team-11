@@ -21,7 +21,7 @@ public class ManageCategoriesMenu extends Menu {
     @Override
     public void execute() {
         System.out.println("\nCategories : ");
-        System.out.println(AllAccountZone.showCategories());
+        System.out.println(AllAccountZone.getCategories());
         super.execute();
     }
 

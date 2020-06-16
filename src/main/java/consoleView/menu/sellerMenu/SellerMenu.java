@@ -101,7 +101,7 @@ public class SellerMenu extends Menu {
         return new Menu("Show Categories", this) {
             @Override
             public void execute() {
-                System.out.println(AllAccountZone.showCategories());
+                System.out.println(AllAccountZone.getCategories());
                 this.parentMenu.execute();
             }
         };

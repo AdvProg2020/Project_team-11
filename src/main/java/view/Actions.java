@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import model.Category;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -233,6 +234,46 @@ public class Actions {
                     e.printStackTrace();
                 }
                 button.setOnMouseClicked(e -> editDiscount(button, textField, discountCode));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Invalid format.");
+                alert.show();
+            }
+        });
+    }
+
+    public static boolean checkCategoryName(String name) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validateNames(name)) {
+            alert.setContentText("Enter category name.");
+            alert.show();
+        } else if (Category.getCategoryByName(name) != null) {
+            alert.setContentText("This name is already occupied.");
+            alert.show();
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    public static void editCategory(TextField textField, Button button, String categoryName) {
+        String lastField = textField.getText();
+        button.setText("Save");
+        textField.setDisable(false);
+        button.setOnMouseClicked(event -> {
+            boolean isValid = false;
+            switch (textField.getPromptText()) {
+                case "Name":
+                    isValid = checkCategoryName(textField.getText());
+                    break;
+                case "Feature":
+                    isValid = Validation.validateNames(textField.getText());
+            }
+            if (isValid) {
+                button.setText("Edit");
+                textField.setDisable(true);
+                AdminZone.editCategory(textField.getPromptText(), textField.getText(), categoryName, lastField);
+                button.setOnMouseClicked(e -> editCategory(textField, button, categoryName));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Invalid format.");

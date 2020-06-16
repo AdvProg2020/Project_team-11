@@ -38,7 +38,7 @@ public class ProductsMenu extends Menu {
         return new Menu("View Categories", this) {
             @Override
             public void execute() {
-                System.out.println(AllAccountZone.showCategories());
+                System.out.println(AllAccountZone.getCategories());
                 this.parentMenu.execute();
             }
         };

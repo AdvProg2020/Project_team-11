@@ -47,6 +47,7 @@ public class AdminScene {
         requests.setOnMouseClicked(e -> manageRequests());
 
         Button categories = createButton("Manage Categories", 200);
+        categories.setOnMouseClicked(e -> manageCategories());
 
         Button logout = createButton("Logout", 200);
         logout.setOnMouseClicked(e -> Actions.logout());
@@ -119,7 +120,11 @@ public class AdminScene {
         gridPane.setHgap(20);
         gridPane.setVgap(20);
 
-        openStage(gridPane, "Personal Info", 600, 550);
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openStage(scrollPane, "Personal Info", 600, 550);
     }
 
     private static void showUsers() {
@@ -207,7 +212,11 @@ public class AdminScene {
         VBox vBox = new VBox();
         vBox.getChildren().addAll(tableView, hBox);
 
-        openStage(vBox, "Users", 900, 500);
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openStage(scrollPane, "Users", 900, 500);
     }
 
     public static void manageDiscounts() {
@@ -223,6 +232,12 @@ public class AdminScene {
                 gridPane.setAlignment(Pos.CENTER);
                 gridPane.setHgap(20);
                 gridPane.setVgap(20);
+
+                VBox textFields = new VBox(20);
+                textFields.setAlignment(Pos.CENTER);
+
+                VBox removeButtons = new VBox(20);
+                removeButtons.setAlignment(Pos.CENTER);
 
                 Label codeLabel = createLabel("Code : ", 150);
                 Label startLabel = createLabel("Start Date : ", 150);
@@ -274,8 +289,8 @@ public class AdminScene {
                         info.remove(userText.getText());
                     });
 
-                    gridPane.add(userText, 1, i);
-                    gridPane.add(userButton, 2, i);
+                    textFields.getChildren().add(userText);
+                    removeButtons.getChildren().add(userButton);
                 }
 
                 Button startButton = createButton("Edit", 100);
@@ -302,7 +317,10 @@ public class AdminScene {
                 Button addUserButton = createButton("Add", 100);
                 addUserButton.setOnMouseClicked(event -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    if (AdminZone.getBuyerByUsername(addUserText.getText()) != null) {
+                    if (AdminZone.getBuyerByUsername(addUserText.getText()) == null) {
+                        alert.setContentText("There is no user with this username.");
+                        alert.show();
+                    } else {
                         if (info.contains(addUserText.getText())) {
                             alert.setContentText("Already exist.");
                             alert.show();
@@ -312,7 +330,6 @@ public class AdminScene {
                             } catch (ParseException ex) {
                                 ex.printStackTrace();
                             }
-                            gridPane.getChildren().removeAll(back, addUserText, addUserButton);
                             TextField userText = createTextField("Username", 500);
                             userText.setText(addUserText.getText());
                             userText.setDisable(true);
@@ -325,20 +342,14 @@ public class AdminScene {
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
                                 }
-                                info.remove(userText.getText());
+                                info.add(userText.getText());
                             });
 
-                            gridPane.add(userText, 1, info.size());
-                            gridPane.add(userButton, 2, info.size());
-                            gridPane.add(back, 1, info.size() + 3);
-                            gridPane.add(addUserText, 1, info.size() + 2);
-                            gridPane.add(addUserButton, 2, info.size() + 2);
+                            textFields.getChildren().add(userText);
+                            removeButtons.getChildren().add(userButton);
                             addUserText.clear();
                             info.add(addUserText.getText());
                         }
-                    } else {
-                        alert.setContentText("There is no user with this username.");
-                        alert.show();
                     }
                 });
 
@@ -349,14 +360,16 @@ public class AdminScene {
                 gridPane.add(percentText, 1, 3);
                 gridPane.add(maxText, 1, 4);
                 gridPane.add(repeatText, 1, 5);
+                gridPane.add(textFields, 1, 6);
                 gridPane.add(startButton, 2, 1);
                 gridPane.add(endButton, 2, 2);
                 gridPane.add(percentButton, 2, 3);
                 gridPane.add(maxButton, 2, 4);
                 gridPane.add(repeatButton, 2, 5);
-                gridPane.add(back, 1, info.size() + 2);
-                gridPane.add(addUserText, 1, info.size() + 1);
-                gridPane.add(addUserButton, 2, info.size() + 1);
+                gridPane.add(removeButtons, 2, 6);
+                gridPane.add(addUserText, 1, 7);
+                gridPane.add(addUserButton, 2, 7);
+                gridPane.add(back, 1, 8);
 
                 ScrollPane scrollPane = new ScrollPane(gridPane);
                 scrollPane.setFitToWidth(true);
@@ -370,8 +383,8 @@ public class AdminScene {
 
         TextField code = createTextField("Code", 150);
         TextField removeCode = createTextField("Code", 150);
-        TextField startDate = createTextField("Start [dd/mm/yyyy hh:mm:ss]", 300);
-        TextField endDate = createTextField("End [dd/mm/yyyy hh:mm:ss]", 300);
+        TextField startDate = createTextField("Start [dd/mm/yyyy hh:mm:ss]", 200);
+        TextField endDate = createTextField("End [dd/mm/yyyy hh:mm:ss]", 200);
         TextField percent = createTextField("Percent", 100);
         TextField max = createTextField("Max Discount", 100);
         TextField repeat = createTextField("Repeated Times", 100);
@@ -513,7 +526,11 @@ public class AdminScene {
         VBox vBox = new VBox();
         vBox.getChildren().addAll(tableView, hBox);
 
-        openStage(vBox, "Users", 900, 500);
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openStage(scrollPane, "Users", 900, 500);
     }
 
     private static void manageRequests() {
@@ -579,6 +596,194 @@ public class AdminScene {
         scrollPane.setFitToHeight(true);
 
         openedStage = openStage(gridPane, "Requests", 800, 600);
+    }
+
+    private static void manageCategories() {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(20);
+        gridPane.setVgap(20);
+
+        VBox nameVBox = new VBox(20);
+        nameVBox.setAlignment(Pos.CENTER);
+
+        VBox removeVBox = new VBox(20);
+        removeVBox.setAlignment(Pos.CENTER);
+
+        ArrayList<String> categories = new ArrayList<>(AllAccountZone.getCategories());
+        for (String category : categories) {
+            Hyperlink hyperlink = new Hyperlink(category);
+
+            hyperlink.setOnMouseClicked(e -> {
+                GridPane categoryGridPane = new GridPane();
+                categoryGridPane.setAlignment(Pos.CENTER);
+                categoryGridPane.setHgap(20);
+                categoryGridPane.setVgap(20);
+
+                Label nameLabel = createLabel("Name : ", 100);
+                Label featureLabel = createLabel("Feature : ", 100);
+
+                ArrayList<String> feature = new ArrayList<>(AdminZone.getCategoryFeature(hyperlink.getText()));
+
+                TextField nameText = createTextField("Name", 500);
+                nameText.setText(hyperlink.getText());
+                nameText.setDisable(true);
+
+                Button editNameButton = createButton("Edit", 100);
+                editNameButton.setOnMouseClicked(event -> Actions.editCategory(nameText, editNameButton, nameText.getText()));
+
+                VBox textFields = new VBox(20);
+                textFields.setAlignment(Pos.CENTER);
+
+                VBox removeButtons = new VBox(20);
+                removeButtons.setAlignment(Pos.CENTER);
+
+                VBox editButtons = new VBox(20);
+                editButtons.setAlignment(Pos.CENTER);
+
+                for (int i = 0; i < feature.size(); i++) {
+                    TextField featureText = createTextField("Feature", 500);
+                    featureText.setText(feature.get(i));
+                    featureText.setDisable(true);
+
+                    Button editFeatureButton = createButton("Edit", 100);
+                    editFeatureButton.setOnMouseClicked(event ->
+                            Actions.editCategory(featureText, editFeatureButton, nameText.getText()));
+
+                    Button remove = createButton("Remove", 100);
+                    remove.setOnMouseClicked(event -> {
+                        AdminZone.editCategory("remove feature", featureText.getText(), nameText.getText(), "");
+                        textFields.getChildren().remove(featureText);
+                        removeButtons.getChildren().remove(remove);
+                        editButtons.getChildren().remove(editFeatureButton);
+                        feature.remove(featureText.getText());
+                    });
+
+                    textFields.getChildren().add(featureText);
+                    removeButtons.getChildren().add(remove);
+                    editButtons.getChildren().add(editFeatureButton);
+                }
+
+                Button back = createButton("Back", 300);
+                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+
+                TextField addFeatureText = createTextField("Feature", 500);
+                Button addFeatureButton = createButton("Add", 100);
+                addFeatureButton.setOnMouseClicked(event -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    if (addFeatureText.getText().isEmpty()) {
+                        alert.setContentText("Enter feature.");
+                        alert.show();
+                    } else {
+                        if (feature.contains(addFeatureText.getText())) {
+                            alert.setContentText("Already exist.");
+                            alert.show();
+                        } else {
+                            AdminZone.editCategory("add feature", addFeatureText.getText(), nameText.getText(), "");
+                            TextField featureText = createTextField("Feature", 500);
+                            featureText.setText(addFeatureText.getText());
+                            featureText.setDisable(true);
+
+                            Button removeFeatureButton = createButton("Remove", 100);
+                            removeFeatureButton.setOnMouseClicked(ev -> {
+                                AdminZone.editCategory("remove feature", featureText.getText(), nameText.getText(), "");
+                                textFields.getChildren().remove(featureText);
+                                removeButtons.getChildren().remove(removeFeatureButton);
+                                feature.remove(featureText.getText());
+                            });
+
+                            Button editFeatureButton = createButton("Edit", 100);
+                            editFeatureButton.setOnMouseClicked(ev ->
+                                    Actions.editCategory(featureText, editFeatureButton, nameText.getText()));
+
+                            textFields.getChildren().add(featureText);
+                            removeButtons.getChildren().add(removeFeatureButton);
+                            editButtons.getChildren().add(editFeatureButton);
+                            addFeatureText.clear();
+                            feature.add(addFeatureText.getText());
+                        }
+                    }
+                });
+
+                categoryGridPane.addColumn(0, nameLabel, featureLabel);
+                categoryGridPane.addColumn(1, nameText, textFields, addFeatureText, back);
+                categoryGridPane.addColumn(2, editNameButton, removeButtons, addFeatureButton);
+                categoryGridPane.add(editButtons, 3, 1);
+
+                ScrollPane scrollPane = new ScrollPane(categoryGridPane);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                openedStage.setScene(new Scene(scrollPane, 1100, 550));
+            });
+
+            Button remove = createButton("Remove", 100);
+            remove.setOnMouseClicked(e -> {
+                nameVBox.getChildren().remove(hyperlink);
+                removeVBox.getChildren().remove(remove);
+                AdminZone.removeCategory(hyperlink.getText());
+            });
+
+            nameVBox.getChildren().add(hyperlink);
+            removeVBox.getChildren().add(remove);
+        }
+
+        Button add = createButton("Add Category", 100);
+        add.setOnMouseClicked(e -> {
+            final String[] name = new String[1];
+            ArrayList<String> feature = new ArrayList<>();
+
+            TextField nameText = createTextField("Name", 150);
+            Button create = createButton("Create", 100);
+
+            HBox nameHBox = new HBox(10);
+            nameHBox.getChildren().addAll(nameText, create);
+            nameHBox.setPadding(new Insets(10, 10, 10, 10));
+            nameHBox.setAlignment(Pos.CENTER);
+
+            gridPane.add(nameHBox, 1, 4);
+
+            TextField featureText = createTextField("Feature", 200);
+            Button addFeature = createButton("Add", 100);
+            Button finish = createButton("Finish", 100);
+
+            HBox featureHBox = new HBox(10);
+            featureHBox.getChildren().addAll(featureText, addFeature, finish);
+            featureHBox.setPadding(new Insets(10, 10, 10, 10));
+            featureHBox.setAlignment(Pos.CENTER);
+
+            create.setOnMouseClicked(event -> {
+                if (Actions.checkCategoryName(nameText.getText())) {
+                    gridPane.getChildren().remove(nameHBox);
+                    name[0] = nameText.getText();
+                    gridPane.add(featureHBox, 1, 4);
+                }
+            });
+
+            addFeature.setOnMouseClicked(event -> {
+                if (Validation.validateNames(featureText.getText())) {
+                    feature.add(featureText.getText());
+                    featureText.clear();
+                }
+            });
+
+            finish.setOnMouseClicked(event -> {
+                gridPane.getChildren().remove(featureHBox);
+                AdminZone.createCategory(name[0], feature);
+                openedStage.close();
+                manageCategories();
+            });
+        });
+
+        gridPane.addColumn(0, nameVBox);
+        gridPane.addColumn(1, removeVBox);
+        gridPane.add(add, 1, removeVBox.getChildren().size());
+
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openedStage = openStage(scrollPane, "Categories", 1100, 550);
     }
 
     private static Stage openStage(Parent root, String title, int width, int height) {

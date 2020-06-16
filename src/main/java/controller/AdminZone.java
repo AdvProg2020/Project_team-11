@@ -407,4 +407,26 @@ public class AdminZone {
             AdminZone.getBuyerByUsername(value).addDiscountCodes(discount, discount.getRepeatedTimes());
         }
     }
+
+    public static ArrayList<String> getCategoryFeature(String name) {
+        Category category = Category.getCategoryByName(name);
+        return category.getSpecialFeatures();
+    }
+
+    public static void editCategory(String field, String value, String categoryName, String lastFeature) {
+        Category category = Category.getCategoryByName(categoryName);
+        assert category != null;
+        if (field.equals("remove feature")) {
+            category.getSpecialFeatures().remove(value);
+            deleteFeatureFromCategory(category, value);
+        } else if (field.equals("add feature")) {
+            category.getSpecialFeatures().add(value);
+            addNewFeatureToCategory(category, value);
+        } else if (field.equals("Name")) {
+            category.setName(value);
+        } else if (field.equals("Feature")) {
+            category.getSpecialFeatures().set(category.getSpecialFeatures().indexOf(lastFeature), value);
+            AdminZone.renameFeatureOfCategory(category, lastFeature, value);
+        }
+    }
 }

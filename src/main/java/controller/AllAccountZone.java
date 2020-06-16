@@ -34,12 +34,12 @@ public class AllAccountZone {
         return new Date(sum);
     }
 
-    public static String showCategories() {
-        StringBuilder categories = new StringBuilder();
+    public static ArrayList<String> getCategories() {
+        ArrayList<String> categories = new ArrayList<>();
         for (Category category : DataBase.getDataBase().getAllCategories()) {
-            categories.append(category.getName()).append("\n");
+            categories.add(category.getName());
         }
-        return categories.toString();
+        return categories;
     }
 
     public static String getCategoriesForFilter() {

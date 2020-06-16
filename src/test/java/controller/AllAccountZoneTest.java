@@ -97,7 +97,7 @@ public class AllAccountZoneTest {
 
     @Test
     public void ShowCategoriesTest() {
-        Assert.assertEquals("PC\nmobile\n", AllAccountZone.showCategories());
+        Assert.assertEquals("PC\nmobile\n", AllAccountZone.getCategories());
     }
 
     @Test
