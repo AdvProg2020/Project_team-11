@@ -37,6 +37,8 @@ public class CommandProcessor extends Application {
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
+
+        stage.setOnCloseRequest(e -> FileProcess.writeDataBaseOnFile());
     }
 
     private static void setStaticValues() {
