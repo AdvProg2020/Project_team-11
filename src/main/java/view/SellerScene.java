@@ -39,6 +39,8 @@ public class SellerScene {
         products.setOnMouseClicked(e -> manageProducts());
 
         Button categories = createButton("show Categories", 200);
+        categories.setOnMouseClicked(e -> showCategories());
+
         Button auctions = createButton("View Auctions", 200);
 
         Button back = createButton("Back", 200);
@@ -301,7 +303,7 @@ public class SellerScene {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(true);
 
-                openedStage.setScene(new Scene(scrollPane, 700, 550));
+                openedStage.setScene(new Scene(scrollPane, 800, 650));
             });
         }
 
@@ -369,7 +371,7 @@ public class SellerScene {
             scrollPane.setFitToWidth(true);
             scrollPane.setFitToHeight(true);
 
-            openedStage.setScene(new Scene(scrollPane, 700, 550));
+            openedStage.setScene(new Scene(scrollPane, 800, 650));
         });
 
         GridPane gridPane = new GridPane();
@@ -386,7 +388,45 @@ public class SellerScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openedStage = openStage(scrollPane, "Sales History", 700, 550);
+        openedStage = openStage(scrollPane, "Sales History", 800, 650);
+    }
+
+    private static void showCategories() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        for (String category : AllAccountZone.getCategories()) {
+            Hyperlink hyperlink = new Hyperlink(category);
+
+            hyperlink.setOnMouseClicked(e -> {
+                VBox featureVBox = new VBox(20);
+                featureVBox.setAlignment(Pos.CENTER);
+
+                for (String feature : AdminZone.getCategoryFeature(hyperlink.getText())) {
+                    Label label = createLabel(feature, 300);
+                    featureVBox.getChildren().add(label);
+                }
+
+                Button back = createButton("Back", 300);
+                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+
+                featureVBox.getChildren().add(back);
+
+                ScrollPane scrollPane = new ScrollPane(featureVBox);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                openedStage.setScene(new Scene(scrollPane, 700, 550));
+            });
+
+            vBox.getChildren().add(hyperlink);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openStage(scrollPane, "Categories", 600, 550);
     }
 
     private static Stage openStage(Parent root, String title, int width, int height) {
