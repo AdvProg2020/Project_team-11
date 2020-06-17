@@ -73,15 +73,14 @@ public class SellerZone {
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description, "unseen");
     }
 
-    public static String getSellerHistory() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<String> getSellerHistory() {
+        ArrayList<String> saleHistory = new ArrayList<>();
         for (SellLog sellLog : ((Seller) AllAccountZone.getCurrentAccount()).getSellHistory()) {
-            output.append(sellLog.getId()).append(". at ").append(sellLog.getDate()).append(sellLog.getSoldProducts())
-                    .append(" sold to ").append(sellLog.getBuyerName()).append(" ").append(sellLog.getReceivedAmount())
-                    .append("$ with discount ").append(sellLog.getReducedAmountForAuction()).append("$ ")
-                    .append(sellLog.getSendingStatus());
+             saleHistory.add(sellLog.getId() + ". at " + sellLog.getDate() + " " + sellLog.getSoldProducts() +
+                     " sold to " + sellLog.getBuyerName() + " " + sellLog.getReceivedAmount() + "$ with discount " +
+                     sellLog.getReducedAmountForAuction() + "$ " + sellLog.getSendingStatus());
         }
-        return output.toString();
+        return saleHistory;
     }
 
     public static String getCompanyInfo() {

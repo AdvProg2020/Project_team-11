@@ -1,6 +1,7 @@
 package view;
 
 import controller.AllAccountZone;
+import controller.SellerZone;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -25,6 +26,8 @@ public class SellerScene {
         personalInfo.setOnMouseClicked(e -> getPersonalInfo());
 
         Button salesHistory = createButton("View Sales History", 200);
+        salesHistory.setOnMouseClicked(e -> viewSalesHistory());
+
         Button products = createButton("Manage Products", 200);
         Button categories = createButton("show Categories", 200);
         Button auctions = createButton("View Auctions", 200);
@@ -120,5 +123,22 @@ public class SellerScene {
         scrollPane.setFitToHeight(true);
 
         openStage(scrollPane, "Personal Info", 600, 550);
+    }
+
+    private static void viewSalesHistory() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        ArrayList<String> salesHistory = new ArrayList<>(SellerZone.getSellerHistory());
+        for (String sale : salesHistory) {
+            Label label = createLabel(sale, 500);
+            vBox.getChildren().add(label);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openStage(scrollPane, "Sales History", 700, 550);
     }
 }
