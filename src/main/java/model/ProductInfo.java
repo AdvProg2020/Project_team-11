@@ -61,14 +61,4 @@ public class ProductInfo {
     public void setStockStatus(int stockStatus) {
         this.stockStatus = stockStatus;
     }
-
-    @Override
-    public String toString() {
-        return "name = '" + name + '\'' +
-                ", company = '" + company + '\'' +
-                ", price = " + price +
-                ", seller = " + seller +
-                ", stockStatus = " + stockStatus +
-                '}';
-    }
 }

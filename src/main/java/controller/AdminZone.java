@@ -61,14 +61,26 @@ public class AdminZone {
         ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
         Product product = SellerZone.getProductById(Integer.parseInt(splitInfo.get(0)));
         assert product != null;
-        if (!splitInfo.get(1).equals("next"))
-            product.getGeneralFeature().setName(splitInfo.get(1));
-        if (!splitInfo.get(2).equals("next"))
-            product.getGeneralFeature().setCompany(splitInfo.get(2));
-        if (!splitInfo.get(3).equals("next"))
-            product.getGeneralFeature().setPrice(Long.parseLong(splitInfo.get(3)));
-        if (!splitInfo.get(4).equals("next"))
-            product.getGeneralFeature().setStockStatus(Integer.parseInt(splitInfo.get(4)));
+        switch (splitInfo.get(1)) {
+            case "Name":
+                product.getGeneralFeature().setName(splitInfo.get(2));
+                break;
+            case "Company":
+                product.getGeneralFeature().setCompany(splitInfo.get(2));
+                break;
+            case "Price":
+                product.getGeneralFeature().setPrice(Long.parseLong(splitInfo.get(2)));
+                break;
+            case "Stock":
+                product.getGeneralFeature().setStockStatus(Integer.parseInt(splitInfo.get(2)));
+                break;
+            case "Description":
+                product.setDescription(splitInfo.get(2));
+                break;
+            default:
+                product.getCategoryFeature().replace(splitInfo.get(1), splitInfo.get(2));
+                break;
+        }
     }
 
     private static void acceptRequestCreateSellerAccount(Request request) {

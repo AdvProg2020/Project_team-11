@@ -105,17 +105,4 @@ public class Product {
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
     }
-
-    @Override
-    public String toString() {
-        return "id = " + id +
-                ", status = '" + status + '\'' +
-                ", generalFeature = " + generalFeature +
-                ", category = " + categoryName +
-                ", specialFeature = " + categoryFeature +
-                ", description = '" + description + '\'' +
-                ", averageScore = " + averageScore +
-                ", comments = " + comments +
-                '}';
-    }
 }

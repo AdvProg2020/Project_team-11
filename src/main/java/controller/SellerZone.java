@@ -1,5 +1,6 @@
 package controller;
 
+import com.google.gson.Gson;
 import model.*;
 
 import java.util.ArrayList;
@@ -17,17 +18,14 @@ public class SellerZone {
         return null;
     }
 
-    public static String getSellerProducts() {
-        StringBuilder productList = new StringBuilder();
+    public static HashMap<Integer, String> getSellerProducts() {
+        HashMap<Integer, String> products = new HashMap<>();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             if (product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
-                productList.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).
-                        append(": ").append(product.getGeneralFeature().getPrice()).append("$ ").
-                        append(product.getGeneralFeature().getCompany()).append(" Average Score: ").
-                        append(product.getAverageScore()).append("\n");
+                products.put(product.getId(), product.getGeneralFeature().getName());
             }
         }
-        return productList.toString();
+        return products;
     }
 
     private static String getProductBuyers(Product product) {
@@ -42,13 +40,24 @@ public class SellerZone {
         return buyersList.toString();
     }
 
-    public static String viewSellerProduct(int productId) {
+    public static HashMap<String, String> getSellerProductDetails(int productId) {
         Product product = getProductById(productId);
-        if (product == null) {
-            return "You haven't this product.";
-        } else {
-            return product.toString();
-        }
+        HashMap<String, String> productDetails= new HashMap<>();
+        productDetails.put("status", product.getStatus());
+        productDetails.put("name", product.getGeneralFeature().getName());
+        productDetails.put("company", product.getGeneralFeature().getCompany());
+        productDetails.put("price", String.valueOf(product.getGeneralFeature().getPrice()));
+        BuyerZone.setAuctionPrice();
+        productDetails.put("auctionPrice", String.valueOf(product.getGeneralFeature().getAuctionPrice()));
+        productDetails.put("stock", String.valueOf(product.getGeneralFeature().getStockStatus()));
+        productDetails.put("category", product.getCategoryName());
+        Gson gson = new Gson();
+        productDetails.put("feature", gson.toJson(product.getCategoryFeature()));
+        productDetails.put("description", product.getDescription());
+        productDetails.put("score", String.valueOf(product.getAverageScore()));
+        productDetails.put("numOfUserRated", String.valueOf(product.getNumOfUsersRated()));
+        productDetails.put("comments", gson.toJson(product.getComments()));
+        return productDetails;
     }
 
     public static String viewProductBuyers(int productId) {
@@ -95,18 +104,17 @@ public class SellerZone {
         return null;
     }
 
-    public static void sendAddNewProductRequest(Category category, HashMap<String, String> descriptions,
+    public static void sendAddNewProductRequest(ArrayList<String> info,
                                                 HashMap<String, String> categoryFeature) {
-        ProductInfo productInfo = new ProductInfo(descriptions.get("name"), descriptions.get("company"),
-                Long.parseLong(descriptions.get("price")), (Seller) AllAccountZone.getCurrentAccount(),
-                Integer.parseInt(descriptions.get("stock status")));
-        Product product = new Product("construction", productInfo, category.getName(), categoryFeature,
-                descriptions.get("description"));
+        ProductInfo productInfo = new ProductInfo(info.get(0), info.get(1),
+                Long.parseLong(info.get(2)), (Seller) AllAccountZone.getCurrentAccount(), Integer.parseInt(info.get(3)));
+        Product product = new Product("construction", productInfo, info.get(5), categoryFeature, info.get(4));
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
                 String.valueOf(product.getId()), "unseen");
     }
 
-    public static void removeProduct(Product product) {
+    public static void removeProduct(int productId) {
+        Product product = getProductById(productId);
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             auction.getProductList().remove(product);
         }
@@ -184,5 +192,13 @@ public class SellerZone {
             }
         }
         return sellerRequest.toString();
+    }
+
+    public static ArrayList<String> getCategoryFeature(String name) {
+        Category category = Category.getCategoryByName(name);
+        if (category != null) {
+            return category.getSpecialFeatures();
+        }
+        return null;
     }
 }

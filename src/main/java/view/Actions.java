@@ -2,6 +2,7 @@ package view;
 
 import controller.AdminZone;
 import controller.AllAccountZone;
+import controller.SellerZone;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -12,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Actions {
 
@@ -282,5 +285,74 @@ public class Actions {
                 alert.show();
             }
         });
+    }
+
+    public static void editProduct(TextField textField, Button button, int productId) {
+        button.setText("Send Request");
+        textField.setDisable(false);
+        button.setOnMouseClicked(e -> {
+            boolean isValid;
+            switch (textField.getPromptText()) {
+                case "Price":
+                    isValid = Validation.validateLong(textField.getText());
+                    break;
+                case "Stock":
+                    isValid = Validation.validateInteger(textField.getText());
+                    break;
+                case "Name":
+                case "Company":
+                case "Description":
+                default:
+                    isValid = Validation.validateNames(textField.getText());
+            }
+            if (isValid) {
+                button.setText("Edit");
+                textField.setDisable(true);
+                SellerZone.sendEditProductRequest(productId + "," + textField.getPromptText() + ","
+                        + textField.getText());
+                button.setOnMouseClicked(event -> editProduct(textField, button, productId));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Invalid format.");
+                alert.show();
+            }
+        });
+    }
+
+    public static boolean createProduct(ArrayList<String> info, HashMap<String, String> features) {
+        boolean isFeaturesComplete = true;
+        for (Map.Entry<String, String> entry : features.entrySet()) {
+            if (!Validation.validateNames(entry.getValue())) {
+                isFeaturesComplete = false;
+                break;
+            }
+        }
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validateNames(info.get(0))) {
+            alert.setContentText("Enter product name.");
+            alert.show();
+        } else if (!Validation.validateNames(info.get(1))) {
+            alert.setContentText("Enter company.");
+            alert.show();
+        } else if (!Validation.validateLong(info.get(2))) {
+            alert.setContentText("Price format is not valid.");
+            alert.show();
+        } else if (!Validation.validateInteger(info.get(3))) {
+            alert.setContentText("Stock format is not valid.");
+            alert.show();
+        } else if (!Validation.validateNames(info.get(4))) {
+            alert.setContentText("Enter Description.");
+            alert.show();
+        } else if (!Validation.validateNames(info.get(5))) {
+            alert.setContentText("Enter category name.");
+            alert.show();
+        } else if (!isFeaturesComplete) {
+            alert.setContentText("Complete features.");
+            alert.show();
+        } else {
+            SellerZone.sendAddNewProductRequest(info, features);
+            return true;
+        }
+        return false;
     }
 }

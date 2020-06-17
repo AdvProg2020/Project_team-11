@@ -28,7 +28,7 @@ public class ManageProducts extends Menu {
             @Override
             public void execute() {
                 int productId = Integer.parseInt(checkInput("Enter Product ID", "\\d{1,9}"));
-                System.out.println(SellerZone.viewSellerProduct(productId));
+                System.out.println(SellerZone.getSellerProductDetails(productId));
                 this.parentMenu.execute();
             }
         };

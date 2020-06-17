@@ -41,9 +41,9 @@ public class MainScenes {
         return signInOrOut;
     }
 
-    public static TextField createTextField(String text, int maxWidth) {
+    public static TextField createTextField(String promptText, int maxWidth) {
         TextField textField = new TextField();
-        textField.setPromptText(text);
+        textField.setPromptText(promptText);
         textField.setMaxWidth(maxWidth);
         textField.setMinWidth(maxWidth);
         textField.setAlignment(Pos.CENTER);

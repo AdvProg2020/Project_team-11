@@ -73,7 +73,7 @@ public class SellerMenu extends Menu {
                 for (String feature : category.getSpecialFeatures()) {
                     categoryFeature.put(feature, checkInput(feature, ".+"));
                 }
-                SellerZone.sendAddNewProductRequest(category, requestDescription, categoryFeature);
+//                SellerZone.sendAddNewProductRequest(category, requestDescription, categoryFeature);
                 System.out.println("Request sent.");
                 this.parentMenu.execute();
             }
@@ -89,7 +89,7 @@ public class SellerMenu extends Menu {
                 if (product == null) {
                     System.out.println("You haven't this product.");
                 } else {
-                    SellerZone.removeProduct(product);
+//                    SellerZone.removeProduct(product);
                     System.out.println("Product removed from your products.");
                 }
                 this.parentMenu.execute();
