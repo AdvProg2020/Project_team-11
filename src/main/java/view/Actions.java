@@ -160,11 +160,6 @@ public class Actions {
             try {
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 start = format.parse(info.get(1));
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 end = format.parse(info.get(2));
             } catch (ParseException ex) {
                 ex.printStackTrace();
@@ -354,5 +349,66 @@ public class Actions {
             return true;
         }
         return false;
+    }
+
+
+    public static boolean createAuction(ArrayList<String> info) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validatePercent(info.get(0))) {
+            alert.setContentText("Enter a number between 0 and 100.");
+            alert.show();
+        } else if (!Validation.validateDate(info.get(1))) {
+            alert.setContentText("Start date format is not valid.");
+            alert.show();
+        } else if (!Validation.validateDate(info.get(2))) {
+            alert.setContentText("End date format is not valid.");
+            alert.show();
+        } else {
+            Date start = null, end = null;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                start = format.parse(info.get(1));
+                end = format.parse(info.get(2));
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+            if (end.before(start)) {
+                alert.setContentText("End date should be after start date.");
+                alert.show();
+            } else {
+                info.set(1, String.valueOf(start.getTime()));
+                info.set(2, String.valueOf(end.getTime()));
+                SellerZone.createAuction(info);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void editAuction(TextField textField, Button button, int auctionId) {
+        button.setText("Send Request");
+        textField.setDisable(false);
+        button.setOnMouseClicked(event -> {
+            boolean isValid = false;
+            switch (textField.getPromptText()) {
+                case "Discount":
+                    isValid = Validation.validatePercent(textField.getText());
+                    break;
+                case "Start [dd/mm/yyyy hh:mm:ss]":
+                case "End [dd/mm/yyyy hh:mm:ss]":
+                    isValid = Validation.validateDate(textField.getText());
+            }
+            //TODO : check date
+            if (isValid) {
+                button.setText("Edit");
+                textField.setDisable(true);
+                SellerZone.sendEditAuctionRequest(textField.getPromptText(), textField.getText(), auctionId);
+                button.setOnMouseClicked(e -> editAuction(textField, button, auctionId));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Invalid format.");
+                alert.show();
+            }
+        });
     }
 }

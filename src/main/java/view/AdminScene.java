@@ -282,10 +282,11 @@ public class AdminScene {
                     userButton.setOnMouseClicked(event -> {
                         try {
                             AdminZone.editDiscount("remove user", userText.getText(), info.get(0));
-                            gridPane.getChildren().removeAll(userText, userButton);
                         } catch (ParseException ex) {
                             ex.printStackTrace();
                         }
+                        textFields.getChildren().remove(userText);
+                        removeButtons.getChildren().remove(userButton);
                         info.remove(userText.getText());
                     });
 
@@ -595,7 +596,7 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openedStage = openStage(gridPane, "Requests", 800, 600);
+        openedStage = openStage(scrollPane, "Requests", 800, 600);
     }
 
     private static void manageCategories() {

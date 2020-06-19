@@ -110,29 +110,31 @@ public class AdminZone {
     private static void acceptRequestEditAuction(Request request) {
         String info = request.getDescription();
         ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
-        Auction auction = getAuctionById(Integer.parseInt(splitInfo.get(0)));
+        Auction auction = getAuctionById(Integer.parseInt(splitInfo.get(2)));
         assert auction != null;
-        if (!splitInfo.get(1).equals("next")) {
-            ArrayList<String> productsId = new ArrayList<>(Arrays.asList(splitInfo.get(1).split("/")));
-            ArrayList<Product> productList = new ArrayList<>();
-            for (String productId : productsId) {
-                Product product = SellerZone.getProductById(Integer.parseInt(productId));
-                productList.add(product);
-            }
-            auction.setProductList(productList);
-        }
-        if (!splitInfo.get(2).equals("next")) {
-            long milliSeconds = Long.parseLong(splitInfo.get(2));
-            Date startDate = new Date(milliSeconds);
-            auction.setStartDate(startDate);
-        }
-        if (!splitInfo.get(3).equals("next")) {
-            long milliSeconds = Long.parseLong(splitInfo.get(3));
-            Date endDate = new Date(milliSeconds);
-            auction.setEndDate(endDate);
-        }
-        if (!splitInfo.get(4).equals("next")) {
-            auction.setDiscountAmount(Integer.parseInt(splitInfo.get(4)));
+        switch (splitInfo.get(0)) {
+            case "Discount":
+                auction.setDiscountAmount(Integer.parseInt(splitInfo.get(1)));
+                break;
+            case "Start [dd/mm/yyyy hh:mm:ss]":
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = null;
+                try {
+                     date = format.parse(splitInfo.get(1));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                auction.setStartDate(date);
+                break;
+            case "End [dd/mm/yyyy hh:mm:ss]":
+                format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                date = null;
+                try {
+                    date = format.parse(splitInfo.get(1));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                auction.setEndDate(date);
         }
     }
 
@@ -284,7 +286,7 @@ public class AdminZone {
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             products.add(new view.tableViewData.Product(product.getId(), product.getStatus(),
                     product.getGeneralFeature().getName(), product.getGeneralFeature().getPrice(),
-                    product.getGeneralFeature().getSeller(), product.getGeneralFeature().getStockStatus(),
+                    product.getGeneralFeature().getSeller().getUsername(), product.getGeneralFeature().getStockStatus(),
                     product.getCategoryName(), product.getCategoryFeature(), product.getAverageScore()));
         }
         return products;

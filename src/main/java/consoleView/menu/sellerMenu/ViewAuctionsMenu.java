@@ -23,7 +23,7 @@ public class ViewAuctionsMenu extends Menu {
     @Override
     public void execute() {
         System.out.println("\nAuctions : ");
-        System.out.println(SellerZone.showSellerAuctions());
+        System.out.println(SellerZone.getSellerAuctions());
         super.execute();
     }
 
@@ -32,7 +32,7 @@ public class ViewAuctionsMenu extends Menu {
             @Override
             public void execute() {
                 int auctionId = Integer.parseInt(checkInput("Enter auction ID", "\\d{1,9}"));
-                System.out.println(SellerZone.showSellerAuction(auctionId));
+                System.out.println(SellerZone.getAuctionDetail(auctionId));
                 this.parentMenu.execute();
             }
         };
@@ -45,7 +45,7 @@ public class ViewAuctionsMenu extends Menu {
                 int auctionId = Integer.parseInt(checkInput("Enter auction ID", "(\\d{1,9})"));
                 if (SellerZone.getAuctionById(auctionId) != null) {
                     String requestDescription = getEditedField(auctionId);
-                    SellerZone.sendEditAuctionRequest(auctionId, requestDescription);
+//                    SellerZone.sendEditAuctionRequest(auctionId, requestDescription);
                 } else {
                     System.out.println("invalid auction ID.");
                 }
@@ -123,6 +123,6 @@ public class ViewAuctionsMenu extends Menu {
         Date endDate = getDate("end ");
         newField.append(endDate.getTime()).append(",");
         newField.append(checkInput("Enter discount amount", "(^[1-9][0-9]?$)|next"));
-        SellerZone.createAuction(newField.toString());
+//        SellerZone.createAuction(newField.toString());
     }
 }

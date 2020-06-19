@@ -126,31 +126,30 @@ public class SellerZone {
         DataBase.getDataBase().getAllProducts().remove(product);
     }
 
-    public static String showSellerAuctions() {
+    public static ArrayList<Integer> getSellerAuctions() {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
-        StringBuilder output = new StringBuilder();
+        ArrayList<Integer> auctionIds = new ArrayList<>();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             if (auction.getSellerName().equals(seller.getUsername())) {
-                output.append(auction.getId()).append(".").append(" discount : ")
-                        .append(auction.getDiscountAmount()).append("%");
+                auctionIds.add(auction.getId());
             }
         }
-        return output.toString();
+        return auctionIds;
     }
 
-    public static String showSellerAuction(int auctionId) {
+    public static ArrayList<String> getAuctionDetail(int auctionId) {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
-        StringBuilder output = new StringBuilder();
+        ArrayList<String> auctionDetails = new ArrayList<>();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getId() == auctionId && auction.getSellerName().equals(seller.getUsername()))
-                output.append(auction.getId()).append(". from ").append(auction.getStartDate()).append(" to ")
-                        .append(auction.getEndDate()).append(" for ").append(auction.getProductList())
-                        .append(" discount : ").append(auction.getDiscountAmount()).append("%");
+            if (auction.getId() == auctionId && auction.getSellerName().equals(seller.getUsername())) {
+                auctionDetails.addAll(Arrays.asList(auction.getStatus(), String.valueOf(auction.getDiscountAmount()),
+                        auction.getStartDate().toString(), auction.getEndDate().toString()));
+                for (Product product : auction.getProductList()) {
+                    auctionDetails.add(product.getId() + ". " + product.getGeneralFeature().getName());
+                }
+            }
         }
-        if (output.length() == 0) {
-            return "invalid ID";
-        }
-        return output.toString();
+        return auctionDetails;
     }
 
     public static Auction getAuctionById(int auctionId) {
@@ -162,25 +161,24 @@ public class SellerZone {
         return null;
     }
 
-    public static void sendEditAuctionRequest(int auctionId, String description) {
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit auction", description, "unseen");
+    public static void sendEditAuctionRequest(String field, String value, int auctionId) {
+        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit auction",
+                field + "," + value + "," + auctionId, "unseen");
         Auction auction = getAuctionById(auctionId);
         auction.setStatus("editing");
     }
 
-    public static void createAuction(String info) {
+    public static void createAuction(ArrayList<String> info) {
         Seller seller = (Seller) AllAccountZone.getCurrentAccount();
-        ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
-        ArrayList<String> productsId = new ArrayList<>(Arrays.asList(splitInfo.get(0).split("/")));
         ArrayList<Product> productList = new ArrayList<>();
-        for (String productId : productsId) {
-            Product product = getProductById(Integer.parseInt(productId));
+        for (int i = 3; i < info.size(); i++) {
+            Product product = getProductById(Integer.parseInt(info.get(i)));
             productList.add(product);
         }
-        long startDateMilliSec = Long.parseLong(splitInfo.get(1));
-        long endDateMilliSec = Long.parseLong(splitInfo.get(2));
+        long startDateMilliSec = Long.parseLong(info.get(1));
+        long endDateMilliSec = Long.parseLong(info.get(2));
         Auction auction = new Auction(productList, "construction", new Date(startDateMilliSec),
-                new Date(endDateMilliSec), Integer.parseInt(splitInfo.get(3)), seller.getUsername());
+                new Date(endDateMilliSec), Integer.parseInt(info.get(0)), seller.getUsername());
         new Request(seller.getUsername(), "add auction", String.valueOf(auction.getId()),
                 "unseen");
     }
@@ -200,5 +198,28 @@ public class SellerZone {
             return category.getSpecialFeatures();
         }
         return null;
+    }
+
+    public static boolean hasProduct(int productId) {
+        Product product = getProductById(productId);
+        if (product == null) {
+            return false;
+        } else if (product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public static void removeProductFromAuction(int auctionId, int productId) {
+        Auction auction = getAuctionById(auctionId);
+        Product product = getProductById(productId);
+        auction.getProductList().remove(product);
+    }
+
+    public static void addProductToAuction(int auctionId, int productId) {
+        Auction auction = getAuctionById(auctionId);
+        Product product = getProductById(productId);
+        auction.getProductList().add(product);
     }
 }

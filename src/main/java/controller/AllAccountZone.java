@@ -8,10 +8,7 @@ import consoleView.menu.Menu;
 import consoleView.menu.auctionMenu.AuctionMenu;
 import consoleView.menu.productsMenu.FilterInfo;
 import consoleView.menu.productsMenu.ProductsMenu;
-import view.AdminScene;
-import view.CommandProcessor;
-import view.MainScenes;
-import view.SellerScene;
+import view.*;
 
 import java.util.*;
 import java.util.List;
@@ -297,7 +294,6 @@ public class AllAccountZone {
                         Button button = new Button("Admin");
                         button.setOnMouseClicked(e -> {
                             CommandProcessor.getStage().setScene(AdminScene.getAdminScene());
-                            CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);
@@ -315,7 +311,6 @@ public class AllAccountZone {
                         Button button = new Button("Seller");
                         button.setOnMouseClicked(e -> {
                             CommandProcessor.getStage().setScene(SellerScene.getSellerScene());
-                            CommandProcessor.getStage().setMaximized(false);
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);
@@ -332,8 +327,7 @@ public class AllAccountZone {
                         setCurrentAccount(account);
                         Button button = new Button("Buyer");
                         button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(MainScenes.getBuyerScene());
-                            CommandProcessor.getStage().setMaximized(false);
+                            CommandProcessor.getStage().setScene(BuyerScene.getBuyerScene());
                             CommandProcessor.getStage().setMaximized(true);
                         });
                         button.setMinWidth(100);

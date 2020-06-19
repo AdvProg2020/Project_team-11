@@ -42,6 +42,10 @@ public class SellerScene {
         categories.setOnMouseClicked(e -> showCategories());
 
         Button auctions = createButton("View Auctions", 200);
+        auctions.setOnMouseClicked(e -> manageAuctions());
+
+        Button logout = createButton("Logout", 200);
+        logout.setOnMouseClicked(e -> Actions.logout());
 
         Button back = createButton("Back", 200);
         back.setOnMouseClicked(e -> {
@@ -49,7 +53,7 @@ public class SellerScene {
             CommandProcessor.getStage().setMaximized(true);
         });
 
-        VBox vBox = new VBox(25, personalInfo, salesHistory, products, categories, auctions, back);
+        VBox vBox = new VBox(25, personalInfo, salesHistory, products, categories, auctions, logout, back);
         vBox.setAlignment(Pos.CENTER);
 
         Screen screen = Screen.getPrimary();
@@ -226,7 +230,7 @@ public class SellerScene {
                 categoryText.setText(productDetails.get("category"));
                 categoryText.setDisable(true);
 
-                VBox featureLabels = new VBox(20);
+                VBox featureLabels = new VBox(25);
                 featureLabels.setAlignment(Pos.CENTER);
 
                 VBox featureTexts = new VBox(20);
@@ -244,7 +248,8 @@ public class SellerScene {
                     featureText.setText(featureEntry.getValue());
                     featureText.setDisable(true);
                     Button editFeature = createButton("Edit", 100);
-                    editFeature.setOnMouseClicked(event -> Actions.editProduct(featureText, editFeature, Integer.parseInt(id.getText())));
+                    editFeature.setOnMouseClicked(event -> Actions.editProduct(featureText, editFeature,
+                            Integer.parseInt(id.getText())));
 
                     featureLabels.getChildren().add(featureLabel);
                     featureTexts.getChildren().add(featureText);
@@ -256,7 +261,8 @@ public class SellerScene {
                 descriptionText.setText(productDetails.get("description"));
                 descriptionText.setDisable(true);
                 Button editDescription = createButton("Edit", 100);
-                editDescription.setOnMouseClicked(event -> Actions.editProduct(descriptionText, editDescription, Integer.parseInt(id.getText())));
+                editDescription.setOnMouseClicked(event -> Actions.editProduct(descriptionText, editDescription,
+                        Integer.parseInt(id.getText())));
 
                 Label scoreLabel = createLabel("Score : ", 100);
                 TextField scoreText = createTextField("Score", 500);
@@ -291,7 +297,7 @@ public class SellerScene {
                 gridPane.addColumn(0, statusLabel, nameLabel, companyLabel, priceLabel, auctionLabel, stockLabel,
                         categoryLabel, featureLabels, descriptionLabel, scoreLabel, rateNumberLabel, commentLabel);
                 gridPane.addColumn(1, statusText, nameText, companyText, priceText, auctionText, stockText,
-                        categoryText, featureTexts, descriptionText, scoreText, rateNumberText, commentVBox);
+                        categoryText, featureTexts, descriptionText, scoreText, rateNumberText, commentVBox, back);
                 gridPane.add(editName, 2, 1);
                 gridPane.add(editCompany, 2, 2);
                 gridPane.add(editPrice, 2, 3);
@@ -357,7 +363,8 @@ public class SellerScene {
                     }
                     if (Actions.createProduct(new ArrayList<>(Arrays.asList(name.getText(), company.getText(),
                             price.getText(), stock.getText(), description.getText(), category.getText())), productFeature)) {
-                        openedStage.setScene(lastScene);
+                        openedStage.close();
+                        manageProducts();
                     }
                 }
             });
@@ -416,7 +423,7 @@ public class SellerScene {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(true);
 
-                openedStage.setScene(new Scene(scrollPane, 700, 550));
+                openedStage.setScene(new Scene(scrollPane, 600, 550));
             });
 
             vBox.getChildren().add(hyperlink);
@@ -426,7 +433,224 @@ public class SellerScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openStage(scrollPane, "Categories", 600, 550);
+        openedStage = openStage(scrollPane, "Categories", 600, 550);
+    }
+
+    private static void manageAuctions() {
+        VBox idVBox = new VBox(20);
+        idVBox.setAlignment(Pos.CENTER);
+
+        ArrayList<Integer> auctionsId = new ArrayList<>(SellerZone.getSellerAuctions());
+
+        for (Integer id : auctionsId) {
+            Hyperlink hyperlink = new Hyperlink(String.valueOf(id));
+
+            hyperlink.setOnMouseClicked(e -> {
+
+                Label statusLabel = createLabel("Status : ", 100);
+                Label discountLabel = createLabel("Discount Percent : ", 100);
+                Label startLabel = createLabel("Start Date : ", 100);
+                Label endLabel = createLabel("End Date : ", 100);
+                Label productLabel = createLabel("Products : ", 100);
+
+                ArrayList<String> auctionDetail =
+                        new ArrayList<>(SellerZone.getAuctionDetail(Integer.parseInt(hyperlink.getText())));
+
+                TextField statusText = createTextField("Status", 400);
+                statusText.setText(auctionDetail.get(0));
+                statusText.setDisable(true);
+
+                TextField discountText = createTextField("Discount", 400);
+                discountText.setText(auctionDetail.get(1));
+                discountText.setDisable(true);
+
+                TextField startText = createTextField("Start [dd/mm/yyyy hh:mm:ss]", 400);
+                startText.setText(auctionDetail.get(2));
+                startText.setDisable(true);
+
+                TextField endText = createTextField("End [dd/mm/yyyy hh:mm:ss]", 400);
+                endText.setText(auctionDetail.get(3));
+                endText.setDisable(true);
+
+                VBox productTextFields = new VBox(20);
+                productTextFields.setAlignment(Pos.CENTER);
+
+                VBox productButton = new VBox(20);
+                productButton.setAlignment(Pos.CENTER);
+
+                for (int i = 4; i < auctionDetail.size(); i++) {
+                    TextField productText = createTextField("Product", 400);
+                    productText.setText(auctionDetail.get(i));
+                    productText.setDisable(true);
+                    productTextFields.getChildren().add(productText);
+
+                    Button removeProduct = createButton("Remove", 100);
+                    removeProduct.setOnMouseClicked(event -> {
+                        SellerZone.removeProductFromAuction(Integer.parseInt(hyperlink.getText()),
+                                Integer.parseInt(productText.getText().substring(0, productText.getText().indexOf("."))));
+                        productTextFields.getChildren().remove(productText);
+                        productButton.getChildren().remove(removeProduct);
+                    });
+                    productButton.getChildren().add(removeProduct);
+                }
+
+                Button editDiscount = createButton("Edit", 100);
+                editDiscount.setOnMouseClicked(event -> Actions.editAuction(discountText, editDiscount,
+                        Integer.parseInt(hyperlink.getText())));
+                Button editStart = createButton("Edit", 100);
+                editStart.setOnMouseClicked(event -> Actions.editAuction(startText, editStart,
+                        Integer.parseInt(hyperlink.getText())));
+                Button editEnd = createButton("Edit", 100);
+                editEnd.setOnMouseClicked(event -> Actions.editAuction(endText, editEnd,
+                        Integer.parseInt(hyperlink.getText())));
+
+                TextField addText = createTextField("Product ID", 400);
+                Button addProduct = createButton("Add Product", 100);
+                addProduct.setOnMouseClicked(event -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    if (Validation.validateInteger(addText.getText())) {
+                        if (SellerZone.getAuctionById(Integer.parseInt(hyperlink.getText())).getProductList()
+                                .contains(SellerZone.getProductById(Integer.parseInt(addText.getText())))) {
+                            alert.setContentText("Already exist.");
+                            alert.show();
+                        } else if (SellerZone.hasProduct(Integer.parseInt(addText.getText()))) {
+                            TextField productText = createTextField("Product", 400);
+                            productText.setText(addText.getText() + ". " +
+                                    SellerZone.getProductById(Integer.parseInt(addText.getText())).getGeneralFeature().getName());
+                            productText.setDisable(true);
+                            productTextFields.getChildren().add(productText);
+
+                            Button removeProduct = createButton("Remove", 100);
+                            removeProduct.setOnMouseClicked(ev -> {
+                                productTextFields.getChildren().remove(productText);
+                                productButton.getChildren().remove(removeProduct);
+                                SellerZone.removeProductFromAuction(Integer.parseInt(hyperlink.getText()),
+                                        Integer.parseInt(productText.getText().substring(0, productText.getText().indexOf("."))));
+                            });
+                            productButton.getChildren().add(removeProduct);
+
+                            SellerZone.addProductToAuction(Integer.parseInt(hyperlink.getText()),
+                                    Integer.parseInt(addText.getText()));
+                            addText.clear();
+                        } else {
+                            alert.setContentText("You haven't this product.");
+                            alert.show();
+                        }
+                    } else {
+                        alert.setContentText("invalid product ID.");
+                        alert.show();
+                    }
+                });
+
+                Button back = createButton("Back", 300);
+                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+
+                GridPane gridPane = new GridPane();
+                gridPane.setAlignment(Pos.CENTER);
+                gridPane.setVgap(20);
+                gridPane.setHgap(20);
+                gridPane.addColumn(0, statusLabel, discountLabel, startLabel, endLabel, productLabel);
+                gridPane.addColumn(1, statusText, discountText, startText, endText, productTextFields, addText, back);
+                gridPane.add(editDiscount, 2, 1);
+                gridPane.add(editStart, 2, 2);
+                gridPane.add(editEnd, 2, 3);
+                gridPane.add(productButton, 2, 4);
+                gridPane.add(addProduct, 2, 5);
+
+                ScrollPane scrollPane = new ScrollPane(gridPane);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                openedStage.setScene(new Scene(scrollPane, 700, 650));
+            });
+
+            idVBox.getChildren().add(hyperlink);
+        }
+
+        Button add = createButton("Add Auction", 150);
+        add.setOnMouseClicked(e -> {
+            TextField discount = createTextField("Discount", 400);
+            TextField start = createTextField("Start Date [dd/mm/yyyy hh:mm:ss]", 400);
+            TextField end = createTextField("End Date [dd/mm/yyyy hh:mm:ss]", 400);
+            TextField product = createTextField("Product ID", 400);
+
+            VBox productVBox = new VBox(20);
+            productVBox.setAlignment(Pos.CENTER);
+
+            VBox removeVBox = new VBox(20);
+            removeVBox.setAlignment(Pos.CENTER);
+
+            ArrayList<String> productsId = new ArrayList<>();
+
+            Button addProduct = createButton("Add", 100);
+            addProduct.setOnMouseClicked(event -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                if (product.getText().isEmpty()) {
+                    alert.setContentText("Enter product ID.");
+                    alert.show();
+                } else if (SellerZone.hasProduct(Integer.parseInt(product.getText()))) {
+                    if (productsId.contains(product.getText())) {
+                        alert.setContentText("Already exist.");
+                        alert.show();
+                    } else {
+                        productsId.add(product.getText());
+                        TextField productText = createTextField("Product", 400);
+                        productText.setText(product.getText() + ". " +
+                                SellerZone.getProductById(Integer.parseInt(product.getText())).getGeneralFeature().getName());
+                        productText.setDisable(true);
+                        productVBox.getChildren().add(productText);
+
+                        Button removeProduct = createButton("Remove", 100);
+                        removeVBox.getChildren().add(removeProduct);
+                        removeProduct.setOnMouseClicked(ev -> {
+                            productsId.remove(productText.getText().substring(0, productText.getText().indexOf(".")));
+                            productVBox.getChildren().remove(productText);
+                            removeVBox.getChildren().remove(removeProduct);
+                        });
+
+                        product.clear();
+                    }
+                } else {
+                    alert.setContentText("You haven't this product.");
+                    alert.show();
+                }
+            });
+
+            Button create = createButton("Create", 100);
+            create.setOnMouseClicked(event -> {
+                ArrayList<String> info = new ArrayList<>(Arrays.asList(discount.getText(), start.getText(), end.getText()));
+                info.addAll(productsId);
+                if (Actions.createAuction(info)) {
+                    openedStage.close();
+                    manageAuctions();
+                }
+            });
+
+            Button back = createButton("Back", 100);
+            back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+
+            GridPane gridPane = new GridPane();
+            gridPane.setAlignment(Pos.CENTER);
+            gridPane.setVgap(20);
+            gridPane.setHgap(20);
+            gridPane.addColumn(0, discount, start, end, productVBox, product, create, back);
+            gridPane.add(addProduct, 1, 4);
+            gridPane.add(removeVBox, 1, 3);
+
+            ScrollPane scrollPane = new ScrollPane(gridPane);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setFitToHeight(true);
+
+            openedStage.setScene(new Scene(scrollPane, 700, 650));
+        });
+
+        idVBox.getChildren().add(add);
+
+        ScrollPane scrollPane = new ScrollPane(idVBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        openedStage = openStage(scrollPane, "Categories", 700, 650);
     }
 
     private static Stage openStage(Parent root, String title, int width, int height) {

@@ -3,7 +3,6 @@ package view.tableViewData;
 import controller.AdminZone;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Seller;
 
 import java.util.HashMap;
 
@@ -12,13 +11,13 @@ public class Product {
     private String status;
     private String name;
     private long price;
-    private Seller seller;
+    private String seller;
     private int stockStatus;
     private String categoryName;
     private HashMap<String, String> categoryFeature;
     private double averageScore;
 
-    public Product(int id, String status, String name, long price, Seller seller, int stockStatus, String categoryName,
+    public Product(int id, String status, String name, long price, String seller, int stockStatus, String categoryName,
                    HashMap<String, String> categoryFeature, double averageScore) {
         this.id = id;
         this.status = status;
@@ -63,11 +62,11 @@ public class Product {
         this.price = price;
     }
 
-    public Seller getSeller() {
+    public String getSeller() {
         return seller;
     }
 
-    public void setSeller(Seller seller) {
+    public void setSeller(String seller) {
         this.seller = seller;
     }
 

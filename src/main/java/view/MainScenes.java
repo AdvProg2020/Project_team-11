@@ -165,21 +165,6 @@ public class MainScenes {
         return new Scene(vBox, 600, 550);
     }
 
-    public static Scene getBuyerScene() {
-        Button personalInfo = createButton("View Personal Info", 200);
-        Button cart = createButton("View Cart", 200);
-        Button orders = createButton("View Orders", 200);
-        Button balance = createButton("View Balance", 200);
-        Button discountCodes = createButton("View Discount Codes", 200);
-
-        VBox vBox = new VBox(25, personalInfo, cart, orders, balance, discountCodes);
-        vBox.setAlignment(Pos.CENTER);
-
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        return new Scene(vBox, bound.getWidth(), bound.getHeight());
-    }
-
     public static Scene getSignInScene() {
         ComboBox<String> type = new ComboBox<>();
         type.getItems().addAll("Admin", "Seller", "Buyer");
