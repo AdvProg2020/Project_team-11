@@ -55,15 +55,15 @@ public class AllAccountZone {
         return regex.toString();
     }
 
-    public static void setFilterCategoryFeature(String categoryName, Menu menu) {
+    public static void setFilterCategoryFeature(String categoryName, String className) {
         HashMap<String, String> feature = new HashMap<>();
         for (String specialFeature : Category.getCategoryByName(categoryName).getSpecialFeatures()) {
             feature.put(specialFeature, "");
         }
-        if (menu instanceof ProductsMenu)
-            ProductsMenu.getFilter().setFeature(feature);
+        if (className.equals("products"))
+            ProductScene.getFilterInfo().setFeature(feature);
         else
-            AuctionMenu.getFilter().setFeature(feature);
+            AuctionScene.getFilterInfo().setFeature(feature);
     }
 
     public static ArrayList<Product> getProductsInSortAndFiltered(String className) {
@@ -98,11 +98,9 @@ public class AllAccountZone {
                         return false;
                     if (filterInfo.getMaximumPrice() < product.getGeneralFeature().getAuctionPrice())
                         return false;
-                    if (!product.getGeneralFeature().getName().toLowerCase().contains(filterInfo.getProductName().toLowerCase()))
-                        return false;
-                    if (!product.getGeneralFeature().getSeller().getUsername().toLowerCase().contains(filterInfo.getSellerName().toLowerCase()))
-                        return false;
-                    if (!product.getGeneralFeature().getCompany().toLowerCase().contains(filterInfo.getCompany().toLowerCase()))
+                    if (!product.getGeneralFeature().getName().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()) &&
+                            !product.getGeneralFeature().getSeller().getUsername().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()) &&
+                            !product.getGeneralFeature().getCompany().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()))
                         return false;
                     if (filterInfo.getMinimumStockStatus() > product.getGeneralFeature().getStockStatus())
                         return false;

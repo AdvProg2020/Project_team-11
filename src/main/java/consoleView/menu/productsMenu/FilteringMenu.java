@@ -219,7 +219,7 @@ public class FilteringMenu extends Menu {
                 ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 ProductsMenu.getFilter().setCategory(field);
-                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
+//                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
             }
         } else {
             if (field.equalsIgnoreCase("min price")) {
@@ -242,7 +242,7 @@ public class FilteringMenu extends Menu {
                 ProductsMenu.getFilter().setMinimumStockStatus(minStockStatus);
             } else {
                 AuctionMenu.getFilter().setCategory(field);
-                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
+//                AllAccountZone.setFilterCategoryFeature(field, parentMenu);
             }
         }
     }

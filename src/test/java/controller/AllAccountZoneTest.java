@@ -112,10 +112,10 @@ public class AllAccountZoneTest {
 
     @Test
     public void setFilterCategoryFeatureTest() {
-        AllAccountZone.setFilterCategoryFeature("PC", productsMenu);
+//        AllAccountZone.setFilterCategoryFeature("PC", productsMenu);
         Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
                                         new ArrayList<>(ProductsMenu.getFilter().getFeature().keySet()));
-        AllAccountZone.setFilterCategoryFeature("PC", auctionMenu);
+//        AllAccountZone.setFilterCategoryFeature("PC", auctionMenu);
         Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
                 new ArrayList<>(AuctionMenu.getFilter().getFeature().keySet()));
     }

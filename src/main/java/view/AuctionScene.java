@@ -28,7 +28,7 @@ public class AuctionScene {
 
     public static Pane getAuctionsRoot() {
         AuctionScene.filterInfo = new FilterInfo("", 0, Long.MAX_VALUE, "",
-                "", "", 0, new HashMap<>());
+                0, new HashMap<>());
         ChoiceBox<String> sort = new ChoiceBox<>();
         sort.getItems().addAll("Price(Ascending)", "Price(Descending)", "Score", "Date");
 
