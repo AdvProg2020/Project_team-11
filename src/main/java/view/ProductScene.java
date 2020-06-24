@@ -2,7 +2,6 @@ package view;
 
 import controller.AdminZone;
 import controller.AllAccountZone;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -14,9 +13,7 @@ import model.Product;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static view.MainScenes.createButton;
 import static view.MainScenes.createTextField;
-import static view.MainScenes.createLabel;
 
 public class ProductScene {
     private static String sort = "date";
@@ -24,10 +21,6 @@ public class ProductScene {
 
     public static FilterInfo getFilterInfo() {
         return filterInfo;
-    }
-
-    public static void setFilterInfo(FilterInfo filterInfo) {
-        ProductScene.filterInfo = filterInfo;
     }
 
     public static String getSort() {
