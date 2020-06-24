@@ -2,18 +2,14 @@ package view;
 
 import controller.AllAccountZone;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
@@ -22,35 +18,26 @@ import static view.MainScenes.createTextField;
 import static view.MainScenes.createLabel;
 
 public class BuyerScene {
-    private static Stage openedStage;
-    private static Scene lastScene;
 
-    public static Scene getBuyerScene() {
-        Button personalInfo = createButton("View Personal Info", 200);
-        personalInfo.setOnMouseClicked(e -> getPersonalInfo());
+    public static Pane getBuyerRoot() {
+        Button personalInfo = createButton("View Personal Info", 300);
+        personalInfo.setMinHeight(50);
+        personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
 
-        Button cart = createButton("View Cart", 200);
-        Button orders = createButton("View Orders", 200);
-        Button discountCodes = createButton("View Discount Codes", 200);
+        Button cart = createButton("View Cart", 300);
+        cart.setMinHeight(50);
+        Button orders = createButton("View Orders", 300);
+        orders.setMinHeight(50);
+        Button discountCodes = createButton("View Discount Codes", 300);
+        discountCodes.setMinHeight(50);
 
-        Button logout = createButton("Logout", 200);
-        logout.setOnMouseClicked(e -> Actions.logout());
+        VBox vBox = new VBox(personalInfo, cart, orders, discountCodes);
+        vBox.setAlignment(Pos.TOP_CENTER);
 
-        Button back = createButton("Back", 200);
-        back.setOnMouseClicked(e -> {
-            CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-            CommandProcessor.getStage().setMaximized(true);
-        });
-
-        VBox vBox = new VBox(25, personalInfo, cart, orders, discountCodes, logout, back);
-        vBox.setAlignment(Pos.CENTER);
-
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        return new Scene(vBox, bound.getWidth(), bound.getHeight());
+        return vBox;
     }
 
-    private static void getPersonalInfo() {
+    public static Parent getPersonalInfo() {
         Label firstNameLabel = createLabel("First Name : ", 150);
         Label lastNameLabel = createLabel("Last Name : ", 150);
         Label emailLabel = createLabel("Email : ", 150);
@@ -118,18 +105,6 @@ public class BuyerScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openStage(scrollPane, "Personal Info", 600, 550);
-    }
-
-    private static Stage openStage(Parent root, String title, int width, int height) {
-        Scene scene = new Scene(root, width, height);
-        lastScene = scene;
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(CommandProcessor.getStage());
-        stage.show();
-        return stage;
+        return scrollPane;
     }
 }

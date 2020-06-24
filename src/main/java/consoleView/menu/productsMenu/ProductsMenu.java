@@ -48,7 +48,7 @@ public class ProductsMenu extends Menu {
         return new Menu("Show Products", this) {
             @Override
             public void execute() {
-                System.out.println(AllAccountZone.getProductsInSortAndFiltered(parentMenu));
+//                System.out.println(AllAccountZone.getProductsInSortAndFiltered(parentMenu));
                 this.parentMenu.execute();
             }
         };

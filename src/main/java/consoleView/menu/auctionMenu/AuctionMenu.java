@@ -38,7 +38,7 @@ public class AuctionMenu extends Menu {
         return new Menu("Show Products", this) {
             @Override
             public void execute() {
-                System.out.println(AllAccountZone.getAuctionProductsInSortAndFiltered(parentMenu));
+//                System.out.println(AllAccountZone.getAuctionProductsInSortAndFiltered(parentMenu));
                 this.parentMenu.execute();
             }
         };

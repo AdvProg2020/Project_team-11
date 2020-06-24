@@ -6,6 +6,7 @@ import controller.SellerZone;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.Category;
 
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static view.MainScenes.getSignInRoot;
 
 public class Actions {
 
@@ -71,9 +74,6 @@ public class Actions {
                 MainScenes.getSignInOrOut().setText("Logout");
 
                 MainScenes.getSignInOrOut().setOnMouseClicked(e -> logout());
-
-                CommandProcessor.getStage().setScene(MainScenes.getLastScene());
-                CommandProcessor.getStage().setMaximized(true);
             } else {
                 alert.setContentText(result);
                 alert.show();
@@ -82,18 +82,16 @@ public class Actions {
     }
 
     public static void logout() {
-        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().remove(MainScenes.getAccountButton());
+        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().remove(2);
         AllAccountZone.setCurrentAccount(null);
 
         MainScenes.getSignInOrOut().setText("Sign In");
         MainScenes.getSignInOrOut().setOnMouseClicked(event -> {
-            MainScenes.setLastScene(CommandProcessor.getStage().getScene());
-            CommandProcessor.getStage().setScene(MainScenes.getSignInScene());
-            CommandProcessor.getStage().setMaximized(true);
+            MainScenes.getBorderPane().setCenter(getSignInRoot());
         });
 
-        CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-        CommandProcessor.getStage().setMaximized(true);
+        MainScenes.getBorderPane().setCenter(ProductScene.getProductsRoot());
+        MainScenes.getBorderPane().setLeft(null);
     }
 
     public static void editPersonalInfo(Button button, TextField textField) {

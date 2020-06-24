@@ -2,11 +2,10 @@ package controller;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import model.*;
 import consoleView.menu.Menu;
 import consoleView.menu.auctionMenu.AuctionMenu;
-import consoleView.menu.productsMenu.FilterInfo;
 import consoleView.menu.productsMenu.ProductsMenu;
 import view.*;
 
@@ -67,43 +66,29 @@ public class AllAccountZone {
             AuctionMenu.getFilter().setFeature(feature);
     }
 
-    public static String getProductsInSortAndFiltered(Menu menu) {
-        StringBuilder output  = new StringBuilder();
+    public static ArrayList<Product> getProductsInSortAndFiltered(String className) {
         BuyerZone.setAuctionPrice();
-        List<Product> products = getSortedProducts(getFilteredProduct(DataBase.getDataBase().getAllProducts(), menu), menu);
-        for (Product product : products) {
-            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n")
-                    .append(product.getGeneralFeature().getCompany()).append(" ")
-                    .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
-                    .append(product.getAverageScore()).append("\n");
-        }
-        return output.toString();
+        List<Product> products =
+                getSortedProducts(getFilteredProduct(DataBase.getDataBase().getAllProducts(), className), className);
+        return new ArrayList<>(products);
     }
 
-    public static String getAuctionProductsInSortAndFiltered(Menu menu) {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<Product> getAuctionProductsInSortAndFiltered(String className) {
         BuyerZone.setAuctionPrice();
         List<Product> auctionProducts = DataBase.getDataBase().getAllProducts().stream()
                 .filter(product ->
                         product.getGeneralFeature().getPrice() != product.getGeneralFeature().getAuctionPrice())
                 .collect(Collectors.toList());
-        List<Product> products = getSortedProducts(getFilteredProduct(auctionProducts, menu), menu);
-        for (Product product : products) {
-            output.append(product.getId()).append(". ").append(product.getGeneralFeature().getName()).append("\n")
-                    .append(product.getGeneralFeature().getCompany()).append("\nOriginal Price : ")
-                    .append(product.getGeneralFeature().getPrice()).append("$   --->>> Current Price : ")
-                    .append(product.getGeneralFeature().getAuctionPrice()).append("$\n")
-                    .append(product.getAverageScore()).append("\n");
-        }
-        return output.toString();
+        List<Product> products = getSortedProducts(getFilteredProduct(auctionProducts, className), className);
+        return new ArrayList<>(products);
     }
 
-    private static List<Product> getFilteredProduct(List<Product> products, Menu menu) {
+    private static List<Product> getFilteredProduct(List<Product> products, String className) {
         FilterInfo filterInfo;
-        if (menu instanceof ProductsMenu)
-            filterInfo = ProductsMenu.getFilter();
+        if (className.equals("products"))
+            filterInfo = ProductScene.getFilterInfo();
         else
-            filterInfo = AuctionMenu.getFilter();
+            filterInfo = AuctionScene.getFilterInfo();
         return products.stream()
                 .filter(product -> {
                     if (!filterInfo.getCategory().equals("") &&
@@ -130,12 +115,12 @@ public class AllAccountZone {
                 }).collect(Collectors.toList());
     }
 
-    private static List<Product> getSortedProducts(List<Product> filteredProducts, Menu menu) {
+    private static List<Product> getSortedProducts(List<Product> filteredProducts, String className) {
         String sort;
-        if (menu instanceof ProductsMenu)
-             sort = ProductsMenu.getSort();
+        if (className.equals("products"))
+            sort = ProductScene.getSort();
         else
-            sort = AuctionMenu.getSort();
+            sort = AuctionScene.getSort();
         return filteredProducts.stream().sorted((p1, p2) -> {
             if (sort.equals("price(ascending)")) {
                 return Long.compare(p1.getGeneralFeature().getAuctionPrice(),
@@ -292,14 +277,14 @@ public class AllAccountZone {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
                         Button button = new Button("Admin");
-                        button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(AdminScene.getAdminScene());
-                            CommandProcessor.getStage().setMaximized(true);
+                        button.setOnAction(e -> {
+                            MainScenes.getBorderPane().setLeft(AdminScene.getAdminRoot());
+                            MainScenes.getBorderPane().setCenter(AdminScene.getPersonalInfo());
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        MainScenes.setAccountButton(button);
-                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
+                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                        button.fire();
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -309,14 +294,14 @@ public class AllAccountZone {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
                         Button button = new Button("Seller");
-                        button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(SellerScene.getSellerScene());
-                            CommandProcessor.getStage().setMaximized(true);
+                        button.setOnAction(e -> {
+                            MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot());
+                            MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        MainScenes.setAccountButton(button);
-                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
+                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                        button.fire();
                         return "Login successfully.";
                     }
                     return "Wrong password.";
@@ -326,14 +311,14 @@ public class AllAccountZone {
                     if (account.getPassword().equals(info.get(2))) {
                         setCurrentAccount(account);
                         Button button = new Button("Buyer");
-                        button.setOnMouseClicked(e -> {
-                            CommandProcessor.getStage().setScene(BuyerScene.getBuyerScene());
-                            CommandProcessor.getStage().setMaximized(true);
+                        button.setOnAction(e -> {
+                            MainScenes.getBorderPane().setLeft(BuyerScene.getBuyerRoot());
+                            MainScenes.getBorderPane().setCenter(BuyerScene.getPersonalInfo());
                         });
                         button.setMinWidth(100);
                         button.setAlignment(Pos.CENTER);
-                        MainScenes.setAccountButton(button);
-                        ((VBox) MainScenes.getMainScene().getRoot()).getChildren().add(button);
+                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                        button.fire();
                         return "Login successfully.";
                     }
                     return "Wrong password.";

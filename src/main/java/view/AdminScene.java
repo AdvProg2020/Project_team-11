@@ -5,17 +5,13 @@ import controller.AllAccountZone;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
 import model.Request;
 import view.tableViewData.Account;
 import view.tableViewData.Product;
@@ -27,46 +23,39 @@ import java.util.Arrays;
 import static view.MainScenes.*;
 
 public class AdminScene {
-    private static Stage openedStage;
-    private static Scene lastScene;
 
-    public static Scene getAdminScene() {
-        Button personalInfo = createButton("View Personal Info", 200);
-        personalInfo.setOnMouseClicked(e -> getPersonalInfo());
+    public static Pane getAdminRoot() {
+        Button personalInfo = createButton("View Personal Info", 300);
+        personalInfo.setMinHeight(50);
+        personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
 
-        Button users = createButton("Manage Users", 200);
-        users.setOnMouseClicked(e -> showUsers());
+        Button users = createButton("Manage Users", 300);
+        users.setMinHeight(50);
+        users.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(showUsers()));
 
-        Button products = createButton("Manage Products", 200);
-        products.setOnMouseClicked(e -> manageProducts());
+        Button products = createButton("Manage Products", 300);
+        products.setMinHeight(50);
+        products.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageProducts()));
 
-        Button discountCodes = createButton("Manage Discount Codes", 200);
-        discountCodes.setOnMouseClicked(e -> manageDiscounts());
+        Button discountCodes = createButton("Manage Discount Codes", 300);
+        discountCodes.setMinHeight(50);
+        discountCodes.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageDiscounts()));
 
-        Button requests = createButton("Manage Requests", 200);
-        requests.setOnMouseClicked(e -> manageRequests());
+        Button requests = createButton("Manage Requests", 300);
+        requests.setMinHeight(50);
+        requests.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageRequests()));
 
-        Button categories = createButton("Manage Categories", 200);
-        categories.setOnMouseClicked(e -> manageCategories());
+        Button categories = createButton("Manage Categories", 300);
+        categories.setMinHeight(50);
+        categories.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageCategories()));
 
-        Button logout = createButton("Logout", 200);
-        logout.setOnMouseClicked(e -> Actions.logout());
+        VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories);
+        vBox.setAlignment(Pos.TOP_CENTER);
 
-        Button back = createButton("Back", 200);
-        back.setOnMouseClicked(e -> {
-            CommandProcessor.getStage().setScene(MainScenes.getMainScene());
-            CommandProcessor.getStage().setMaximized(true);
-        });
-
-        VBox vBox = new VBox(25, personalInfo, users, products, discountCodes, requests, categories, logout, back);
-        vBox.setAlignment(Pos.CENTER);
-
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        return new Scene(vBox, bound.getWidth(), bound.getHeight());
+        return vBox;
     }
 
-    private static void getPersonalInfo() {
+    public static Parent getPersonalInfo() {
         Label firstNameLabel = createLabel("First Name : ", 150);
         Label lastNameLabel = createLabel("Last Name : ", 150);
         Label emailLabel = createLabel("Email : ", 150);
@@ -124,10 +113,10 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openStage(scrollPane, "Personal Info", 600, 550);
+        return scrollPane;
     }
 
-    private static void showUsers() {
+    private static Parent showUsers() {
         TableColumn<Account, String> typeColumn = new TableColumn<>("Account Type");
         typeColumn.setMinWidth(100);
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("accountType"));
@@ -216,10 +205,10 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openStage(scrollPane, "Users", 900, 500);
+        return scrollPane;
     }
 
-    public static void manageDiscounts() {
+    public static Parent manageDiscounts() {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
@@ -312,7 +301,7 @@ public class AdminScene {
                 repeatButton.setOnMouseClicked(event -> Actions.editDiscount(repeatButton, repeatText, hyperlink.getText()));
 
                 Button back = createButton("Back", 300);
-                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+                back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageDiscounts()));
 
                 TextField addUserText = createTextField("Username", 500);
                 Button addUserButton = createButton("Add", 100);
@@ -376,7 +365,7 @@ public class AdminScene {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(true);
 
-                openedStage.setScene(new Scene(scrollPane, 1100, 550));
+                MainScenes.getBorderPane().setCenter(scrollPane);
             });
 
             vBox.getChildren().add(hyperlink);
@@ -395,8 +384,7 @@ public class AdminScene {
         Button delete = createButton("Delete", 100);
         delete.setOnMouseClicked(e -> {
             if (Actions.deleteDiscount(removeCode.getText())) {
-                openedStage.close();
-                manageDiscounts();
+                MainScenes.getBorderPane().setCenter(manageDiscounts());
             }
         });
 
@@ -449,8 +437,7 @@ public class AdminScene {
         finish.setOnMouseClicked(e -> {
             vBox.getChildren().remove(allowedUserHBox);
             AdminZone.createDiscount(discountInfo, allowedUsers);
-            openedStage.close();
-            manageDiscounts();
+            MainScenes.getBorderPane().setCenter(manageDiscounts());
         });
 
         Button addDiscount = createButton("Create Discount", 200);
@@ -465,10 +452,10 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openedStage = openStage(scrollPane, "Discount Codes", 1100, 550);
+        return scrollPane;
     }
 
-    public static void manageProducts() {
+    private static Parent manageProducts() {
         TableColumn<Product, String> idColumn = new TableColumn<>("ID");
         idColumn.setMinWidth(100);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -531,10 +518,10 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openStage(scrollPane, "Users", 900, 500);
+        return scrollPane;
     }
 
-    private static void manageRequests() {
+    private static Parent manageRequests() {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
@@ -560,12 +547,12 @@ public class AdminScene {
                 Label description = createLabel(request.getDescription(), 500);
 
                 Button back = createButton("Back", 150);
-                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+                back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageRequests()));
 
                 requestGridPane.addColumn(0, topicLabel, senderLabel, statusLabel, descriptionLabel);
                 requestGridPane.addColumn(1, topic, sender, status, description, back);
 
-                openedStage.setScene(new Scene(requestGridPane, 800, 600));
+                MainScenes.getBorderPane().setCenter(requestGridPane);
             });
 
             Label topic = createLabel(request.getTopic(), 150);
@@ -596,10 +583,10 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openedStage = openStage(scrollPane, "Requests", 800, 600);
+        return scrollPane;
     }
 
-    private static void manageCategories() {
+    private static Parent manageCategories() {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
@@ -666,7 +653,7 @@ public class AdminScene {
                 }
 
                 Button back = createButton("Back", 300);
-                back.setOnMouseClicked(event -> openedStage.setScene(lastScene));
+                back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageCategories()));
 
                 TextField addFeatureText = createTextField("Feature", 500);
                 Button addFeatureButton = createButton("Add", 100);
@@ -715,7 +702,7 @@ public class AdminScene {
                 scrollPane.setFitToWidth(true);
                 scrollPane.setFitToHeight(true);
 
-                openedStage.setScene(new Scene(scrollPane, 1100, 550));
+                MainScenes.getBorderPane().setCenter(scrollPane);
             });
 
             Button remove = createButton("Remove", 100);
@@ -771,8 +758,7 @@ public class AdminScene {
             finish.setOnMouseClicked(event -> {
                 gridPane.getChildren().remove(featureHBox);
                 AdminZone.createCategory(name[0], feature);
-                openedStage.close();
-                manageCategories();
+                MainScenes.getBorderPane().setCenter(manageCategories());
             });
         });
 
@@ -784,18 +770,6 @@ public class AdminScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
-        openedStage = openStage(scrollPane, "Categories", 1100, 550);
-    }
-
-    private static Stage openStage(Parent root, String title, int width, int height) {
-        Scene scene = new Scene(root, width, height);
-        lastScene = scene;
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(CommandProcessor.getStage());
-        stage.show();
-        return stage;
+        return scrollPane;
     }
 }
