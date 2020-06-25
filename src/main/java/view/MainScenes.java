@@ -15,30 +15,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainScenes {
-    private static Scene lastScene;
-    private static Button accountButton;
     private static Scene mainScene;
     private static Button signInOrOut;
     private static BorderPane borderPane;
 
     public static BorderPane getBorderPane() {
         return borderPane;
-    }
-
-    public static Scene getLastScene() {
-        return lastScene;
-    }
-
-    public static void setLastScene(Scene lastScene) {
-        MainScenes.lastScene = lastScene;
-    }
-
-    public static void setAccountButton(Button accountButton) {
-        MainScenes.accountButton = accountButton;
-    }
-
-    public static Button getAccountButton() {
-        return accountButton;
     }
 
     public static Scene getMainScene() {
@@ -72,7 +54,7 @@ public class MainScenes {
         return label;
     }
 
-    public static Scene getRegisterAdminScene() {
+    public Scene getRegisterAdminScene() {
         TextField firstName = createTextField("First Name", 300);
         TextField lastName = createTextField("Last Name", 300);
         TextField email = createTextField("Email", 300);
@@ -101,10 +83,11 @@ public class MainScenes {
 
         Screen screen = Screen.getPrimary();
         Rectangle2D bound = screen.getBounds();
-        return new Scene(vBox, bound.getWidth(), bound.getHeight());
+        Scene scene = new Scene(vBox, bound.getWidth(), bound.getHeight());
+        return scene;
     }
 
-    public static Scene getMainMenuScene() {
+    public Scene getMainMenuScene() {
         Button signIn;
         signIn = createButton("Sign in", 100);
         signIn.setOnMouseClicked(e -> {
@@ -133,7 +116,7 @@ public class MainScenes {
 
         Screen screen = Screen.getPrimary();
         Rectangle2D bound = screen.getBounds();
-        mainScene = new Scene(borderPane, bound.getWidth(), bound.getHeight());
+        MainScenes.mainScene = new Scene(borderPane, bound.getWidth(), bound.getHeight());
         return mainScene;
     }
 

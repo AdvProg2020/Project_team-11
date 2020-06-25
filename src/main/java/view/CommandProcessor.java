@@ -3,10 +3,13 @@ package view;
 import controller.FileProcess;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import model.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 
 public class CommandProcessor extends Application {
@@ -25,14 +28,16 @@ public class CommandProcessor extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws FileNotFoundException {
         Stage stage = new Stage();
+        stage.getIcons().add(new Image(new FileInputStream("Styles/Photos/shop.png")));
         CommandProcessor.stage = stage;
         stage.setTitle("Store");
         Scene scene;
-        scene = MainScenes.getMainMenuScene();
+        MainScenes mainScenes = new MainScenes();
+        scene = mainScenes.getMainMenuScene();
         if (!DataBase.getDataBase().getHasAdminAccountCreated()) {
-            scene = MainScenes.getRegisterAdminScene();
+            scene = mainScenes.getRegisterAdminScene();
         }
         stage.setScene(scene);
         stage.setMaximized(true);
