@@ -409,4 +409,18 @@ public class Actions {
             }
         });
     }
+
+    public static boolean checkReceiverInfo(String address, String number) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validateNames(address)) {
+            alert.setContentText("Enter Address.");
+            alert.show();
+        } else if (!Validation.validateLong(number)) {
+            alert.setContentText("Invalid Phone Number.");
+            alert.show();
+        } else {
+            return true;
+        }
+        return false;
+    }
 }

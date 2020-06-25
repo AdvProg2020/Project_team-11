@@ -25,7 +25,7 @@ public class ViewCartMenu extends Menu {
         return new Menu("Show Products", this) {
             @Override
             public void execute() {
-                System.out.println(BuyerZone.showProductsInCart());
+                System.out.println(BuyerZone.getProductsInCart());
                 this.parentMenu.execute();
             }
         };

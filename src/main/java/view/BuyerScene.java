@@ -1,17 +1,19 @@
 package view;
 
 import controller.AllAccountZone;
+import controller.BuyerZone;
+import controller.SellerZone;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static view.MainScenes.createButton;
 import static view.MainScenes.createTextField;
@@ -25,10 +27,13 @@ public class BuyerScene {
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
 
         Button cart = createButton("View Cart", 300);
+        cart.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewCart()));
         cart.setMinHeight(50);
         Button orders = createButton("View Orders", 300);
+        orders.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewOrders()));
         orders.setMinHeight(50);
         Button discountCodes = createButton("View Discount Codes", 300);
+        discountCodes.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewDiscounts()));
         discountCodes.setMinHeight(50);
 
         VBox vBox = new VBox(personalInfo, cart, orders, discountCodes);
@@ -102,6 +107,150 @@ public class BuyerScene {
         gridPane.setVgap(20);
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent viewCart() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        Label priceLabel = createLabel("Total Price", 50);
+        TextField priceText = createTextField("Price", 50);
+        priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+        priceText.setDisable(true);
+        Button purchase = createButton("Purchase", 50);
+        purchase.setOnMouseClicked(e -> {
+            Label label = createLabel("Enter receiver information and discount code.", 500);
+            TextField address = createTextField("Address", 500);
+            TextField phoneNumber = createTextField("Phone Number", 500);
+            TextField discount = createTextField("Discount Code", 500);
+            Button applyDiscount = createButton("Apply Discount", 500);
+            applyDiscount.setOnMouseClicked(event -> {
+                if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText())) {
+                    String result = BuyerZone.checkDiscountCode(discount.getText());
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    if (result.equals("Discount applied.")) {
+                        alert.setContentText("Discount applied.");
+                        alert.show();
+                        paymentRoot();
+                    } else {
+                        alert.setAlertType(Alert.AlertType.ERROR);
+                        alert.setContentText(result);
+                        alert.show();
+                    }
+                }
+            });
+            Button next = createButton("Next", 500);
+            next.setOnMouseClicked(event -> {
+                if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText())) {
+                    paymentRoot();
+                }
+            });
+            Button back = createButton("Back", 500);
+            back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(viewCart()));
+
+            VBox infoVBox = new VBox(20);
+            infoVBox.setAlignment(Pos.CENTER);
+            infoVBox.getChildren().addAll(label, address, phoneNumber, discount, applyDiscount, next, back);
+            MainScenes.getBorderPane().setCenter(infoVBox);
+        });
+
+        HashMap<String, Integer> products = new HashMap<>(BuyerZone.getProductsInCart());
+        for (Map.Entry<String, Integer> entry : products.entrySet()) {
+            Hyperlink hyperlink = new Hyperlink(entry.getKey());
+            hyperlink.setOnMouseClicked(e -> {
+                //TODO product scene
+            });
+            Button decreaseButton = createButton("-", 20);
+            TextField textField = createTextField("Number", 50);
+            textField.setDisable(true);
+            textField.setText(String.valueOf(entry.getValue()));
+            Button increaseButton = createButton("+", 20);
+
+            HBox hBox = new HBox(20);
+            hBox.setAlignment(Pos.CENTER);
+            hBox.getChildren().addAll(hyperlink, decreaseButton, textField, increaseButton);
+            vBox.getChildren().add(hBox);
+
+            decreaseButton.setOnMouseClicked(e -> {
+                BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), -1);
+                textField.setText(String.valueOf(Integer.parseInt(textField.getText()) - 1));
+                priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+                if (textField.getText().equals("0")) {
+                    BuyerZone.removeProductFromCart();
+                    vBox.getChildren().remove(hBox);
+                }
+            });
+            increaseButton.setOnMouseClicked(e -> {
+                BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), 1);
+                textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
+                priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+            });
+        }
+
+        HBox hBox = new HBox(20);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.getChildren().addAll(priceLabel, priceText, purchase);
+        if (!priceText.getText().equals("0"))
+            vBox.getChildren().add(hBox);
+
+        return vBox;
+    }
+
+    private static void paymentRoot() {
+        long priceWithDiscount = BuyerZone.calculatePriceWithDiscountsAndAuctions();
+        long totalPrice = BuyerZone.calculatePriceWithAuctions();
+        Label price = createLabel("Total Price : " + priceWithDiscount + "$", 200);
+        Label discountAmount =
+                createLabel("Discount : " + (totalPrice - priceWithDiscount) + "$", 200);
+        Button payment = createButton("Pay", 200);
+        payment.setOnMouseClicked(ev -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            if (BuyerZone.canPayMoney()) {
+                BuyerZone.payMoney();
+                alert.setContentText("Purchase Completed.\nThank you for buying.");
+                alert.show();
+                MainScenes.getBorderPane().setCenter(viewOrders());
+            } else {
+                alert.setAlertType(Alert.AlertType.ERROR);
+                alert.setContentText("You don't have enough money.");
+                alert.show();
+            }
+        });
+
+        VBox payInfo = new VBox(20);
+        payInfo.setAlignment(Pos.CENTER);
+        payInfo.getChildren().addAll(price, discountAmount, payment);
+        MainScenes.getBorderPane().setCenter(payInfo);
+    }
+
+    private static Parent viewOrders() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        // TODO : Orders & Rate
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent viewDiscounts() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        ArrayList<String> discounts = new ArrayList<>(BuyerZone.getBuyerDiscounts());
+        for (String discount : discounts) {
+            Label label = createLabel(discount, 500);
+            vBox.getChildren().add(label);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 

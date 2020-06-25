@@ -2,22 +2,19 @@ package controller;
 
 import model.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BuyerZone {
 
-    public static String showProductsInCart() {
-        StringBuilder productList = new StringBuilder();
+    public static HashMap<String, Integer> getProductsInCart() {
+        HashMap<String, Integer> products = new HashMap<>();
         for (Product product : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
-            productList.append(product.getId()).append(". ").append(product.getGeneralFeature().getName())
-                    .append(" number: ").append(((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(product))
-                    .append(" ").append(product.getGeneralFeature().getPrice()).append("$ Brand : ")
-                    .append(product.getGeneralFeature().getCompany()).append(" Average Score: ")
-                    .append(product.getAverageScore()).append("\n");
+            products.put(String.valueOf(product.getId()),((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(product));
         }
-        return productList.toString();
+        return products;
     }
 
     public static String changeNumberOFProductInCart(int productId, int number) {
@@ -80,7 +77,7 @@ public class BuyerZone {
 
     public static boolean canPayMoney() {
         Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
-        long totalPriceAfterDiscount = calculatePriceWithDiscountsAndAuctions(buyer);
+        long totalPriceAfterDiscount = calculatePriceWithDiscountsAndAuctions();
         return totalPriceAfterDiscount <= buyer.getWallet();
     }
 
@@ -93,7 +90,8 @@ public class BuyerZone {
         return totalPrice;
     }
 
-    private static long calculatePriceWithDiscountsAndAuctions(Buyer buyer) {
+    public static long calculatePriceWithDiscountsAndAuctions() {
+        Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
         long totalPrice = calculatePriceWithAuctions();
         if (buyer.getActiveDiscount() == null) {
             return totalPrice;
@@ -118,7 +116,7 @@ public class BuyerZone {
     }
 
     private static void decreaseBuyerMoney(Buyer buyer) {
-        long newMoney = buyer.getWallet() - calculatePriceWithDiscountsAndAuctions(buyer);
+        long newMoney = buyer.getWallet() - calculatePriceWithDiscountsAndAuctions();
         buyer.setWallet(newMoney);
     }
 
@@ -139,7 +137,7 @@ public class BuyerZone {
     }
 
     private static void createLogs(Buyer buyer) {
-        long paidAmount = calculatePriceWithDiscountsAndAuctions(buyer);
+        long paidAmount = calculatePriceWithDiscountsAndAuctions();
         long totalPrice = calculatePriceWithAuctions();
         HashMap<Integer, String> purchasedProducts = new HashMap<>();
         for (Product product : buyer.getCart().keySet()) {
@@ -229,15 +227,14 @@ public class BuyerZone {
         product.addNumOfUsersRated();
     }
 
-    public static String getBuyerDiscounts() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<String> getBuyerDiscounts() {
+        ArrayList<String> discounts = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getDiscountCodes().entrySet()) {
             Discount discount = getDiscountByCode(entry.getKey());
-            output.append(discount.getCode()).append(" : ").append(entry.getValue())
-                    .append(" times ").append(discount.getAmount()[0]).append("% discount Max = ")
-                    .append(discount.getAmount()[1]).append("$ from '").append(discount.getStartDate())
-                    .append("' to '").append(discount.getEndDate()).append("'\n");
+            discounts.add(discount.getCode() + " : " + entry.getValue() + " times " + discount.getAmount()[0] +
+                    "% discount Max = " + discount.getAmount()[1] + "$ from '" + discount.getStartDate()
+                     + "' to '" + discount.getEndDate());
         }
-        return output.toString();
+        return discounts;
     }
 }
