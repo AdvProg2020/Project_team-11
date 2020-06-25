@@ -28,26 +28,32 @@ public class AdminScene {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
+        personalInfo.getStyleClass().add("account-button");
 
         Button users = createButton("Manage Users", 300);
         users.setMinHeight(50);
         users.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(showUsers()));
+        users.getStyleClass().add("account-button");
 
         Button products = createButton("Manage Products", 300);
         products.setMinHeight(50);
         products.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageProducts()));
+        products.getStyleClass().add("account-button");
 
         Button discountCodes = createButton("Manage Discount Codes", 300);
         discountCodes.setMinHeight(50);
         discountCodes.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageDiscounts()));
+        discountCodes.getStyleClass().add("account-button");
 
         Button requests = createButton("Manage Requests", 300);
         requests.setMinHeight(50);
         requests.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageRequests()));
+        requests.getStyleClass().add("account-button");
 
         Button categories = createButton("Manage Categories", 300);
         categories.setMinHeight(50);
         categories.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageCategories()));
+        categories.getStyleClass().add("account-button");
 
         VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories);
         vBox.setAlignment(Pos.TOP_CENTER);

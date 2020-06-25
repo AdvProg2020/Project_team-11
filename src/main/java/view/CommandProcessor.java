@@ -2,8 +2,10 @@ package view;
 
 import controller.FileProcess;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.*;
 
@@ -19,7 +21,7 @@ public class CommandProcessor extends Application {
         return stage;
     }
 
-    public static void runMenus(String[] args) {
+    public void run(String[] args) {
         if (new File("resources\\admins.json").exists()) {
             FileProcess.initialize();
         }
@@ -34,11 +36,16 @@ public class CommandProcessor extends Application {
         CommandProcessor.stage = stage;
         stage.setTitle("Store");
         Scene scene;
-        MainScenes mainScenes = new MainScenes();
-        scene = mainScenes.getMainMenuScene();
-        if (!DataBase.getDataBase().getHasAdminAccountCreated()) {
-            scene = mainScenes.getRegisterAdminScene();
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bound = screen.getBounds();
+        if (DataBase.getDataBase().getHasAdminAccountCreated()) {
+            scene = new Scene(MainScenes.getMainMenuScene(), bound.getWidth(), bound.getHeight());
+        } else {
+            scene = new Scene(MainScenes.getRegisterAdminScene(), bound.getWidth(), bound.getHeight());
         }
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();

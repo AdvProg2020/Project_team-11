@@ -26,22 +26,27 @@ public class SellerScene {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
+        personalInfo.getStyleClass().add("account-button");
 
         Button salesHistory = createButton("View Sales History", 300);
         salesHistory.setMinHeight(50);
         salesHistory.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewSalesHistory()));
+        salesHistory.getStyleClass().add("account-button");
 
         Button products = createButton("Manage Products", 300);
         products.setMinHeight(50);
         products.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageProducts()));
+        products.getStyleClass().add("account-button");
 
         Button categories = createButton("show Categories", 300);
         categories.setMinHeight(50);
         categories.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(showCategories()));
+        categories.getStyleClass().add("account-button");
 
         Button auctions = createButton("View Auctions", 300);
         auctions.setMinHeight(50);
         auctions.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageAuctions()));
+        auctions.getStyleClass().add("account-button");
 
         VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions);
         vBox.setAlignment(Pos.TOP_CENTER);

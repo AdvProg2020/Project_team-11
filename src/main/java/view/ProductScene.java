@@ -141,7 +141,7 @@ public class ProductScene {
         for (int i = 0; i < products.size()/5 + 1 ; i++) {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
                 Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
-                hyperlink.setMinSize(100, 100);
+                hyperlink.setMinSize(200, 200);
                 hyperlink.setOnMouseClicked(e -> {
                     //TODO : Product Scene
                 });
@@ -151,6 +151,6 @@ public class ProductScene {
     }
 
     public static void getProductRoot() {
-        
+
     }
 }

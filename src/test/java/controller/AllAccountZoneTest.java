@@ -3,10 +3,10 @@ package controller;
 import model.*;
 import org.junit.Assert;
 import org.junit.Test;
-import consoleView.menu.MainMenu;
-import consoleView.menu.Menu;
-import consoleView.menu.auctionMenu.AuctionMenu;
-import consoleView.menu.productsMenu.ProductsMenu;
+//import consoleView.menu.MainMenu;
+//import consoleView.menu.Menu;
+//import consoleView.menu.auctionMenu.AuctionMenu;
+//import consoleView.menu.productsMenu.ProductsMenu;
 
 import java.util.*;
 
@@ -22,8 +22,8 @@ public class AllAccountZoneTest {
                 "09135467595", "mamad", "1234", "apple", 500);
     private final Category category1 = new Category("PC", new ArrayList<>(Arrays.asList("RAM", "Memory", "CPU")));
     private final Category category2 = new Category("mobile", new ArrayList<>(Arrays.asList("RAM", "Memory", "network")));
-    private final ProductsMenu productsMenu = new ProductsMenu(new MainMenu());
-    private final AuctionMenu auctionMenu = new AuctionMenu(new MainMenu());
+//    private final ProductsMenu productsMenu = new ProductsMenu(new MainMenu());
+//    private final AuctionMenu auctionMenu = new AuctionMenu(new MainMenu());
     private final ProductInfo productInfo1 = new ProductInfo("A50", "sumsung", 200, seller2, 5);
     private final Product product1 = new Product("accepted", productInfo1, "mobile",
             new HashMap<>(Map.of("RAM", "8", "Memory", "128GB", "network", "4.5G")), "very good");
@@ -60,7 +60,7 @@ public class AllAccountZoneTest {
 
     @Test
     public void loginUserTest() {
-        Menu.setMainMenu(new MainMenu());
+//        Menu.setMainMenu(new MainMenu());
         ArrayList<String> info = new ArrayList<>(Arrays.asList("admin", "alimamad", "1234"));
         Assert.assertEquals("Login successfully.", AllAccountZone.loginUser(info));
         info = new ArrayList<>(Arrays.asList("admin", "alimamad", "123"));
@@ -113,28 +113,28 @@ public class AllAccountZoneTest {
     @Test
     public void setFilterCategoryFeatureTest() {
 //        AllAccountZone.setFilterCategoryFeature("PC", productsMenu);
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
-                                        new ArrayList<>(ProductsMenu.getFilter().getFeature().keySet()));
+//        Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
+//                                        new ArrayList<>(ProductsMenu.getFilter().getFeature().keySet()));
 //        AllAccountZone.setFilterCategoryFeature("PC", auctionMenu);
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
-                new ArrayList<>(AuctionMenu.getFilter().getFeature().keySet()));
+//        Assert.assertEquals(new ArrayList<>(Arrays.asList("Memory", "CPU", "RAM")),
+//                new ArrayList<>(AuctionMenu.getFilter().getFeature().keySet()));
     }
 
     @Test
     public void getProductsInSortAndFilteredTest() {
 //        AllAccountZone.getProductsInSortAndFiltered(productsMenu);
 //        AllAccountZone.getProductsInSortAndFiltered(auctionMenu);
-        ProductsMenu.getFilter().setCategory("mobile");
-        ProductsMenu.getFilter().setFeature(new HashMap<>(Map.of("RAM", "16")));
-        ProductsMenu.setSort("score");
+//        ProductsMenu.getFilter().setCategory("mobile");
+//        ProductsMenu.getFilter().setFeature(new HashMap<>(Map.of("RAM", "16")));
+//        ProductsMenu.setSort("score");
 //        AllAccountZone.getProductsInSortAndFiltered(productsMenu);
     }
 
     @Test
     public void getAuctionProductsInSortAndFilteredTest() {
 //        AllAccountZone.getAuctionProductsInSortAndFiltered(productsMenu);
-        AuctionMenu.getFilter().setCategory("mobile");
-        AuctionMenu.setSort("Price(Descending)");
+//        AuctionMenu.getFilter().setCategory("mobile");
+//        AuctionMenu.setSort("Price(Descending)");
 //        AllAccountZone.getAuctionProductsInSortAndFiltered(auctionMenu);
     }
 

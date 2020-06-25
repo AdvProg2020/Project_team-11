@@ -4,9 +4,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import model.*;
-import consoleView.menu.Menu;
-import consoleView.menu.auctionMenu.AuctionMenu;
-import consoleView.menu.productsMenu.ProductsMenu;
 import view.*;
 
 import java.util.*;
@@ -279,8 +276,9 @@ public class AllAccountZone {
                             MainScenes.getBorderPane().setLeft(AdminScene.getAdminRoot());
                             MainScenes.getBorderPane().setCenter(AdminScene.getPersonalInfo());
                         });
-                        button.setMinWidth(100);
+                        button.setMinWidth(200);
                         button.setAlignment(Pos.CENTER);
+                        button.getStyleClass().add("top-buttons");
                         ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
                         button.fire();
                         return "Login successfully.";
@@ -296,8 +294,9 @@ public class AllAccountZone {
                             MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot());
                             MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
                         });
-                        button.setMinWidth(100);
+                        button.setMinWidth(200);
                         button.setAlignment(Pos.CENTER);
+                        button.getStyleClass().add("top-buttons");
                         ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
                         button.fire();
                         return "Login successfully.";
@@ -313,8 +312,9 @@ public class AllAccountZone {
                             MainScenes.getBorderPane().setLeft(BuyerScene.getBuyerRoot());
                             MainScenes.getBorderPane().setCenter(BuyerScene.getPersonalInfo());
                         });
-                        button.setMinWidth(100);
+                        button.setMinWidth(200);
                         button.setAlignment(Pos.CENTER);
+                        button.getStyleClass().add("top-buttons");
                         ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
                         button.fire();
                         return "Login successfully.";

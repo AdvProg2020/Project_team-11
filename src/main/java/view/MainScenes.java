@@ -2,20 +2,16 @@ package view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainScenes {
-    private static Scene mainScene;
     private static Button signInOrOut;
     private static BorderPane borderPane;
 
@@ -23,17 +19,12 @@ public class MainScenes {
         return borderPane;
     }
 
-    public static Scene getMainScene() {
-        return mainScene;
-    }
-
     public static Button getSignInOrOut() {
         return signInOrOut;
     }
 
     public static TextField createTextField(String promptText, int maxWidth) {
-        TextField textField = new TextField();
-        textField.setPromptText(promptText);
+        TextField textField = new PersistentPromptTextField(null, promptText);
         textField.setMaxWidth(maxWidth);
         textField.setMinWidth(maxWidth);
         textField.setAlignment(Pos.CENTER);
@@ -54,7 +45,7 @@ public class MainScenes {
         return label;
     }
 
-    public Scene getRegisterAdminScene() {
+    public static Parent getRegisterAdminScene() {
         TextField firstName = createTextField("First Name", 300);
         TextField lastName = createTextField("Last Name", 300);
         TextField email = createTextField("Email", 300);
@@ -73,7 +64,7 @@ public class MainScenes {
                     firstName.getText(), lastName.getText(), email.getText(),
                     phoneNumber.getText(), username.getText(), password.getText()));
             if (Actions.register(info)) {
-                CommandProcessor.getStage().setScene(MainScenes.getMainScene());
+                CommandProcessor.getStage().getScene().setRoot(getMainMenuScene());
                 CommandProcessor.getStage().setMaximized(true);
             }
         });
@@ -81,29 +72,29 @@ public class MainScenes {
         VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, register);
         vBox.setAlignment(Pos.CENTER);
 
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        Scene scene = new Scene(vBox, bound.getWidth(), bound.getHeight());
-        return scene;
+        return vBox;
     }
 
-    public Scene getMainMenuScene() {
+    public static Parent getMainMenuScene() {
         Button signIn;
-        signIn = createButton("Sign in", 100);
+        signIn = createButton("Sign in", 200);
         signIn.setOnMouseClicked(e -> {
             borderPane.setCenter(getSignInRoot());
         });
+        signIn.getStyleClass().add("top-buttons");
         signInOrOut = signIn;
-        Button products = createButton("Products", 100);
+        Button products = createButton("Products", 200);
         products.setOnAction(e -> {
             borderPane.setCenter(ProductScene.getProductsRoot());
             borderPane.setLeft(null);
         });
-        Button auctions = createButton("Auction", 100);
+        products.getStyleClass().add("top-buttons");
+        Button auctions = createButton("Auction", 200);
         auctions.setOnMouseClicked(e -> {
             borderPane.setCenter(AuctionScene.getAuctionsRoot());
             borderPane.setLeft(null);
         });
+        auctions.getStyleClass().add("top-buttons");
 
         HBox hBox = new HBox(20, products, auctions, signIn);
         hBox.setPadding(new Insets(20, 20, 20, 20));
@@ -113,11 +104,9 @@ public class MainScenes {
         borderPane.setTop(hBox);
         borderPane.setCenter(ProductScene.getProductsRoot());
         MainScenes.borderPane = borderPane;
+        borderPane.setStyle("-fx-background-color: #FF8C00");
 
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bound = screen.getBounds();
-        MainScenes.mainScene = new Scene(borderPane, bound.getWidth(), bound.getHeight());
-        return mainScene;
+        return borderPane;
     }
 
     public static Parent getSignInRoot() {

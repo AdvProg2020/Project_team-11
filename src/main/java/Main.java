@@ -5,6 +5,6 @@ public class Main {
 
     public static void main(String[] args) {
         new DataBase();
-        CommandProcessor.runMenus(args);
+        new CommandProcessor().run(args);
     }
 }

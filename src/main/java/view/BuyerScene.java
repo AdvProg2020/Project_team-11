@@ -25,16 +25,22 @@ public class BuyerScene {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
+        personalInfo.getStyleClass().add("account-button");
 
         Button cart = createButton("View Cart", 300);
         cart.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewCart()));
         cart.setMinHeight(50);
+        cart.getStyleClass().add("account-button");
+
         Button orders = createButton("View Orders", 300);
         orders.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewOrders()));
         orders.setMinHeight(50);
+        orders.getStyleClass().add("account-button");
+
         Button discountCodes = createButton("View Discount Codes", 300);
         discountCodes.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(viewDiscounts()));
         discountCodes.setMinHeight(50);
+        discountCodes.getStyleClass().add("account-button");
 
         VBox vBox = new VBox(personalInfo, cart, orders, discountCodes);
         vBox.setAlignment(Pos.TOP_CENTER);
