@@ -201,7 +201,7 @@ public class AllAccountZone {
         Product product2 = SellerZone.getProductById(productId2);
         Category category = SellerZone.getCategoryByName(product1.getCategoryName());
         if (!category.getName().equals(product2.getCategoryName())) {
-            return "Cannot compared! You should enter a product in " + product1.getCategoryName() + " category";
+            return "Cannot compared! You should enter a product in " + product1.getCategoryName() + " category.";
         } else {
             StringBuilder output = new StringBuilder();
             for (String feature : category.getSpecialFeatures()) {

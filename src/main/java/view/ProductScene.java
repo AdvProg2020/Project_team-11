@@ -190,6 +190,39 @@ public class ProductScene {
         }
 
         Button compare = createButton("Compare", 150);
+        compare.setOnMouseClicked(e -> {
+            TextField productIdText = createTextField("Product ID", 100);
+            Button ok = createButton("Compare", 100);
+            ok.setOnMouseClicked(event -> {
+                if (Actions.checkProductIdToCompare(productId, productIdText.getText())) {
+                    String output = AllAccountZone.compareTwoProduct(productId, Integer.parseInt(productIdText.getText()));
+                    GridPane gridPane = new GridPane();
+                    gridPane.setAlignment(Pos.CENTER);
+                    gridPane.setHgap(20);
+                    gridPane.setVgap(20);
+                    gridPane.addRow(0, createLabel("Feature", 100),
+                            createLabel("Product1", 100), createLabel("Product2", 100));
+                    int j = 1;
+                    for (String featureCompare : output.split("-")) {
+                        gridPane.addRow(j++, createLabel(featureCompare.split(",")[0], 100),
+                                createLabel(featureCompare.split(",")[1], 100),
+                                createLabel(featureCompare.split(",")[2], 100));
+                    }
+                    Button back = createButton("Back", 100);
+                    back.setOnMouseClicked(ev -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
+                    gridPane.add(back, 1, j);
+
+                    MainScenes.getBorderPane().setCenter(gridPane);
+                }
+            });
+            Button back = createButton("Back", 100);
+            back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
+
+            VBox vBox = new VBox(20);
+            vBox.setAlignment(Pos.CENTER);
+            vBox.getChildren().addAll(productIdText, ok, back);
+            MainScenes.getBorderPane().setCenter(vBox);
+        });
         Button comments = createButton("Comments", 150);
         Button digest = createButton("Digest", 150);
 

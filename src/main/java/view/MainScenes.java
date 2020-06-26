@@ -72,7 +72,11 @@ public class MainScenes {
         VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, register);
         vBox.setAlignment(Pos.CENTER);
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 
     public static Parent getMainMenuScene() {
@@ -205,6 +209,10 @@ public class MainScenes {
             }
         });
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 }

@@ -423,4 +423,30 @@ public class Actions {
         }
         return false;
     }
+
+    public static boolean checkProductIdToCompare(int productId1, String productId2) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (productId2.isEmpty()) {
+            alert.setContentText("Enter product ID to compare.");
+            alert.show();
+        } else if (!Validation.validateInteger(productId2)) {
+            alert.setContentText("Enter a number.");
+            alert.show();
+        } else if (productId1 == Integer.parseInt(productId2)) {
+            alert.setContentText("Choose a different product.");
+            alert.show();
+        } else if (SellerZone.getProductById(Integer.parseInt(productId2)) == null) {
+            alert.setContentText("Invalid ID.");
+            alert.show();
+        } else {
+            String output = AllAccountZone.compareTwoProduct(productId1, Integer.parseInt(productId2));
+            if (output.startsWith("Cannot")) {
+                alert.setContentText(output);
+                alert.show();
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
 }
