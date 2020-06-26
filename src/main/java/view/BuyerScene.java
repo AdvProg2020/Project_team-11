@@ -6,11 +6,15 @@ import controller.SellerZone;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -174,18 +178,31 @@ public class BuyerScene {
             Hyperlink hyperlink = new Hyperlink(entry.getKey());
             hyperlink.setOnMouseClicked(e ->
                     MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
-            Button decreaseButton = createButton("-", 20);
+            ImageView decrease = null;
+            try {
+                decrease = new ImageView(new Image(new FileInputStream("Styles/Photos/minus.png")));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            decrease.setFitHeight(25);
+            decrease.setFitWidth(25);
             TextField textField = createTextField("Number", 50);
             textField.setDisable(true);
             textField.setText(String.valueOf(entry.getValue()));
-            Button increaseButton = createButton("+", 20);
-
+            ImageView increase = null;
+            try {
+                increase = new ImageView(new Image(new FileInputStream("Styles/Photos/plus.png")));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            increase.setFitHeight(25);
+            increase.setFitWidth(40);
             HBox hBox = new HBox(20);
             hBox.setAlignment(Pos.CENTER);
-            hBox.getChildren().addAll(hyperlink, decreaseButton, textField, increaseButton);
+            hBox.getChildren().addAll(hyperlink, decrease, textField, increase);
             vBox.getChildren().add(hBox);
 
-            decreaseButton.setOnMouseClicked(e -> {
+            decrease.setOnMouseClicked(e -> {
                 BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), -1);
                 textField.setText(String.valueOf(Integer.parseInt(textField.getText()) - 1));
                 priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
@@ -194,7 +211,7 @@ public class BuyerScene {
                     vBox.getChildren().remove(hBox);
                 }
             });
-            increaseButton.setOnMouseClicked(e -> {
+            increase.setOnMouseClicked(e -> {
                 BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), 1);
                 textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
                 priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
@@ -241,7 +258,10 @@ public class BuyerScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        // TODO : Orders & Rate
+        for (String order : BuyerZone.getOrdersInfo()) {
+            Label label = createLabel(order, 600);
+            vBox.getChildren().add(label);
+        }
 
         ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);

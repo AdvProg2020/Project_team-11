@@ -5,13 +5,13 @@ import java.util.Date;
 public class SellLog extends ExchangeLog {
     private final long receivedAmount;
     private final long reducedAmountForAuction;
-    private final Product soldProduct;
+    private final String soldProduct;
     private final String buyerName;
     private final String sellerUsername;
     private String sendingStatus;
 
     public SellLog(Date date, long receivedAmount, long reducedAmountForAuction,
-                   Product soldProduct, String buyerName, String sellerUsername, String sendingStatus) {
+                   String soldProduct, String buyerName, String sellerUsername, String sendingStatus) {
         super(date);
         this.receivedAmount = receivedAmount;
         this.reducedAmountForAuction = reducedAmountForAuction;
@@ -29,7 +29,7 @@ public class SellLog extends ExchangeLog {
         return reducedAmountForAuction;
     }
 
-    public Product getSoldProducts() {
+    public String getSoldProducts() {
         return soldProduct;
     }
 

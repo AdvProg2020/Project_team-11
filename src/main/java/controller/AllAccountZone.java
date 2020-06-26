@@ -36,22 +36,6 @@ public class AllAccountZone {
         return categories;
     }
 
-    public static String getCategoriesForFilter() {
-        StringBuilder categories = new StringBuilder();
-        for (Category category : DataBase.getDataBase().getAllCategories()) {
-            categories.append(category.getName()).append(" | ");
-        }
-        return categories.toString();
-    }
-
-    public static String getCategoriesRegex() {
-        StringBuilder regex = new StringBuilder("(?i)(");
-        for (Category category : DataBase.getDataBase().getAllCategories()) {
-            regex.append(category.getName()).append("|");
-        }
-        return regex.toString();
-    }
-
     public static void setFilterCategoryFeature(String categoryName, String className) {
         HashMap<String, String> feature = new HashMap<>();
         if (!categoryName.equals("--------")) {
@@ -90,6 +74,8 @@ public class AllAccountZone {
             filterInfo = AuctionScene.getFilterInfo();
         return products.stream()
                 .filter(product -> {
+                    if (!product.getStatus().equals("accepted"))
+                        return false;
                     if (!filterInfo.getCategory().equals("") && !filterInfo.getCategory().equals("--------") &&
                             !filterInfo.getCategory().equals(product.getCategoryName()))
                         return false;
@@ -98,7 +84,7 @@ public class AllAccountZone {
                     if (filterInfo.getMaximumPrice() < product.getGeneralFeature().getAuctionPrice())
                         return false;
                     if (!product.getGeneralFeature().getName().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()) &&
-                            !product.getGeneralFeature().getSeller().getUsername().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()) &&
+                            !product.getGeneralFeature().getSeller().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()) &&
                             !product.getGeneralFeature().getCompany().toLowerCase().contains(filterInfo.getSearchBar().toLowerCase()))
                         return false;
                     if (filterInfo.getMinimumStockStatus() > product.getGeneralFeature().getStockStatus())
@@ -159,40 +145,8 @@ public class AllAccountZone {
         }
     }
 
-    public static String showProductWithSellers(int productId) {
-        BuyerZone.setAuctionPrice();
-        StringBuilder output = new StringBuilder();
-        for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getId() == productId)
-                output.append("Seller : ").append(product.getGeneralFeature().getSeller().getUsername()).append("\n")
-                        .append(product.getGeneralFeature().getName()).append(" ")
-                        .append(product.getGeneralFeature().getAuctionPrice()).append("$ ")
-                        .append(product.getGeneralFeature().getCompany()).append(" ")
-                        .append(product.getCategoryName()).append(" Score : ")
-                        .append(product.getAverageScore()).append(" ").append(product.getDescription());
-        }
-        return output.toString();
-    }
-
     public static void addProductToCart(int productId) {
-        Product product = SellerZone.getProductById(productId);
-        ((Buyer) AllAccountZone.getCurrentAccount()).setCart(product);
-    }
-
-    public static String showProductAttribute(int productId) {
-        Product product = null;
-        for (Product product1 : DataBase.getDataBase().getAllProducts()) {
-            if (product1.getId() == productId) {
-                product = product1;
-                break;
-            }
-        }
-        String feature = "";
-        for (Map.Entry<String, String> entry : product.getCategoryFeature().entrySet()) {
-            feature += entry.getKey() + " : " + entry.getValue() + "\n";
-        }
-        return "Category : " + product.getCategoryName() + "\n" + feature + product.getDescription() +
-                "\nscore : " + product.getAverageScore() + " from " + product.getNumOfUsersRated() + " person";
+        ((Buyer) AllAccountZone.getCurrentAccount()).setCart(productId);
     }
 
     public static String compareTwoProduct(int productId1, int productId2) {
@@ -209,15 +163,6 @@ public class AllAccountZone {
             }
             return output.toString();
         }
-    }
-
-    public static String showProductComments(int productId) {
-        Product product = SellerZone.getProductById(productId);
-        StringBuilder output = new StringBuilder();
-        for (Comment comment : product.getComments()) {
-            output.append(comment.getCommentText()).append("\n");
-        }
-        return output.toString();
     }
 
     public static void createComment(String text, int productId) {

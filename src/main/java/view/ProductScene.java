@@ -179,7 +179,7 @@ public class ProductScene {
              info.add(auctionText, 1, i++);
         }
         Label sellerLabel = createLabel("Seller Username : ", 100);
-        Label sellerText = createLabel(product.getGeneralFeature().getSeller().getUsername(), 200);
+        Label sellerText = createLabel(product.getGeneralFeature().getSeller(), 200);
         Label stockLabel = createLabel("Stock : ", 100);
         Label stockText = createLabel(String.valueOf(product.getGeneralFeature().getStockStatus()), 200);
         info.addColumn(0, nameLabel, companyLabel, sellerLabel, stockLabel, priceLabel);
@@ -261,7 +261,9 @@ public class ProductScene {
                     alert.show();
                 }
             });
-            vBox.getChildren().add(add);
+            Button back = createButton("Back", 100);
+            back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
+            vBox.getChildren().addAll(add, back);
 
             MainScenes.getBorderPane().setCenter(vBox);
         });

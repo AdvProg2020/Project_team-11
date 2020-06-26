@@ -11,31 +11,29 @@ public class BuyerZone {
 
     public static HashMap<String, Integer> getProductsInCart() {
         HashMap<String, Integer> products = new HashMap<>();
-        for (Product product : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
-            products.put(String.valueOf(product.getId()),((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(product));
+        for (Integer productId : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
+            products.put(String.valueOf(productId),((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(productId));
         }
         return products;
     }
 
-    public static String changeNumberOFProductInCart(int productId, int number) {
-        for (Map.Entry<Product, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
-            if (entry.getKey().getId() == productId) {
+    public static void changeNumberOFProductInCart(int productId, int number) {
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+            if (entry.getKey() == productId) {
                 entry.setValue(entry.getValue() + number);
-                return "Done";
             }
         }
-        return "You haven't this product";
     }
 
     public static void removeProductFromCart() {
-        Product removeProduct = null;
-        for (Map.Entry<Product, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+        int removeProductId = 0;
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
             if (entry.getValue() == 0) {
-                removeProduct = entry.getKey();
+                removeProductId = entry.getKey();
                 break;
             }
         }
-        ((Buyer) AllAccountZone.getCurrentAccount()).getCart().remove(removeProduct);
+        ((Buyer) AllAccountZone.getCurrentAccount()).getCart().remove(removeProductId);
     }
 
     public static String checkDiscountCode(String discountCode) {
@@ -84,8 +82,8 @@ public class BuyerZone {
     public static long calculatePriceWithAuctions() {
         setAuctionPrice();
         long totalPrice = 0;
-        for (Map.Entry<Product, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
-            totalPrice += entry.getKey().getGeneralFeature().getAuctionPrice() * entry.getValue();
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+            totalPrice += SellerZone.getProductById(entry.getKey()).getGeneralFeature().getAuctionPrice() * entry.getValue();
         }
         return totalPrice;
     }
@@ -121,9 +119,10 @@ public class BuyerZone {
     }
 
     private static void increaseSellerMoney(Buyer buyer) {
-        for (Map.Entry<Product, Integer> entry : buyer.getCart().entrySet()) {
-            Seller seller = entry.getKey().getGeneralFeature().getSeller();
-            long newMoney = seller.getWallet() + entry.getKey().getGeneralFeature().getAuctionPrice() * entry.getValue();
+        for (Map.Entry<Integer, Integer> entry : buyer.getCart().entrySet()) {
+            Product product = SellerZone.getProductById(entry.getKey());
+            Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
+            long newMoney = seller.getWallet() + product.getGeneralFeature().getAuctionPrice() * entry.getValue();
             seller.setWallet(newMoney);
         }
     }
@@ -140,20 +139,23 @@ public class BuyerZone {
         long paidAmount = calculatePriceWithDiscountsAndAuctions();
         long totalPrice = calculatePriceWithAuctions();
         HashMap<Integer, String> purchasedProducts = new HashMap<>();
-        for (Product product : buyer.getCart().keySet()) {
-            purchasedProducts.put(product.getId(), product.getGeneralFeature().getSeller().getFirstName() + " " +
-                    product.getGeneralFeature().getSeller().getLastName());
+        for (Integer productId : buyer.getCart().keySet()) {
+            Product product = SellerZone.getProductById(productId);
+            Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
+            purchasedProducts.put(productId, seller.getFirstName() + " " + seller.getLastName());
         }
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), paidAmount, totalPrice - paidAmount,
                 purchasedProducts, AllAccountZone.getCurrentAccount().getUsername(), "sending");
         buyer.addBuyHistory(buyLog);
-        for (Product product : buyer.getCart().keySet()) {
+        for (Integer productId : buyer.getCart().keySet()) {
+            Product product = SellerZone.getProductById(productId);
             SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(), product.getGeneralFeature().getAuctionPrice(),
                     product.getGeneralFeature().getPrice() - product.getGeneralFeature().getAuctionPrice(),
-                    product, AllAccountZone.getCurrentAccount().getFirstName() + " " +
-                    AllAccountZone.getCurrentAccount().getLastName(), product.getGeneralFeature().getSeller().getUsername(),
+                    product.getGeneralFeature().getName(), AllAccountZone.getCurrentAccount().getFirstName() + " " +
+                    AllAccountZone.getCurrentAccount().getLastName(), product.getGeneralFeature().getSeller(),
                     "sending");
-            product.getGeneralFeature().getSeller().addSellHistory(sellLog);
+            Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
+            seller.addSellHistory(sellLog);
         }
     }
 
@@ -172,34 +174,19 @@ public class BuyerZone {
         }
     }
 
-    public static String getOrders() {
-        StringBuilder output = new StringBuilder();
+    public static ArrayList<String> getOrdersInfo() {
+        ArrayList<String> orders = new ArrayList<>();
+        StringBuilder productList = new StringBuilder();
         for (BuyLog buyLog  : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
-            output.append(buyLog.getId()).append(". ").append(buyLog.getDate());
-        }
-        return output.toString();
-    }
-
-    public static String getOrderInfo(int logId) {
-        ExchangeLog log = ExchangeLog.getLogById(logId);
-        StringBuilder output = new StringBuilder();
-        if (!(log instanceof BuyLog)) {
-            return "invalid ID";
-        } else if (!((BuyLog) log).getBuyerUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
-            return "invalid ID";
-        } else {
-            StringBuilder productList = new StringBuilder();
-            for (Map.Entry<Integer, String> entry : ((BuyLog) log).getPurchasedProductionsAndSellers().entrySet()) {
-                productList.append(SellerZone.getProductById(entry.getKey()))
+            for (Map.Entry<Integer, String> entry : buyLog.getPurchasedProductionsAndSellers().entrySet()) {
+                productList.append(SellerZone.getProductById(entry.getKey()).getGeneralFeature().getName())
                         .append(" seller : ").append(entry.getValue());
             }
-            output.append(log.getId()).append(". ").append(log.getDate()).append(" : \n")
-                    .append(productList).append("\n")
-                    .append(((BuyLog) log).getPaidAmount()).append("$ -> Discount = ")
-                    .append(((BuyLog) log).getDiscountAmountApplied()).append("$\n")
-                    .append(((BuyLog) log).getDeliveryStatus());
+            orders.add(buyLog.getId() + ". " + buyLog.getDate() + " : \n" + productList + "\n" +
+                    buyLog.getPaidAmount() + "$ -> Discount = " + buyLog.getDiscountAmountApplied() + "$\n" +
+                    buyLog.getDeliveryStatus());
         }
-        return output.toString();
+        return orders;
     }
 
     public static boolean hasUserBoughtProduct(int productId) {

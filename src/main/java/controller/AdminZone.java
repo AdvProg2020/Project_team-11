@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 public class AdminZone {
 
@@ -15,23 +14,9 @@ public class AdminZone {
         return DataBase.getDataBase().getAllRequests();
     }
 
-    public static String viewRequestDetails(int requestId) {
+    public static void acceptRequest(int requestId) {
         Request request = getRequestById(requestId);
-        if (request == null) {
-            return "invalid request ID";
-        } else {
-            return requestId + ". " + request.getTopic() + " : \n" +
-                    AllAccountZone.getAccountByUsername(request.getSenderName()).getFirstName() + " " +
-                    AllAccountZone.getAccountByUsername(request.getSenderName()).getLastName() + "\n" +
-                    request.getDescription();
-        }
-    }
-
-    public static String acceptRequest(int requestId) {
-        Request request = getRequestById(requestId);
-        if (request == null || !request.getStatus().equals("unseen")) {
-            return "invalid request ID";
-        } else if (request.getTopic().equalsIgnoreCase("create seller account")) {
+        if (request.getTopic().equalsIgnoreCase("create seller account")) {
             acceptRequestCreateSellerAccount(request);
         } else if (request.getTopic().equalsIgnoreCase("edit product")) {
             acceptRequestEditProduct(request);
@@ -45,7 +30,6 @@ public class AdminZone {
             acceptRequestAddComment(request);
         }
         request.setStatus("accepted");
-        return "Done";
     }
 
     private static Request getRequestById(int requestId) {
@@ -151,11 +135,9 @@ public class AdminZone {
         return null;
     }
 
-    public static String declineRequest(int requestId) {
+    public static void declineRequest(int requestId) {
         Request request = getRequestById(requestId);
-        if (request == null || !request.getStatus().equals("unseen"))
-            return "invalid request ID";
-        else if (request.getTopic().equalsIgnoreCase("create seller account"))
+        if (request.getTopic().equalsIgnoreCase("create seller account"))
             declineRequestCreateSellerAccount(request);
         else if (request.getTopic().equalsIgnoreCase("add comment"))
             declineRequestAddComment(request);
@@ -168,7 +150,6 @@ public class AdminZone {
         else if (request.getTopic().equalsIgnoreCase("edit auction"))
             declineRequestEditAuction(request);
             request.setStatus("declined");
-        return "Done";
     }
 
     private static void declineRequestCreateSellerAccount(Request request) {
@@ -227,8 +208,12 @@ public class AdminZone {
                 accountDeleted = account;
             }
         }
-        if (accountDeleted == null)
-            return;
+        if (accountDeleted instanceof Buyer) {
+            for (String discountCode : ((Buyer) accountDeleted).getDiscountCodes().keySet()) {
+                Discount discount = getDiscountByCode(discountCode);
+                discount.getAllowedUsers().remove(accountDeleted.getUsername());
+            }
+        }
         if (accountDeleted instanceof Seller) {
             ArrayList<Auction> sellerAuctions = new ArrayList<>();
             for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
@@ -238,7 +223,7 @@ public class AdminZone {
             DataBase.getDataBase().getAllAuctions().removeAll(sellerAuctions);
             ArrayList<Product> sellerProducts = new ArrayList<>();
             for (Product product : DataBase.getDataBase().getAllProducts()) {
-                if (product.getGeneralFeature().getSeller().getUsername().equals(accountDeleted.getUsername()))
+                if (product.getGeneralFeature().getSeller().equals(accountDeleted.getUsername()))
                     sellerProducts.add(product);
             }
             DataBase.getDataBase().getAllProducts().removeAll(sellerProducts);
@@ -246,19 +231,13 @@ public class AdminZone {
         DataBase.getDataBase().getAllAccounts().remove(accountDeleted);
     }
 
-    public static void createAdminProfile(ArrayList<String> info) {
-        new Admin(info.get(0), info.get(1), info.get(2), info.get(3), info.get(4), info.get(5));
-    }
-
-    public static String removeProduct(int productId) {
+    public static void removeProduct(int productId) {
         Product removedProduct = null;
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             if (product.getId() == productId) {
                 removedProduct = product;
             }
         }
-        if (removedProduct == null)
-            return "invalid product ID.";
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             auction.getProductList().remove(removedProduct);
         }
@@ -278,7 +257,6 @@ public class AdminZone {
         }
         DataBase.getDataBase().getAllRates().removeAll(rates);
         DataBase.getDataBase().getAllProducts().remove(removedProduct);
-        return "product removed successfully.";
     }
 
     public static ArrayList<view.tableViewData.Product> getAllProducts() {
@@ -286,7 +264,7 @@ public class AdminZone {
         for (Product product : DataBase.getDataBase().getAllProducts()) {
             products.add(new view.tableViewData.Product(product.getId(), product.getStatus(),
                     product.getGeneralFeature().getName(), product.getGeneralFeature().getPrice(),
-                    product.getGeneralFeature().getSeller().getUsername(), product.getGeneralFeature().getStockStatus(),
+                    product.getGeneralFeature().getSeller(), product.getGeneralFeature().getStockStatus(),
                     product.getCategoryName(), product.getCategoryFeature(), product.getAverageScore()));
         }
         return products;

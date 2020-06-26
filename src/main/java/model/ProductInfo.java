@@ -5,10 +5,10 @@ public class ProductInfo {
     private String company;
     private long price;
     private long auctionPrice;
-    private final Seller seller;
+    private final String seller;
     private int stockStatus;
 
-    public ProductInfo(String name, String company, long price, Seller seller, int stockStatus) {
+    public ProductInfo(String name, String company, long price, String seller, int stockStatus) {
         this.name = name;
         this.company = company;
         this.price = price;
@@ -34,7 +34,7 @@ public class ProductInfo {
         return auctionPrice;
     }
 
-    public Seller getSeller() {
+    public String getSeller() {
         return seller;
     }
 

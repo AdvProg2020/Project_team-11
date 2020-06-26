@@ -669,7 +669,7 @@ public class AdminScene {
                 Button addFeatureButton = createButton("Add", 100);
                 addFeatureButton.setOnMouseClicked(event -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    if (addFeatureText.getText().isEmpty()) {
+                    if (addFeatureText.getText() == null) {
                         alert.setContentText("Enter feature.");
                         alert.show();
                     } else {
@@ -732,44 +732,46 @@ public class AdminScene {
             ArrayList<String> feature = new ArrayList<>();
 
             TextField nameText = createTextField("Name", 150);
-            Button create = createButton("Create", 100);
+            Button create = createButton("Create", 150);
+            Button back = createButton("Back", 150);
+            back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageCategories()));
 
-            HBox nameHBox = new HBox(10);
-            nameHBox.getChildren().addAll(nameText, create);
-            nameHBox.setPadding(new Insets(10, 10, 10, 10));
-            nameHBox.setAlignment(Pos.CENTER);
+            VBox categoryNameVBox = new VBox(10);
+            categoryNameVBox.getChildren().addAll(nameText, create, back);
+            categoryNameVBox.setPadding(new Insets(10, 10, 10, 10));
+            categoryNameVBox.setAlignment(Pos.CENTER);
 
-            gridPane.add(nameHBox, 1, 4);
+            create.setOnMouseClicked(ev -> {
+                TextField featureText = createTextField("Feature", 200);
+                Button addFeature = createButton("Add", 150);
+                Button finish = createButton("Finish", 150);
+                Button back1 = createButton("Back", 150);
+                back1.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageCategories()));
 
-            TextField featureText = createTextField("Feature", 200);
-            Button addFeature = createButton("Add", 100);
-            Button finish = createButton("Finish", 100);
+                HBox featureHBox = new HBox(10);
+                featureHBox.getChildren().addAll(featureText, addFeature, finish, back1);
+                featureHBox.setPadding(new Insets(10, 10, 10, 10));
+                featureHBox.setAlignment(Pos.CENTER);
 
-            HBox featureHBox = new HBox(10);
-            featureHBox.getChildren().addAll(featureText, addFeature, finish);
-            featureHBox.setPadding(new Insets(10, 10, 10, 10));
-            featureHBox.setAlignment(Pos.CENTER);
+                addFeature.setOnMouseClicked(event -> {
+                    if (Validation.validateNames(featureText.getText())) {
+                        feature.add(featureText.getText());
+                        featureText.clear();
+                    }
+                });
 
-            create.setOnMouseClicked(event -> {
+                finish.setOnMouseClicked(event -> {
+                    AdminZone.createCategory(name[0], feature);
+                    MainScenes.getBorderPane().setCenter(manageCategories());
+                });
+
                 if (Actions.checkCategoryName(nameText.getText())) {
-                    gridPane.getChildren().remove(nameHBox);
                     name[0] = nameText.getText();
-                    gridPane.add(featureHBox, 1, 4);
+                    MainScenes.getBorderPane().setCenter(featureHBox);
                 }
             });
 
-            addFeature.setOnMouseClicked(event -> {
-                if (Validation.validateNames(featureText.getText())) {
-                    feature.add(featureText.getText());
-                    featureText.clear();
-                }
-            });
-
-            finish.setOnMouseClicked(event -> {
-                gridPane.getChildren().remove(featureHBox);
-                AdminZone.createCategory(name[0], feature);
-                MainScenes.getBorderPane().setCenter(manageCategories());
-            });
+            MainScenes.getBorderPane().setCenter(categoryNameVBox);
         });
 
         gridPane.addColumn(0, nameVBox);

@@ -7,7 +7,7 @@ public class Buyer extends Account {
     private long wallet;
     private final HashMap<String, Integer> discountCodes;//discount code, number
     private final ArrayList<BuyLog> buyHistory;
-    private final HashMap<Product, Integer> cart;
+    private final HashMap<Integer, Integer> cart;// product ID & number
     private Discount activeDiscount;
 
     public Buyer(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
@@ -31,7 +31,7 @@ public class Buyer extends Account {
         return buyHistory;
     }
 
-    public HashMap<Product, Integer> getCart() {
+    public HashMap<Integer, Integer> getCart() {
         return cart;
     }
 
@@ -51,8 +51,8 @@ public class Buyer extends Account {
         this.buyHistory.add(buyHistory);
     }
 
-    public void setCart(Product product) {
-        this.cart.put(product, 1);
+    public void setCart(int productId) {
+        this.cart.put(productId, 1);
     }
 
     public void setActiveDiscount(Discount activeDiscount) {
@@ -62,15 +62,5 @@ public class Buyer extends Account {
     public void decreaseDiscountCode(Discount discount) {
         int number = this.discountCodes.get(discount.getCode());
         this.discountCodes.replace(discount.getCode(), number - 1);
-    }
-
-    @Override
-    public String toString() {
-        return "Buyer{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                '}';
     }
 }

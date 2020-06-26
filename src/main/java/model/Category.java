@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Category {
     private String name;
     private final ArrayList<String> specialFeatures;
-//    private ArrayList<Category> subCategories; this is optional. think about it after ending main things.
     private final ArrayList<Product> productList;
 
     public Category(String name, ArrayList<String> specialFeatures) {

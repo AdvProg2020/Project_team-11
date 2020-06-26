@@ -21,7 +21,7 @@ public class SellerZone {
     public static HashMap<Integer, String> getSellerProducts() {
         HashMap<Integer, String> products = new HashMap<>();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            if (product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount().getUsername())) {
                 products.put(product.getId(), product.getGeneralFeature().getName());
             }
         }
@@ -60,24 +60,6 @@ public class SellerZone {
         return productDetails;
     }
 
-    public static String viewProductBuyers(int productId) {
-        Product product = getProductById(productId);
-        if (product == null) {
-            return "You haven't this product.";
-        } else {
-            return getProductBuyers(product);
-        }
-    }
-
-    public static String editProduct(int productId) {
-        Product product = getProductById(productId);
-        if (product == null || !product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount())) {
-            return "You haven't this product.";
-        } else {
-            return "Edit";
-        }
-    }
-
     public static void sendEditProductRequest(String description) {
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description, "unseen");
     }
@@ -92,10 +74,6 @@ public class SellerZone {
         return saleHistory;
     }
 
-    public static String getCompanyInfo() {
-        return ((Seller) AllAccountZone.getCurrentAccount()).getCompanyName();
-    }
-
     public static Category getCategoryByName(String name) {
         for (Category category : DataBase.getDataBase().getAllCategories()) {
             if (category.getName().equalsIgnoreCase(name))
@@ -107,7 +85,7 @@ public class SellerZone {
     public static void sendAddNewProductRequest(ArrayList<String> info,
                                                 HashMap<String, String> categoryFeature) {
         ProductInfo productInfo = new ProductInfo(info.get(0), info.get(1),
-                Long.parseLong(info.get(2)), (Seller) AllAccountZone.getCurrentAccount(), Integer.parseInt(info.get(3)));
+                Long.parseLong(info.get(2)), AllAccountZone.getCurrentAccount().getUsername(), Integer.parseInt(info.get(3)));
         Product product = new Product("construction", productInfo, info.get(5), categoryFeature, info.get(4));
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
                 String.valueOf(product.getId()), "unseen");
@@ -204,7 +182,7 @@ public class SellerZone {
         Product product = getProductById(productId);
         if (product == null) {
             return false;
-        } else if (product.getGeneralFeature().getSeller().getUsername().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+        } else if (product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount().getUsername())) {
             return true;
         }
         return false;
