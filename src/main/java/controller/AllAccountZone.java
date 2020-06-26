@@ -174,10 +174,9 @@ public class AllAccountZone {
         return output.toString();
     }
 
-    public static String addProductToCart(int productId) {
+    public static void addProductToCart(int productId) {
         Product product = SellerZone.getProductById(productId);
         ((Buyer) AllAccountZone.getCurrentAccount()).setCart(product);
-        return "Done.";
     }
 
     public static String showProductAttribute(int productId) {
@@ -224,14 +223,9 @@ public class AllAccountZone {
     public static void createComment(String text, int productId) {
         Buyer buyer = (Buyer) getCurrentAccount();
         Product product = SellerZone.getProductById(productId);
-        boolean hasBought = false;
-        for (BuyLog buyLog : buyer.getBuyHistory()) {
-            if (buyLog.getPurchasedProductionsAndSellers().containsKey(productId)) {
-                hasBought = true;
-                break;
-            }
-        }
+        boolean hasBought = BuyerZone.hasUserBoughtProduct(productId);
         Comment comment = new Comment(buyer.getUsername(), productId, text, "unseen", hasBought);
+        product.getComments().add(comment);
         new Request(buyer.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
     }
 
@@ -356,5 +350,11 @@ public class AllAccountZone {
                 ((Buyer) currentAccount).setWallet(Long.parseLong(value));
             }
         }
+    }
+
+    public static boolean canUserBuyOrComment() {
+        if (currentAccount == null) {
+            return false;
+        } else return currentAccount instanceof Buyer;
     }
 }

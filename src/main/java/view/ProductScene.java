@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import model.Comment;
 import model.Product;
 
 import java.util.ArrayList;
@@ -145,6 +146,7 @@ public class ProductScene {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
                 Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
                 hyperlink.setMinSize(200, 200);
+                hyperlink.setAlignment(Pos.CENTER);
                 hyperlink.setOnMouseClicked(e ->
                         MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
                 gridPane.add(hyperlink, j, i);
@@ -226,14 +228,60 @@ public class ProductScene {
 
         Button comments = createButton("Comments", 150);
         comments.setOnMouseClicked(e -> {
+            VBox vBox = new VBox(20);
+            vBox.setAlignment(Pos.CENTER);
+            for (Comment comment : SellerZone.getProductById(productId).getComments()) {
+                if (comment.getStatus().equals("accepted")) {
+                    vBox.getChildren().add(createLabel(comment.getBuyerName() + " : " + comment.getCommentText(),
+                            500));
+                }
+            }
+            Button add = createButton("Add a comment", 200);
+            add.setOnMouseClicked(event -> {
+                if (AllAccountZone.canUserBuyOrComment()) {
+                    TextField comment = createTextField("Comment", 500);
+                    Button send = createButton("Send", 100);
+                    send.setOnMouseClicked(ev -> {
+                        if (comment.getText() == null) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setContentText("Enter your comment.");
+                            alert.show();
+                        } else {
+                            AllAccountZone.createComment(comment.getText(), productId);
+                            comment.clear();
+                            vBox.getChildren().removeAll(comment, send);
+                            vBox.getChildren().addAll(add);
+                        }
+                    });
+                    vBox.getChildren().remove(add);
+                    vBox.getChildren().addAll(comment, send);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("You should sign in as a buyer.");
+                    alert.show();
+                }
+            });
+            vBox.getChildren().add(add);
 
+            MainScenes.getBorderPane().setCenter(vBox);
         });
 
-        Button digest = createButton("Digest", 150);
+        Button buy = createButton("Buy", 150);
+        buy.setOnMouseClicked(e -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            if (AllAccountZone.canUserBuyOrComment()) {
+                AllAccountZone.addProductToCart(productId);
+                alert.setContentText("Product added to your cart successfully.");
+            } else {
+                alert.setAlertType(Alert.AlertType.ERROR);
+                alert.setContentText("You should sign in as a buyer.");
+            }
+            alert.show();
+        });
 
         VBox buttons = new VBox(20);
         buttons.setAlignment(Pos.BOTTOM_RIGHT);
-        buttons.getChildren().addAll(compare, comments, digest);
+        buttons.getChildren().addAll(compare, comments, buy);
 
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
