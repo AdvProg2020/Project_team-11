@@ -223,7 +223,12 @@ public class ProductScene {
             vBox.getChildren().addAll(productIdText, ok, back);
             MainScenes.getBorderPane().setCenter(vBox);
         });
+
         Button comments = createButton("Comments", 150);
+        comments.setOnMouseClicked(e -> {
+
+        });
+
         Button digest = createButton("Digest", 150);
 
         VBox buttons = new VBox(20);

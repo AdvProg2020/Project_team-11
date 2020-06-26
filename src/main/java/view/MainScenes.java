@@ -108,7 +108,7 @@ public class MainScenes {
         borderPane.setTop(hBox);
         borderPane.setCenter(ProductScene.getProductsRoot());
         MainScenes.borderPane = borderPane;
-        borderPane.setStyle("-fx-background-color: #FF8C00");
+        borderPane.setStyle("-fx-background-color: #C5CBE3");
 
         return borderPane;
     }
