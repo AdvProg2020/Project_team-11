@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static view.MainScenes.createTextField;
+import static view.ProductScene.getProductRoot;
 
 public class AuctionScene {
     private static String sort = "Date";
@@ -140,9 +141,8 @@ public class AuctionScene {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
                 Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
                 hyperlink.setMinSize(200, 200);
-                hyperlink.setOnMouseClicked(e -> {
-                    //TODO : Product Scene
-                });
+                hyperlink.setOnMouseClicked(e ->
+                        MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
                 gridPane.add(hyperlink, j, i);
             }
         }

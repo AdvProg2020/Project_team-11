@@ -22,7 +22,7 @@ import static view.MainScenes.createTextField;
 
 public class SellerScene {
 
-    public static Pane getSellerRoot() {
+    public static Parent getSellerRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
@@ -51,7 +51,11 @@ public class SellerScene {
         VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions);
         vBox.setAlignment(Pos.TOP_CENTER);
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 
     public static Parent getPersonalInfo() {

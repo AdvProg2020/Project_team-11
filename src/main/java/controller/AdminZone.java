@@ -424,7 +424,11 @@ public class AdminZone {
 
     public static ArrayList<String> getCategoryFeature(String name) {
         Category category = Category.getCategoryByName(name);
-        return category.getSpecialFeatures();
+        if (category != null) {
+            return category.getSpecialFeatures();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public static void editCategory(String field, String value, String categoryName, String lastFeature) {

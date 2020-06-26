@@ -2,18 +2,20 @@ package view;
 
 import controller.AdminZone;
 import controller.AllAccountZone;
+import controller.BuyerZone;
+import controller.SellerZone;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Product;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-import static view.MainScenes.createTextField;
+import static view.MainScenes.*;
 
 public class ProductScene {
     private static String sort = "date";
@@ -96,6 +98,7 @@ public class ProductScene {
         });
 
         ComboBox<String> categoryFilter = new ComboBox<>();
+        categoryFilter.getItems().add("--------");
         categoryFilter.getItems().addAll(AllAccountZone.getCategories());
         categoryFilter.setPromptText("Category");
         categoryFilter.setMinWidth(200);
@@ -142,15 +145,68 @@ public class ProductScene {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
                 Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
                 hyperlink.setMinSize(200, 200);
-                hyperlink.setOnMouseClicked(e -> {
-                    //TODO : Product Scene
-                });
+                hyperlink.setOnMouseClicked(e ->
+                        MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
                 gridPane.add(hyperlink, j, i);
             }
         }
     }
 
-    public static void getProductRoot() {
+    public static Parent getProductRoot(int productId) {
+        GridPane info = new GridPane();
+        info.setAlignment(Pos.CENTER);
+        info.setHgap(20);
+        info.setVgap(20);
 
+        Product product = SellerZone.getProductById(productId);
+        Label nameLabel = createLabel("Name : ", 100);
+        Label nameText = createLabel(product.getGeneralFeature().getName(), 200);
+        Label companyLabel = createLabel("Company : ", 100);
+        Label companyText = createLabel(product.getGeneralFeature().getCompany(), 200);
+        BuyerZone.setAuctionPrice();
+        long price = product.getGeneralFeature().getPrice();
+        long auctionPrice = product.getGeneralFeature().getAuctionPrice();
+        Label priceLabel = createLabel("Price : ", 100);
+        Label priceText = createLabel(String.valueOf(price), 200);
+        Label auctionLabel, auctionText;
+        int i = 5;
+        if (price != auctionPrice) {
+             auctionLabel = createLabel("Auction Price : ", 100);
+             auctionText = createLabel(product.getGeneralFeature().getName(), 200);
+             info.add(auctionLabel, 0, i);
+             info.add(auctionText, 1, i++);
+        }
+        Label sellerLabel = createLabel("Seller Username : ", 100);
+        Label sellerText = createLabel(product.getGeneralFeature().getSeller().getUsername(), 200);
+        Label stockLabel = createLabel("Stock : ", 100);
+        Label stockText = createLabel(String.valueOf(product.getGeneralFeature().getStockStatus()), 200);
+        info.addColumn(0, nameLabel, companyLabel, sellerLabel, stockLabel, priceLabel);
+        info.addColumn(1, nameText, companyText, sellerText, stockText, priceText);
+        for (Map.Entry<String, String> entry : product.getCategoryFeature().entrySet()) {
+            Label featureLabel = createLabel(entry.getKey() + " : ", 100);
+            Label featureText = createLabel(entry.getValue(), 200);
+            info.add(featureLabel, 0, i);
+            info.add(featureText, 1, i++);
+        }
+
+        Button compare = createButton("Compare", 150);
+        Button comments = createButton("Comments", 150);
+        Button digest = createButton("Digest", 150);
+
+        VBox buttons = new VBox(20);
+        buttons.setAlignment(Pos.BOTTOM_RIGHT);
+        buttons.getChildren().addAll(compare, comments, digest);
+
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(30);
+        gridPane.add(info, 0, 0);
+        gridPane.add(buttons, 3, 0);
+
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 }

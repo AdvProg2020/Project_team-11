@@ -54,8 +54,10 @@ public class AllAccountZone {
 
     public static void setFilterCategoryFeature(String categoryName, String className) {
         HashMap<String, String> feature = new HashMap<>();
-        for (String specialFeature : Category.getCategoryByName(categoryName).getSpecialFeatures()) {
-            feature.put(specialFeature, "");
+        if (!categoryName.equals("--------")) {
+            for (String specialFeature : Category.getCategoryByName(categoryName).getSpecialFeatures()) {
+                feature.put(specialFeature, "");
+            }
         }
         if (className.equals("products"))
             ProductScene.getFilterInfo().setFeature(feature);
@@ -88,7 +90,7 @@ public class AllAccountZone {
             filterInfo = AuctionScene.getFilterInfo();
         return products.stream()
                 .filter(product -> {
-                    if (!filterInfo.getCategory().equals("") &&
+                    if (!filterInfo.getCategory().equals("") && !filterInfo.getCategory().equals("--------") &&
                             !filterInfo.getCategory().equals(product.getCategoryName()))
                         return false;
                     if (filterInfo.getMinimumPrice() > product.getGeneralFeature().getAuctionPrice())

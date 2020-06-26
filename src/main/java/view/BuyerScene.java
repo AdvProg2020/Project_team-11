@@ -18,10 +18,11 @@ import java.util.Map;
 import static view.MainScenes.createButton;
 import static view.MainScenes.createTextField;
 import static view.MainScenes.createLabel;
+import static view.ProductScene.getProductRoot;
 
 public class BuyerScene {
 
-    public static Pane getBuyerRoot() {
+    public static Parent getBuyerRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
@@ -45,7 +46,11 @@ public class BuyerScene {
         VBox vBox = new VBox(personalInfo, cart, orders, discountCodes);
         vBox.setAlignment(Pos.TOP_CENTER);
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 
     public static Parent getPersonalInfo() {
@@ -167,9 +172,8 @@ public class BuyerScene {
         HashMap<String, Integer> products = new HashMap<>(BuyerZone.getProductsInCart());
         for (Map.Entry<String, Integer> entry : products.entrySet()) {
             Hyperlink hyperlink = new Hyperlink(entry.getKey());
-            hyperlink.setOnMouseClicked(e -> {
-                //TODO product scene
-            });
+            hyperlink.setOnMouseClicked(e ->
+                    MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
             Button decreaseButton = createButton("-", 20);
             TextField textField = createTextField("Number", 50);
             textField.setDisable(true);

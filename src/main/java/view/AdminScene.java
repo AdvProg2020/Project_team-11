@@ -24,7 +24,7 @@ import static view.MainScenes.*;
 
 public class AdminScene {
 
-    public static Pane getAdminRoot() {
+    public static Parent getAdminRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
         personalInfo.setMinHeight(50);
         personalInfo.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
@@ -58,7 +58,11 @@ public class AdminScene {
         VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories);
         vBox.setAlignment(Pos.TOP_CENTER);
 
-        return vBox;
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
     }
 
     public static Parent getPersonalInfo() {
