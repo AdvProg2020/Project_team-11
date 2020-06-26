@@ -426,7 +426,7 @@ public class Actions {
 
     public static boolean checkProductIdToCompare(int productId1, String productId2) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        if (productId2.isEmpty()) {
+        if (productId2 == null) {
             alert.setContentText("Enter product ID to compare.");
             alert.show();
         } else if (!Validation.validateInteger(productId2)) {
@@ -442,6 +442,26 @@ public class Actions {
             String output = AllAccountZone.compareTwoProduct(productId1, Integer.parseInt(productId2));
             if (output.startsWith("Cannot")) {
                 alert.setContentText(output);
+                alert.show();
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean rate(String scoreText) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (scoreText == null) {
+            alert.setContentText("Enter score.");
+            alert.show();
+        } else if (!Validation.validateInteger(scoreText)) {
+            alert.setContentText("Invalid format.");
+            alert.show();
+        } else {
+            int score = Integer.parseInt(scoreText);
+            if (score > 5 || score < 0) {
+                alert.setContentText("Enter a number from 0 to 5.");
                 alert.show();
             } else {
                 return true;

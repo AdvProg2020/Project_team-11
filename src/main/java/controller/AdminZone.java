@@ -14,6 +14,11 @@ public class AdminZone {
         return DataBase.getDataBase().getAllRequests();
     }
 
+    public static void removeRequest(int requestId) {
+        Request request = getRequestById(requestId);
+        DataBase.getDataBase().getAllRequests().remove(request);
+    }
+
     public static void acceptRequest(int requestId) {
         Request request = getRequestById(requestId);
         if (request.getTopic().equalsIgnoreCase("create seller account")) {
@@ -65,6 +70,7 @@ public class AdminZone {
                 product.getCategoryFeature().replace(splitInfo.get(1), splitInfo.get(2));
                 break;
         }
+        product.setStatus("accepted");
     }
 
     private static void acceptRequestCreateSellerAccount(Request request) {
@@ -120,6 +126,7 @@ public class AdminZone {
                 }
                 auction.setEndDate(date);
         }
+        auction.setStatus("accepted");
     }
 
     private static void acceptRequestAddComment(Request request) {
@@ -172,12 +179,12 @@ public class AdminZone {
     }
 
     private static void declineRequestAddAuction(Request request) {
-        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription()));
+        Auction auction = getAuctionById(Integer.parseInt(request.getDescription()));
         auction.setStatus("rejected");
     }
 
     private static void declineRequestEditAuction(Request request) {
-        Auction auction = SellerZone.getAuctionById(Integer.parseInt(request.getDescription().split(",")[0]));
+        Auction auction = getAuctionById(Integer.parseInt(request.getDescription().split(",")[2]));
         auction.setStatus("accepted");
     }
 

@@ -200,16 +200,9 @@ public class BuyerZone {
     }
 
     public static void createRate(int productId, int score) {
-        Product product = null;
-        for (BuyLog buyLog : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
-            for (Map.Entry<Integer, String> entry : buyLog.getPurchasedProductionsAndSellers().entrySet()) {
-                if (entry.getKey() == productId) {
-                    product = SellerZone.getProductById(productId);
-                }
-            }
-        }
-        new Rate(AllAccountZone.getCurrentAccount().getUsername(), score, product.getId());
-        double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getAverageScore() + 1);
+        Product product = SellerZone.getProductById(productId);
+        new Rate(AllAccountZone.getCurrentAccount().getUsername(), score, productId);
+        double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getNumOfUsersRated() + 1);
         product.setAverageScore(newScore);
         product.addNumOfUsersRated();
     }

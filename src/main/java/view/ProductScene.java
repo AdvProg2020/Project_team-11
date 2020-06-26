@@ -171,25 +171,67 @@ public class ProductScene {
         Label priceLabel = createLabel("Price : ", 100);
         Label priceText = createLabel(String.valueOf(price), 200);
         Label auctionLabel, auctionText;
-        int i = 5;
-        if (price != auctionPrice) {
-             auctionLabel = createLabel("Auction Price : ", 100);
-             auctionText = createLabel(product.getGeneralFeature().getName(), 200);
-             info.add(auctionLabel, 0, i);
-             info.add(auctionText, 1, i++);
-        }
         Label sellerLabel = createLabel("Seller Username : ", 100);
         Label sellerText = createLabel(product.getGeneralFeature().getSeller(), 200);
         Label stockLabel = createLabel("Stock : ", 100);
         Label stockText = createLabel(String.valueOf(product.getGeneralFeature().getStockStatus()), 200);
+        Label scoreLabel = createLabel("Score : ", 100);
+        Label scoreText = createLabel(String.valueOf(product.getAverageScore()), 200);
+        Label descriptionLabel = createLabel("Description : ", 100);
+        Label descriptionText = createLabel(product.getDescription(), 200);
+        Label categoryLabel = createLabel("Category : ", 100);
+        Label categoryText = createLabel(product.getCategoryName(), 200);
         info.addColumn(0, nameLabel, companyLabel, sellerLabel, stockLabel, priceLabel);
         info.addColumn(1, nameText, companyText, sellerText, stockText, priceText);
+        int i = 5;
+        if (price != auctionPrice) {
+            auctionLabel = createLabel("Auction Price : ", 100);
+            auctionText = createLabel(String.valueOf(auctionPrice), 200);
+            info.add(auctionLabel, 0, i);
+            info.add(auctionText, 1, i++);
+        }
+        info.add(scoreLabel, 0, i);
+        info.add(scoreText, 1, i++);
+        info.add(descriptionLabel, 0, i);
+        info.add(descriptionText, 1, i++);
+        info.add(categoryLabel, 0, i);
+        info.add(categoryText, 1, i++);
         for (Map.Entry<String, String> entry : product.getCategoryFeature().entrySet()) {
             Label featureLabel = createLabel(entry.getKey() + " : ", 100);
             Label featureText = createLabel(entry.getValue(), 200);
             info.add(featureLabel, 0, i);
             info.add(featureText, 1, i++);
         }
+
+        Button rate = createButton("Rate", 150);
+        rate.setOnMouseClicked(e -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            if (AllAccountZone.canUserBuyOrComment()) {
+                if (BuyerZone.hasUserBoughtProduct(productId)) {
+                    TextField score = createTextField("Score", 100);
+                    Button rateScore = createButton("Rate", 100);
+                    rateScore.setOnMouseClicked(event -> {
+                        if (Actions.rate(score.getText())) {
+                            BuyerZone.createRate(productId, Integer.parseInt(score.getText()));
+                            MainScenes.getBorderPane().setCenter(getProductRoot(productId));
+                        }
+                    });
+                    Button back = createButton("Back", 100);
+                    back.setOnMouseClicked(ev -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
+                    HBox hBox = new HBox(20);
+                    hBox.setAlignment(Pos.CENTER);
+                    hBox.getChildren().addAll(score, rateScore, back);
+
+                    MainScenes.getBorderPane().setCenter(hBox);
+                } else {
+                    alert.setContentText("You can't rate this product.");
+                    alert.show();
+                }
+            } else {
+                alert.setContentText("You should sign in as a buyer.");
+                alert.show();
+            }
+        });
 
         Button compare = createButton("Compare", 150);
         compare.setOnMouseClicked(e -> {
@@ -283,7 +325,7 @@ public class ProductScene {
 
         VBox buttons = new VBox(20);
         buttons.setAlignment(Pos.BOTTOM_RIGHT);
-        buttons.getChildren().addAll(compare, comments, buy);
+        buttons.getChildren().addAll(rate, compare, comments, buy);
 
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);

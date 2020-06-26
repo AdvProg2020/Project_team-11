@@ -130,7 +130,7 @@ public class SellerZone {
         return auctionDetails;
     }
 
-    public static Auction getAuctionById(int auctionId) {
+    public static Auction getSellerAuctionById(int auctionId) {
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             if (auction.getSellerName().equals(AllAccountZone.getCurrentAccount().getUsername()) && auction.getId() == auctionId) {
                 return auction;
@@ -142,7 +142,7 @@ public class SellerZone {
     public static void sendEditAuctionRequest(String field, String value, int auctionId) {
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit auction",
                 field + "," + value + "," + auctionId, "unseen");
-        Auction auction = getAuctionById(auctionId);
+        Auction auction = getSellerAuctionById(auctionId);
         auction.setStatus("editing");
     }
 
@@ -190,13 +190,13 @@ public class SellerZone {
 
 
     public static void removeProductFromAuction(int auctionId, int productId) {
-        Auction auction = getAuctionById(auctionId);
+        Auction auction = getSellerAuctionById(auctionId);
         Product product = getProductById(productId);
         auction.getProductList().remove(product);
     }
 
     public static void addProductToAuction(int auctionId, int productId) {
-        Auction auction = getAuctionById(auctionId);
+        Auction auction = getSellerAuctionById(auctionId);
         Product product = getProductById(productId);
         auction.getProductList().add(product);
     }

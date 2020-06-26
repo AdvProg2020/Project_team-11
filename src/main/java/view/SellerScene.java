@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import model.Comment;
 
@@ -506,7 +505,7 @@ public class SellerScene {
                 addProduct.setOnMouseClicked(event -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     if (Validation.validateInteger(addText.getText())) {
-                        if (SellerZone.getAuctionById(Integer.parseInt(hyperlink.getText())).getProductList()
+                        if (SellerZone.getSellerAuctionById(Integer.parseInt(hyperlink.getText())).getProductList()
                                 .contains(SellerZone.getProductById(Integer.parseInt(addText.getText())))) {
                             alert.setContentText("Already exist.");
                             alert.show();

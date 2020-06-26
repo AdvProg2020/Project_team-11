@@ -570,23 +570,32 @@ public class AdminScene {
 
             Button acceptButton = createButton("Accept", 100);
             Button declineButton = createButton("Decline", 100);
+            Button removeButton = createButton("Remove", 100);
+            removeButton.setOnMouseClicked(e -> {
+                AdminZone.removeRequest(Integer.parseInt(idHyperlink.getText()));
+                gridPane.getChildren().removeAll(idHyperlink, topic, sender, removeButton);
+            });
 
             if (request.getStatus().equals("unseen")) {
+                removeButton.setDisable(true);
                 gridPane.add(acceptButton, 3, i);
                 gridPane.add(declineButton, 4, i);
                 acceptButton.setOnMouseClicked(e -> {
                     AdminZone.acceptRequest(request.getId());
                     gridPane.getChildren().removeAll(acceptButton, declineButton);
+                    removeButton.setDisable(false);
                 });
                 declineButton.setOnMouseClicked(e -> {
                     AdminZone.declineRequest(request.getId());
                     gridPane.getChildren().removeAll(acceptButton, declineButton);
+                    removeButton.setDisable(false);
                 });
             }
 
             gridPane.add(idHyperlink, 0, i);
             gridPane.add(topic, 1, i);
-            gridPane.add(sender, 2, i++);
+            gridPane.add(sender, 2, i);
+            gridPane.add(removeButton, 5, i++);
         }
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
