@@ -34,7 +34,7 @@ public class ProductScene {
         return sort;
     }
 
-    public static Pane getProductsRoot() {
+    public static Parent getProductsRoot() {
         ProductScene.filterInfo = new FilterInfo("", 0, Long.MAX_VALUE, "",
                 0, new HashMap<>());
 
@@ -136,12 +136,20 @@ public class ProductScene {
             setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
         });
 
+        ScrollPane scrollPane = new ScrollPane(productsGridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(hBox);
         borderPane.setRight(filterVBox);
-        borderPane.setCenter(productsGridPane);
+        borderPane.setCenter(scrollPane);
 
-        return borderPane;
+        ScrollPane pane = new ScrollPane(borderPane);
+        pane.setFitToWidth(true);
+        pane.setFitToHeight(true);
+
+        return pane;
     }
 
     public static void setProducts(GridPane gridPane, ArrayList<Product> products) {
@@ -185,7 +193,12 @@ public class ProductScene {
                     auctionImage.setY(0);
                     pane.getChildren().add(auctionImage);
                 }
-                vBox.getChildren().addAll(pane, hyperlink);
+                HBox hBox = new HBox();
+                hBox.getChildren().addAll(createLabel(products.get(5*i + j).getGeneralFeature().getName(), 100),
+                        createLabel(products.get(5 * i + j).getGeneralFeature().getAuctionPrice() + "$", 100));
+                hBox.setAlignment(Pos.CENTER);
+                pane.setMinHeight(200);
+                vBox.getChildren().addAll(pane, hBox, hyperlink);
                 hyperlink.setOnMouseClicked(e ->
                         MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
                 gridPane.add(vBox, j, i);
