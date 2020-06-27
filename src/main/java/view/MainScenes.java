@@ -7,7 +7,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -35,7 +38,15 @@ public class MainScenes {
         Button button = new Button(text);
         button.setAlignment(Pos.CENTER);
         button.setMinWidth(minWidth);
+        button.setOnMouseClicked(event -> playClickSound());
+        button.setOnAction(actionEvent -> playClickSound());
         return button;
+    }
+
+    private static void playClickSound() {
+        Media clickMusic = new Media(new File("Styles/Sound/click.mp3").toURI().toString());
+        MediaPlayer clickMusicPlayer = new MediaPlayer(clickMusic);
+        clickMusicPlayer.play();
     }
 
     public static Label createLabel(String text, int minWidth) {

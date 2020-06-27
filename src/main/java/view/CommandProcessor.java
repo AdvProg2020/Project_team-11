@@ -5,6 +5,8 @@ import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.*;
@@ -49,6 +51,16 @@ public class CommandProcessor extends Application {
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
+
+        new Thread(() -> {
+            Media media = new Media(new File("Styles/Sound/background music.mp3").toURI().toString());
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            while (true) {
+                mediaPlayer.play();
+            }
+        }).start();
 
         stage.setOnCloseRequest(e -> FileProcess.writeDataBaseOnFile());
     }

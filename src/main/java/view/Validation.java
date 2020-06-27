@@ -3,29 +3,29 @@ package view;
 public class Validation {
 
     public static boolean validateNames(String name) {
-        return !name.isEmpty();
+        return name != null;
     }
 
     public static boolean validateEmail(String email) {
-        if (email.isEmpty()) {
+        if (email == null) {
             return false;
         } else return email.matches(".+@.+\\.[a-zA-Z]{2,3}");
     }
 
     public static boolean validateInteger(String number) {
-        if (number.isEmpty()) {
+        if (number == null) {
             return false;
         } else return number.matches("\\d{1,9}");
     }
 
     public static boolean validateLong(String number) {
-        if (number.isEmpty()) {
+        if (number == null) {
             return false;
         } else return number.matches("\\d{1,18}");
     }
 
     public static boolean validateDate(String date) {
-        if (date.isEmpty()) {
+        if (date == null) {
             return false;
         } else return date.matches("^\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}$");
     }
