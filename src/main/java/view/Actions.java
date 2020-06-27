@@ -3,13 +3,18 @@ package view;
 import controller.AdminZone;
 import controller.AllAccountZone;
 import controller.SellerZone;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import model.Category;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -312,7 +317,7 @@ public class Actions {
         });
     }
 
-    public static boolean createProduct(ArrayList<String> info, HashMap<String, String> features) {
+    public static boolean createProduct(ArrayList<String> info, HashMap<String, String> features, ImageView imageView, boolean hasImage) {
         boolean isFeaturesComplete = true;
         for (Map.Entry<String, String> entry : features.entrySet()) {
             if (!Validation.validateNames(entry.getValue())) {
@@ -343,7 +348,15 @@ public class Actions {
             alert.setContentText("Complete features.");
             alert.show();
         } else {
-            SellerZone.sendAddNewProductRequest(info, features);
+            int productId = SellerZone.sendAddNewProductRequest(info, features);
+            if (hasImage) {
+                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
+                try {
+                    ImageIO.write(bufferedImage, "png", new File("Styles/Photos/" + productId + ".png"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return true;
         }
         return false;

@@ -9,10 +9,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import model.Comment;
 
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -316,6 +320,35 @@ public class SellerScene {
             gridPane.setVgap(20);
             gridPane.setHgap(20);
 
+            ImageView imageView = null;
+            final boolean[] hasImage = {false};
+            try {
+                imageView = new javafx.scene.image.ImageView(new Image(new FileInputStream("Styles/Photos/Drag & Drop.png")));
+                imageView.setFitWidth(300);
+                imageView.setFitHeight(300);
+                ImageView finalImageView = imageView;
+
+                imageView.setOnDragOver(event -> {
+                    if (event.getDragboard().hasFiles()) {
+                        event.acceptTransferModes(TransferMode.ANY);
+                    }
+                    event.consume();
+                });
+
+                imageView.setOnDragDropped(event -> {
+                    System.out.println("droped.");
+                    List<File> files = event.getDragboard().getFiles();
+                    try {
+                        finalImageView.setImage(new Image(new FileInputStream(files.get(0))));
+                        hasImage[0] = true;
+                        System.out.println("done");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
             TextField name = createTextField("Name", 300);
             TextField company = createTextField("Company", 300);
             TextField price = createTextField("Price", 300);
@@ -327,8 +360,8 @@ public class SellerScene {
             VBox features = new VBox(20);
             features.setAlignment(Pos.CENTER);
 
-            gridPane.addColumn(0, name, company, price, stock, description, category, features);
-            gridPane.add(apply, 1, 5);
+            gridPane.addColumn(0,imageView, name, company, price, stock, description, category, features);
+            gridPane.add(apply, 1, 6);
 
             apply.setOnMouseClicked(event -> {
                 if (AdminZone.isCategoryNameValid(category.getText())) {
@@ -347,6 +380,7 @@ public class SellerScene {
             });
 
             Button create = createButton("Create", 300);
+            ImageView finalImageView1 = imageView;
             create.setOnMouseClicked(event -> {
                 if (features.getChildren().isEmpty()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -358,16 +392,19 @@ public class SellerScene {
                         productFeature.put(((TextField) child).getPromptText(), ((TextField) child).getText());
                     }
                     if (Actions.createProduct(new ArrayList<>(Arrays.asList(name.getText(), company.getText(),
-                            price.getText(), stock.getText(), description.getText(), category.getText())), productFeature)) {
+                            price.getText(), stock.getText(), description.getText(), category.getText())),
+                            productFeature,
+                            finalImageView1,
+                            hasImage[0])) {
                         MainScenes.getBorderPane().setCenter(manageProducts());
                     }
                 }
             });
-            gridPane.add(create, 0, 7);
+            gridPane.add(create, 0, 8);
 
             Button back = createButton("Back", 300);
             back.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(manageProducts()));
-            gridPane.add(back, 0, 8);
+            gridPane.add(back, 0, 9);
 
             ScrollPane scrollPane = new ScrollPane(gridPane);
             scrollPane.setFitToWidth(true);

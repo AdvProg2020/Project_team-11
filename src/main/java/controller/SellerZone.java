@@ -82,13 +82,14 @@ public class SellerZone {
         return null;
     }
 
-    public static void sendAddNewProductRequest(ArrayList<String> info,
+    public static int sendAddNewProductRequest(ArrayList<String> info,
                                                 HashMap<String, String> categoryFeature) {
         ProductInfo productInfo = new ProductInfo(info.get(0), info.get(1),
                 Long.parseLong(info.get(2)), AllAccountZone.getCurrentAccount().getUsername(), Integer.parseInt(info.get(3)));
         Product product = new Product("construction", productInfo, info.get(5), categoryFeature, info.get(4));
         new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
                 String.valueOf(product.getId()), "unseen");
+        return product.getId();
     }
 
     public static void removeProduct(int productId) {
