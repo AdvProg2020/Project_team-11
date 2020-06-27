@@ -6,13 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import model.Product;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static view.MainScenes.createTextField;
-import static view.ProductScene.getProductRoot;
+import static view.ProductScene.setProducts;
 
 public class AuctionScene {
     private static String sort = "Date";
@@ -34,7 +33,7 @@ public class AuctionScene {
         productsGridPane.setAlignment(Pos.CENTER);
         productsGridPane.setHgap(20);
         productsGridPane.setVgap(20);
-        setProducts(productsGridPane);
+        setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
 
         ComboBox<String> sort = new ComboBox<>();
         sort.getItems().addAll("Price(Ascending)", "Price(Descending)", "Score", "Date");
@@ -43,14 +42,14 @@ public class AuctionScene {
         sort.setOnAction(e -> {
             AuctionScene.sort = sort.getValue().toLowerCase();
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
         });
 
         TextField nameFilter = createTextField("Product Name / Company / Seller Name", 500);
         nameFilter.textProperty().addListener((list, oldText, newText) -> {
             filterInfo.setSearchBar(newText);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
         });
 
         HBox hBox = new HBox(150, sort, nameFilter);
@@ -62,11 +61,11 @@ public class AuctionScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMinimumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumPrice(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             }
         });
         TextField maxPrice = createTextField("Maximum Price", 200);
@@ -74,11 +73,11 @@ public class AuctionScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMaximumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMaximumPrice(Long.MAX_VALUE);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             }
         });
         TextField stock = createTextField("Minimum Stock", 200);
@@ -86,11 +85,11 @@ public class AuctionScene {
             if (newText.matches("\\d{1,9}")) {
                 filterInfo.setMinimumStockStatus(Integer.parseInt(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumStockStatus(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
             }
         });
 
@@ -116,7 +115,7 @@ public class AuctionScene {
                 textField.textProperty().addListener((list, oldText, newText) -> {
                     filterInfo.getFeature().replace(textField.getPromptText(), newText);
                     productsGridPane.getChildren().clear();
-                    setProducts(productsGridPane);
+                    setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
                 });
             }
             try {
@@ -124,7 +123,7 @@ public class AuctionScene {
             } catch (Exception ignored) {}
             filterVBox.getChildren().add(filterFeature);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products")));
         });
 
         BorderPane borderPane = new BorderPane();
@@ -133,18 +132,5 @@ public class AuctionScene {
         borderPane.setCenter(productsGridPane);
 
         return borderPane;
-    }
-
-    private static void setProducts(GridPane gridPane) {
-        ArrayList<Product> products = new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered("products"));
-        for (int i = 0; i < products.size()/5 + 1 ; i++) {
-            for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
-                Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
-                hyperlink.setMinSize(200, 200);
-                hyperlink.setOnMouseClicked(e ->
-                        MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
-                gridPane.add(hyperlink, j, i);
-            }
-        }
     }
 }

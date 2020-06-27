@@ -196,7 +196,7 @@ public class BuyerScene {
                 e.printStackTrace();
             }
             increase.setFitHeight(25);
-            increase.setFitWidth(40);
+            increase.setFitWidth(25);
             HBox hBox = new HBox(20);
             hBox.setAlignment(Pos.CENTER);
             hBox.getChildren().addAll(hyperlink, decrease, textField, increase);

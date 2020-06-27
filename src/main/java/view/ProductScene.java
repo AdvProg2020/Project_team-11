@@ -8,10 +8,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import model.Comment;
 import model.Product;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +42,7 @@ public class ProductScene {
         productsGridPane.setAlignment(Pos.CENTER);
         productsGridPane.setHgap(20);
         productsGridPane.setVgap(20);
-        setProducts(productsGridPane);
+        setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
 
         ComboBox<String> sort = new ComboBox<>();
         sort.getItems().addAll("Price(Ascending)", "Price(Descending)", "Score", "Date");
@@ -47,14 +51,14 @@ public class ProductScene {
         sort.setOnAction(e -> {
             ProductScene.sort = sort.getValue().toLowerCase();
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
         });
 
         TextField nameFilter = createTextField("Product Name / Company / Seller Name", 500);
         nameFilter.textProperty().addListener((list, oldText, newText) -> {
             filterInfo.setSearchBar(newText);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
         });
 
         HBox hBox = new HBox(150, sort, nameFilter);
@@ -66,11 +70,11 @@ public class ProductScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMinimumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumPrice(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             }
         });
         TextField maxPrice = createTextField("Maximum Price", 200);
@@ -78,11 +82,11 @@ public class ProductScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMaximumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMaximumPrice(Long.MAX_VALUE);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             }
         });
         TextField stock = createTextField("Minimum Stock", 200);
@@ -90,11 +94,11 @@ public class ProductScene {
             if (newText.matches("\\d{1,9}")) {
                 filterInfo.setMinimumStockStatus(Integer.parseInt(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumStockStatus(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane);
+                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
             }
         });
 
@@ -121,7 +125,7 @@ public class ProductScene {
                 textField.textProperty().addListener((list, oldText, newText) -> {
                     filterInfo.getFeature().replace(textField.getPromptText(), newText);
                     productsGridPane.getChildren().clear();
-                    setProducts(productsGridPane);
+                    setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
                 });
             }
             try {
@@ -129,7 +133,7 @@ public class ProductScene {
             } catch (Exception ignored) {}
             filterVBox.getChildren().add(filterFeature);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane);
+            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
         });
 
         BorderPane borderPane = new BorderPane();
@@ -140,18 +144,100 @@ public class ProductScene {
         return borderPane;
     }
 
-    private static void setProducts(GridPane gridPane) {
-        ArrayList<Product> products = new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products"));
+    public static void setProducts(GridPane gridPane, ArrayList<Product> products) {
         for (int i = 0; i < products.size()/5 + 1 ; i++) {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
+                Pane pane = new Pane();
+                VBox vBox = new VBox();
+                vBox.setAlignment(Pos.CENTER);
+                ImageView productImage = null, rateImage = null, auctionImage = null;
+                try {
+                    productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/product.png")));
+                    rateImage = getRateImage(String.valueOf(products.get(5*i + j).getAverageScore()));
+                    BuyerZone.setAuctionPrice();
+                    double percent = (double) products.get(5*i + j).getGeneralFeature().getAuctionPrice() /
+                            products.get(5*i + j).getGeneralFeature().getPrice();
+                    auctionImage = getAuctionImage(1 - percent);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                productImage.setFitWidth(200);
+                productImage.setFitHeight(200);
+                productImage.setX(0);
+                productImage.setY(0);
+                rateImage.setFitWidth(140);
+                rateImage.setFitHeight(40);
+                rateImage.setX(30);
+                rateImage.setY(160);
                 Hyperlink hyperlink = new Hyperlink(String.valueOf(products.get(5*i + j).getId()));
-                hyperlink.setMinSize(200, 200);
+                hyperlink.setMinWidth(200);
                 hyperlink.setAlignment(Pos.CENTER);
+                pane.getChildren().addAll(productImage, rateImage, hyperlink);
+                if (auctionImage != null) {
+                    auctionImage.setFitHeight(140);
+                    auctionImage.setFitWidth(140);
+                    auctionImage.setX(50);
+                    auctionImage.setY(0);
+                    pane.getChildren().add(auctionImage);
+                }
+                vBox.getChildren().addAll(pane, hyperlink);
                 hyperlink.setOnMouseClicked(e ->
                         MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(hyperlink.getText()))));
-                gridPane.add(hyperlink, j, i);
+                gridPane.add(vBox, j, i);
             }
         }
+    }
+
+    private static ImageView getRateImage(String score) throws FileNotFoundException {
+        switch (score) {
+            case "0.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/0.png")));
+            case "0.5":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/0.5.png")));
+            case "1.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/1.png")));
+            case "1.5":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/1.5.png")));
+            case "2.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/2.png")));
+            case "2.5":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/2.5.png")));
+            case "3.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/3.png")));
+            case "3.5":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/3.5.png")));
+            case "4.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/4.png")));
+            case "4.5":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/4.5.png")));
+            case "5.0":
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/5.png")));
+        }
+        return null;
+    }
+
+    private static ImageView getAuctionImage(double percent) throws FileNotFoundException {
+        switch ((int) (Math.round(percent * 10) * 10)) {
+            case 10:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/10.png")));
+            case 20:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/20.png")));
+            case 30:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/30.png")));
+            case 40:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/40.png")));
+            case 50:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/50.png")));
+            case 60:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/60.png")));
+            case 70:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/70.png")));
+            case 80:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/80.png")));
+            case 90:
+                return new ImageView(new Image(new FileInputStream("Styles/Photos/90.png")));
+        }
+        return null;
     }
 
     public static Parent getProductRoot(int productId) {
