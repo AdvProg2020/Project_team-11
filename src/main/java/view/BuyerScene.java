@@ -196,10 +196,27 @@ public class BuyerScene {
                 e.printStackTrace();
             }
             increase.setFitHeight(25);
-            increase.setFitWidth(25);
+            increase.setFitWidth(40);
+            Label name = createLabel(SellerZone.getProductById(Integer.parseInt(entry.getKey()))
+                            .getGeneralFeature().getName(), 50);
+            Label price = createLabel(SellerZone.getProductById(Integer.parseInt(entry.getKey()))
+                    .getGeneralFeature().getAuctionPrice() + "$", 50);
+            ImageView productImage = null;
+            try {
+                productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/p" +
+                        entry.getKey() + ".png")));
+            } catch (FileNotFoundException e) {
+                try {
+                    productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/product.png")));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            productImage.setFitWidth(200);
+            productImage.setFitHeight(200);
             HBox hBox = new HBox(20);
             hBox.setAlignment(Pos.CENTER);
-            hBox.getChildren().addAll(hyperlink, decrease, textField, increase);
+            hBox.getChildren().addAll(productImage, hyperlink, name, price, decrease, textField, increase);
             vBox.getChildren().add(hBox);
 
             decrease.setOnMouseClicked(e -> {

@@ -352,7 +352,7 @@ public class Actions {
             if (hasImage) {
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
                 try {
-                    ImageIO.write(bufferedImage, "png", new File("Styles/Photos/" + productId + ".png"));
+                    ImageIO.write(bufferedImage, "png", new File("Styles/Photos/p" + productId + ".png"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

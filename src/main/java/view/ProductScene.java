@@ -152,14 +152,19 @@ public class ProductScene {
                 vBox.setAlignment(Pos.CENTER);
                 ImageView productImage = null, rateImage = null, auctionImage = null;
                 try {
-                    productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/product.png")));
                     rateImage = getRateImage(String.valueOf(products.get(5*i + j).getAverageScore()));
                     BuyerZone.setAuctionPrice();
                     double percent = (double) products.get(5*i + j).getGeneralFeature().getAuctionPrice() /
                             products.get(5*i + j).getGeneralFeature().getPrice();
                     auctionImage = getAuctionImage(1 - percent);
+                    productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/p" +
+                            products.get(5*i + j).getId() + ".png")));
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    try {
+                        productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/product.png")));
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 productImage.setFitWidth(200);
                 productImage.setFitHeight(200);
@@ -409,15 +414,29 @@ public class ProductScene {
             alert.show();
         });
 
+        ImageView productImage = null;
+        try {
+            productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/p" +
+                    productId + ".png")));
+        } catch (FileNotFoundException e) {
+            try {
+                productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/product.png")));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+        productImage.setFitWidth(200);
+        productImage.setFitHeight(200);
+
         VBox buttons = new VBox(20);
         buttons.setAlignment(Pos.BOTTOM_RIGHT);
-        buttons.getChildren().addAll(rate, compare, comments, buy);
+        buttons.getChildren().addAll(productImage, rate, compare, comments, buy);
 
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(30);
         gridPane.add(info, 0, 0);
-        gridPane.add(buttons, 3, 0);
+        gridPane.add(buttons, 1, 0);
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
         scrollPane.setFitToWidth(true);

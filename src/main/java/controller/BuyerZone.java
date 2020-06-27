@@ -136,6 +136,7 @@ public class BuyerZone {
     }
 
     private static void createLogs(Buyer buyer) {
+        //TODO : decrease stock
         long paidAmount = calculatePriceWithDiscountsAndAuctions();
         long totalPrice = calculatePriceWithAuctions();
         HashMap<Integer, String> purchasedProducts = new HashMap<>();
