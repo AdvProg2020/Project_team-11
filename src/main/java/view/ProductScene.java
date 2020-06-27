@@ -193,6 +193,19 @@ public class ProductScene {
                     auctionImage.setY(0);
                     pane.getChildren().add(auctionImage);
                 }
+                if (products.get(5*i + j).getGeneralFeature().getStockStatus() == 0) {
+                    try {
+                        ImageView blackSquare = new ImageView(new Image(new FileInputStream("Styles/Photos/black.png")));
+                        blackSquare.setOpacity(0.4);
+                        blackSquare.setFitHeight(200);
+                        blackSquare.setFitWidth(200);
+                        blackSquare.setX(0);
+                        blackSquare.setY(0);
+                        pane.getChildren().addAll(blackSquare);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
                 HBox hBox = new HBox();
                 hBox.getChildren().addAll(createLabel(products.get(5*i + j).getGeneralFeature().getName(), 100),
                         createLabel(products.get(5 * i + j).getGeneralFeature().getAuctionPrice() + "$", 100));
