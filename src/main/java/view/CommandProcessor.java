@@ -18,6 +18,7 @@ import java.util.Comparator;
 
 public class CommandProcessor extends Application {
     private static Stage stage;
+    private static MediaPlayer mediaPlayer;
 
     public static Stage getStage() {
         return stage;
@@ -55,11 +56,10 @@ public class CommandProcessor extends Application {
         new Thread(() -> {
             Media media = new Media(new File("Styles/Sound/background music.mp3").toURI().toString());
             MediaPlayer mediaPlayer = new MediaPlayer(media);
+            CommandProcessor.mediaPlayer = mediaPlayer;
             mediaPlayer.setAutoPlay(true);
             mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            while (true) {
-                mediaPlayer.play();
-            }
+            mediaPlayer.play();
         }).start();
 
         stage.setOnCloseRequest(e -> FileProcess.writeDataBaseOnFile());

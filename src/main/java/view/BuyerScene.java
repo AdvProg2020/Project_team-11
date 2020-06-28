@@ -229,9 +229,14 @@ public class BuyerScene {
                 }
             });
             increase.setOnMouseClicked(e -> {
-                BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), 1);
-                textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
-                priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+                if (BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), 1)) {
+                    textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
+                    priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("There isn't any more of this product.");
+                    alert.show();
+                }
             });
         }
 

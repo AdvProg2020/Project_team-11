@@ -7,15 +7,17 @@ public class BuyLog extends ExchangeLog {
     private final long paidAmount;
     private final long discountAmountApplied;
     private final HashMap<Integer, String> purchasedProductionsAndSellers;//product ID, seller Username
+    private HashMap<Integer, Integer> numOfProduct;//product ID , number
     private final String buyerUsername;
     private String deliveryStatus;
 
-    public BuyLog(Date date, long paidAmount, long discountAmountApplied,
-                  HashMap<Integer, String> purchasedProductionsAndSellers, String buyerUsername, String deliveryStatus) {
+    public BuyLog(Date date, long paidAmount, long discountAmountApplied, HashMap<Integer, String> purchasedProductionsAndSellers,
+                  HashMap<Integer, Integer> numOfProduct, String buyerUsername, String deliveryStatus) {
         super(date);
         this.paidAmount = paidAmount;
         this.discountAmountApplied = discountAmountApplied;
         this.purchasedProductionsAndSellers = purchasedProductionsAndSellers;
+        this.numOfProduct = numOfProduct;
         this.buyerUsername = buyerUsername;
         this.deliveryStatus = deliveryStatus;
     }

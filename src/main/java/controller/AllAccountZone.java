@@ -23,8 +23,8 @@ public class AllAccountZone {
 
     public static Date getCurrentDate() {
         Date UTCDate = new Date();
-        final Date diffDate = new Date((4 * 3600 + 30 * 60) * 1000);
-        long sum = UTCDate.getTime() + diffDate.getTime();
+//        final Date diffDate = new Date((4 * 3600 + 30 * 60) * 1000);
+        long sum = UTCDate.getTime() /*+ diffDate.getTime()*/;
         return new Date(sum);
     }
 

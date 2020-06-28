@@ -431,8 +431,13 @@ public class ProductScene {
         buy.setOnMouseClicked(e -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             if (AllAccountZone.canUserBuyOrComment()) {
-                AllAccountZone.addProductToCart(productId);
-                alert.setContentText("Product added to your cart successfully.");
+                if (SellerZone.getProductById(productId).getGeneralFeature().getStockStatus() != 0) {
+                    AllAccountZone.addProductToCart(productId);
+                    alert.setContentText("Product added to your cart successfully.");
+                } else {
+                    alert.setAlertType(Alert.AlertType.ERROR);
+                    alert.setContentText("Nothing left in stock.");
+                }
             } else {
                 alert.setAlertType(Alert.AlertType.ERROR);
                 alert.setContentText("You should sign in as a buyer.");
