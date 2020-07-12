@@ -1,9 +1,14 @@
-package view.tableViewData;
+package Client.view.tableViewData;
 
-import controller.AdminZone;
+import Client.view.ClientHandler;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Product {
@@ -104,7 +109,15 @@ public class Product {
 
     public static ObservableList<Product> getProducts() {
         ObservableList<Product> list = FXCollections.observableArrayList();
-        list.addAll(AdminZone.getAllProducts());
+        try {
+            ClientHandler.getDataOutputStream().writeUTF("get table products");
+            ClientHandler.getDataOutputStream().flush();
+            String data = ClientHandler.getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<Product>>() {}.getType();
+            list.addAll(new ArrayList<>(new Gson().fromJson(data, foundListType)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 }

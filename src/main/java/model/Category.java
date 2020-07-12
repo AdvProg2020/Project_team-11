@@ -33,12 +33,4 @@ public class Category {
     public void setName(String name) {
         this.name = name;
     }
-
-    public static Category getCategoryByName(String name) {
-        for (Category category : DataBase.getDataBase().getAllCategories()) {
-            if (category.getName().equalsIgnoreCase(name))
-                return category;
-        }
-        return null;
-    }
 }

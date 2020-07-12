@@ -1,9 +1,8 @@
-package view;
+package Client.view;
 
-import controller.AdminZone;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import controller.AllAccountZone;
-import controller.BuyerZone;
-import controller.SellerZone;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -16,15 +15,20 @@ import model.Product;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static view.MainScenes.*;
+import static Client.view.MainScenes.*;
+import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ClientHandler.getDataOutputStream;
 
 public class ProductScene {
     private static String sort = "date";
     private static FilterInfo filterInfo;
+    private static Gson gson = new Gson();
 
     public static FilterInfo getFilterInfo() {
         return filterInfo;
@@ -35,6 +39,7 @@ public class ProductScene {
     }
 
     public static Parent getProductsRoot() {
+        final Type[] foundListType = new Type[1];
         ProductScene.filterInfo = new FilterInfo("", 0, Long.MAX_VALUE, "",
                 0, new HashMap<>());
 
@@ -42,7 +47,10 @@ public class ProductScene {
         productsGridPane.setAlignment(Pos.CENTER);
         productsGridPane.setHgap(20);
         productsGridPane.setVgap(20);
-        setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+
+        ArrayList<Product> productsInSortAndFiltered
+                = new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products"));
+        setProducts(productsGridPane, new ArrayList<>(productsInSortAndFiltered));
 
         ComboBox<String> sort = new ComboBox<>();
         sort.getItems().addAll("Price(Ascending)", "Price(Descending)", "Score", "Date");
@@ -51,14 +59,16 @@ public class ProductScene {
         sort.setOnAction(e -> {
             ProductScene.sort = sort.getValue().toLowerCase();
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+            setProducts(productsGridPane,
+                    new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
         });
 
         TextField nameFilter = createTextField("Product Name / Company / Seller Name", 500);
         nameFilter.textProperty().addListener((list, oldText, newText) -> {
             filterInfo.setSearchBar(newText);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+            setProducts(productsGridPane,
+                    new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
         });
 
         HBox hBox = new HBox(150, sort, nameFilter);
@@ -70,11 +80,13 @@ public class ProductScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMinimumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumPrice(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             }
         });
         TextField maxPrice = createTextField("Maximum Price", 200);
@@ -82,11 +94,13 @@ public class ProductScene {
             if (newText.matches("\\d{1,18}")) {
                 filterInfo.setMaximumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMaximumPrice(Long.MAX_VALUE);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             }
         });
         TextField stock = createTextField("Minimum Stock", 200);
@@ -94,17 +108,27 @@ public class ProductScene {
             if (newText.matches("\\d{1,9}")) {
                 filterInfo.setMinimumStockStatus(Integer.parseInt(newText));
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumStockStatus(0);
                 productsGridPane.getChildren().clear();
-                setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                setProducts(productsGridPane,
+                        new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
             }
         });
 
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.getItems().add("--------");
-        categoryFilter.getItems().addAll(AllAccountZone.getCategories());
+        try {
+            getDataOutputStream().writeUTF("get categories");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
+            categoryFilter.getItems().addAll(new ArrayList<>(gson.fromJson(data, foundListType[0])));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         categoryFilter.setPromptText("Category");
         categoryFilter.setMinWidth(200);
 
@@ -116,7 +140,18 @@ public class ProductScene {
         categoryFilter.setOnAction(e -> {
             filterInfo.setCategory(categoryFilter.getValue());
             AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), "products");
-            ArrayList<String> features = new ArrayList<>(AdminZone.getCategoryFeature(categoryFilter.getValue()));
+            ArrayList<String> features = new ArrayList<>();
+            try {
+                getDataOutputStream().writeUTF("get category feature");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(categoryFilter.getValue());
+                getDataOutputStream().flush();
+                String data = getDataInputStream().readUTF();
+                foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
+                features = gson.fromJson(data, foundListType[0]);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             VBox filterFeature = new VBox(20);
             filterFeature.setAlignment(Pos.CENTER);
             for (String feature : features) {
@@ -125,7 +160,8 @@ public class ProductScene {
                 textField.textProperty().addListener((list, oldText, newText) -> {
                     filterInfo.getFeature().replace(textField.getPromptText(), newText);
                     productsGridPane.getChildren().clear();
-                    setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+                    setProducts(productsGridPane,
+                            new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
                 });
             }
             try {
@@ -133,7 +169,8 @@ public class ProductScene {
             } catch (Exception ignored) {}
             filterVBox.getChildren().add(filterFeature);
             productsGridPane.getChildren().clear();
-            setProducts(productsGridPane, new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered("products")));
+            setProducts(productsGridPane,
+                    new ArrayList<>(AllAccountZone.getProductsInSortAndFiltered(getProducts(), "products")));
         });
 
         ScrollPane scrollPane = new ScrollPane(productsGridPane);
@@ -152,6 +189,18 @@ public class ProductScene {
         return pane;
     }
 
+    public static ArrayList<Product> getProducts() {
+        try {
+            getDataOutputStream().writeUTF("get products");
+            getDataOutputStream().flush();
+            Type foundListType = new TypeToken<ArrayList<Product>>(){}.getType();
+            return gson.fromJson(getDataInputStream().readUTF(), foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void setProducts(GridPane gridPane, ArrayList<Product> products) {
         for (int i = 0; i < products.size()/5 + 1 ; i++) {
             for (int j = 0; j < 5 && 5*i + j < products.size(); j++) {
@@ -161,7 +210,6 @@ public class ProductScene {
                 ImageView productImage = null, rateImage = null, auctionImage = null;
                 try {
                     rateImage = getRateImage(String.valueOf(products.get(5*i + j).getAverageScore()));
-                    BuyerZone.setAuctionPrice();
                     double percent = (double) products.get(5*i + j).getGeneralFeature().getAuctionPrice() /
                             products.get(5*i + j).getGeneralFeature().getPrice();
                     auctionImage = getAuctionImage(1 - percent);
@@ -277,12 +325,23 @@ public class ProductScene {
         info.setHgap(20);
         info.setVgap(20);
 
-        Product product = SellerZone.getProductById(productId);
+        Product product = null;
+        try {
+            getDataOutputStream().writeUTF("get product");
+            getDataOutputStream().flush();
+            getDataOutputStream().writeInt(productId);
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<Product>() {}.getType();
+            product = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Label nameLabel = createLabel("Name : ", 100);
         Label nameText = createLabel(product.getGeneralFeature().getName(), 200);
         Label companyLabel = createLabel("Company : ", 100);
         Label companyText = createLabel(product.getGeneralFeature().getCompany(), 200);
-        BuyerZone.setAuctionPrice();
         long price = product.getGeneralFeature().getPrice();
         long auctionPrice = product.getGeneralFeature().getAuctionPrice();
         Label priceLabel = createLabel("Price : ", 100);
@@ -323,30 +382,51 @@ public class ProductScene {
         Button rate = createButton("Rate", 150);
         rate.setOnMouseClicked(e -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            if (AllAccountZone.canUserBuyOrComment()) {
-                if (BuyerZone.hasUserBoughtProduct(productId)) {
-                    TextField score = createTextField("Score", 100);
-                    Button rateScore = createButton("Rate", 100);
-                    rateScore.setOnMouseClicked(event -> {
-                        if (Actions.rate(score.getText())) {
-                            BuyerZone.createRate(productId, Integer.parseInt(score.getText()));
-                            MainScenes.getBorderPane().setCenter(getProductRoot(productId));
-                        }
-                    });
-                    Button back = createButton("Back", 100);
-                    back.setOnMouseClicked(ev -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
-                    HBox hBox = new HBox(20);
-                    hBox.setAlignment(Pos.CENTER);
-                    hBox.getChildren().addAll(score, rateScore, back);
 
-                    MainScenes.getBorderPane().setCenter(hBox);
+            try {
+                getDataOutputStream().writeUTF("is buyer");
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("has bought");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(productId);
+                    getDataOutputStream().flush();
+                    if (getDataInputStream().readBoolean()) {
+                        TextField score = createTextField("Score", 100);
+                        Button rateScore = createButton("Rate", 100);
+                        rateScore.setOnMouseClicked(event -> {
+                            if (Actions.rate(score.getText())) {
+                                try {
+                                    getDataOutputStream().writeUTF("rate");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeInt(productId);
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(score.getText());
+                                    getDataOutputStream().flush();
+                                    getDataInputStream().readUTF();
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
+                                MainScenes.getBorderPane().setCenter(getProductRoot(productId));
+                            }
+                        });
+                        Button back = createButton("Back", 100);
+                        back.setOnMouseClicked(ev -> MainScenes.getBorderPane().setCenter(getProductRoot(productId)));
+                        HBox hBox = new HBox(20);
+                        hBox.setAlignment(Pos.CENTER);
+                        hBox.getChildren().addAll(score, rateScore, back);
+
+                        MainScenes.getBorderPane().setCenter(hBox);
+                    } else {
+                        alert.setContentText("You can't rate this product.");
+                        alert.show();
+                    }
                 } else {
-                    alert.setContentText("You can't rate this product.");
+                    alert.setContentText("You should sign in as a buyer.");
                     alert.show();
                 }
-            } else {
-                alert.setContentText("You should sign in as a buyer.");
-                alert.show();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
 
@@ -356,7 +436,18 @@ public class ProductScene {
             Button ok = createButton("Compare", 100);
             ok.setOnMouseClicked(event -> {
                 if (Actions.checkProductIdToCompare(productId, productIdText.getText())) {
-                    String output = AllAccountZone.compareTwoProduct(productId, Integer.parseInt(productIdText.getText()));
+                    String output = "";
+                    try {
+                        getDataOutputStream().writeUTF("compare product");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeInt(productId);
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeInt(Integer.parseInt(productIdText.getText()));
+                        getDataOutputStream().flush();
+                        output = getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     GridPane gridPane = new GridPane();
                     gridPane.setAlignment(Pos.CENTER);
                     gridPane.setHgap(20);
@@ -386,10 +477,11 @@ public class ProductScene {
         });
 
         Button comments = createButton("Comments", 150);
+        Product finalProduct = product;
         comments.setOnMouseClicked(e -> {
             VBox vBox = new VBox(20);
             vBox.setAlignment(Pos.CENTER);
-            for (Comment comment : SellerZone.getProductById(productId).getComments()) {
+            for (Comment comment : finalProduct.getComments()) {
                 if (comment.getStatus().equals("accepted")) {
                     vBox.getChildren().add(createLabel(comment.getBuyerName() + " : " + comment.getCommentText(),
                             500));
@@ -397,27 +489,43 @@ public class ProductScene {
             }
             Button add = createButton("Add a comment", 200);
             add.setOnMouseClicked(event -> {
-                if (AllAccountZone.canUserBuyOrComment()) {
-                    TextField comment = createTextField("Comment", 500);
-                    Button send = createButton("Send", 100);
-                    send.setOnMouseClicked(ev -> {
-                        if (comment.getText() == null) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setContentText("Enter your comment.");
-                            alert.show();
-                        } else {
-                            AllAccountZone.createComment(comment.getText(), productId);
-                            comment.clear();
-                            vBox.getChildren().removeAll(comment, send);
-                            vBox.getChildren().addAll(add);
-                        }
-                    });
-                    vBox.getChildren().remove(add);
-                    vBox.getChildren().addAll(comment, send);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("You should sign in as a buyer.");
-                    alert.show();
+                try {
+                    getDataOutputStream().writeUTF("is buyer");
+                    getDataOutputStream().flush();
+                    if (getDataInputStream().readBoolean()) {
+                        TextField comment = createTextField("Comment", 500);
+                        Button send = createButton("Send", 100);
+                        send.setOnMouseClicked(ev -> {
+                            if (comment.getText() == null) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setContentText("Enter your comment.");
+                                alert.show();
+                            } else {
+                                try {
+                                    getDataOutputStream().writeUTF("comment");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(comment.getText());
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeInt(productId);
+                                    getDataOutputStream().flush();
+                                    getDataInputStream().readUTF();
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
+                                comment.clear();
+                                vBox.getChildren().removeAll(comment, send);
+                                vBox.getChildren().addAll(add);
+                            }
+                        });
+                        vBox.getChildren().remove(add);
+                        vBox.getChildren().addAll(comment, send);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText("You should sign in as a buyer.");
+                        alert.show();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             });
             Button back = createButton("Back", 100);
@@ -430,17 +538,27 @@ public class ProductScene {
         Button buy = createButton("Buy", 150);
         buy.setOnMouseClicked(e -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            if (AllAccountZone.canUserBuyOrComment()) {
-                if (SellerZone.getProductById(productId).getGeneralFeature().getStockStatus() != 0) {
-                    AllAccountZone.addProductToCart(productId);
-                    alert.setContentText("Product added to your cart successfully.");
+            try {
+                getDataOutputStream().writeUTF("is buyer");
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    if (finalProduct.getGeneralFeature().getStockStatus() != 0) {
+                        getDataOutputStream().writeUTF("add to cart");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeInt(productId);
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                        alert.setContentText("Product added to your cart successfully.");
+                    } else {
+                        alert.setAlertType(Alert.AlertType.ERROR);
+                        alert.setContentText("Nothing left in stock.");
+                    }
                 } else {
                     alert.setAlertType(Alert.AlertType.ERROR);
-                    alert.setContentText("Nothing left in stock.");
+                    alert.setContentText("You should sign in as a buyer.");
                 }
-            } else {
-                alert.setAlertType(Alert.AlertType.ERROR);
-                alert.setContentText("You should sign in as a buyer.");
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
             alert.show();
         });

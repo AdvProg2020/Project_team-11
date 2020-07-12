@@ -18,10 +18,10 @@ public class SellerZone {
         return null;
     }
 
-    public static HashMap<Integer, String> getSellerProducts() {
+    public static HashMap<Integer, String> getSellerProducts(Account account) {
         HashMap<Integer, String> products = new HashMap<>();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            if (product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            if (product.getGeneralFeature().getSeller().equals(account.getUsername())) {
                 products.put(product.getId(), product.getGeneralFeature().getName());
             }
         }
@@ -60,13 +60,13 @@ public class SellerZone {
         return productDetails;
     }
 
-    public static void sendEditProductRequest(String description) {
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit product", description, "unseen");
+    public static void sendEditProductRequest(String description, Account account) {
+        new Request(account.getUsername(), "edit product", description, "unseen");
     }
 
-    public static ArrayList<String> getSellerHistory() {
+    public static ArrayList<String> getSellerHistory(Account account) {
         ArrayList<String> saleHistory = new ArrayList<>();
-        for (SellLog sellLog : ((Seller) AllAccountZone.getCurrentAccount()).getSellHistory()) {
+        for (SellLog sellLog : ((Seller) account).getSellHistory()) {
              saleHistory.add(sellLog.getId() + ". at " + sellLog.getDate() + " " + sellLog.getSoldProducts() +
                      " sold to " + sellLog.getBuyerName() + " " + sellLog.getReceivedAmount() + "$ with discount " +
                      sellLog.getReducedAmountForAuction() + "$ " + sellLog.getSendingStatus());
@@ -82,13 +82,11 @@ public class SellerZone {
         return null;
     }
 
-    public static int sendAddNewProductRequest(ArrayList<String> info,
-                                                HashMap<String, String> categoryFeature) {
+    public static int sendAddNewProductRequest(ArrayList<String> info, HashMap<String, String> categoryFeature, Account account) {
         ProductInfo productInfo = new ProductInfo(info.get(0), info.get(1),
-                Long.parseLong(info.get(2)), AllAccountZone.getCurrentAccount().getUsername(), Integer.parseInt(info.get(3)));
+                Long.parseLong(info.get(2)), account.getUsername(), Integer.parseInt(info.get(3)));
         Product product = new Product("construction", productInfo, info.get(5), categoryFeature, info.get(4));
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "add product",
-                String.valueOf(product.getId()), "unseen");
+        new Request(account.getUsername(), "add product", String.valueOf(product.getId()), "unseen");
         return product.getId();
     }
 
@@ -105,8 +103,8 @@ public class SellerZone {
         DataBase.getDataBase().getAllProducts().remove(product);
     }
 
-    public static ArrayList<Integer> getSellerAuctions() {
-        Seller seller = (Seller) AllAccountZone.getCurrentAccount();
+    public static ArrayList<Integer> getSellerAuctions(Account account) {
+        Seller seller = (Seller) account;
         ArrayList<Integer> auctionIds = new ArrayList<>();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             if (auction.getSellerName().equals(seller.getUsername())) {
@@ -116,8 +114,8 @@ public class SellerZone {
         return auctionIds;
     }
 
-    public static ArrayList<String> getAuctionDetail(int auctionId) {
-        Seller seller = (Seller) AllAccountZone.getCurrentAccount();
+    public static ArrayList<String> getAuctionDetail(int auctionId, Account account) {
+        Seller seller = (Seller) account;
         ArrayList<String> auctionDetails = new ArrayList<>();
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
             if (auction.getId() == auctionId && auction.getSellerName().equals(seller.getUsername())) {
@@ -131,24 +129,24 @@ public class SellerZone {
         return auctionDetails;
     }
 
-    public static Auction getSellerAuctionById(int auctionId) {
+    public static Auction getSellerAuctionById(int auctionId, Account account) {
         for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
-            if (auction.getSellerName().equals(AllAccountZone.getCurrentAccount().getUsername()) && auction.getId() == auctionId) {
+            if (auction.getSellerName().equals(account.getUsername()) && auction.getId() == auctionId) {
                 return auction;
             }
         }
         return null;
     }
 
-    public static void sendEditAuctionRequest(String field, String value, int auctionId) {
-        new Request(AllAccountZone.getCurrentAccount().getUsername(), "edit auction",
+    public static void sendEditAuctionRequest(String field, String value, int auctionId, Account account) {
+        new Request(account.getUsername(), "edit auction",
                 field + "," + value + "," + auctionId, "unseen");
-        Auction auction = getSellerAuctionById(auctionId);
+        Auction auction = getSellerAuctionById(auctionId, account);
         auction.setStatus("editing");
     }
 
-    public static void createAuction(ArrayList<String> info) {
-        Seller seller = (Seller) AllAccountZone.getCurrentAccount();
+    public static void createAuction(ArrayList<String> info, Account account) {
+        Seller seller = (Seller) account;
         ArrayList<Product> productList = new ArrayList<>();
         for (int i = 3; i < info.size(); i++) {
             Product product = getProductById(Integer.parseInt(info.get(i)));
@@ -161,44 +159,46 @@ public class SellerZone {
         new Request(seller.getUsername(), "add auction", String.valueOf(auction.getId()),
                 "unseen");
     }
-    public static String showSellerRequests() {
+
+    public static String showSellerRequests(Account account) {
         StringBuilder sellerRequest = new StringBuilder();
         for (Request request : DataBase.getDataBase().getAllRequests()) {
-            if (request.getSenderName().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            if (request.getSenderName().equals(account.getUsername())) {
                 sellerRequest.append(request.getTopic()).append(" -> ").append(request.getStatus()).append("\n");
             }
         }
         return sellerRequest.toString();
     }
 
-    public static ArrayList<String> getCategoryFeature(String name) {
-        Category category = Category.getCategoryByName(name);
-        if (category != null) {
-            return category.getSpecialFeatures();
-        }
-        return null;
-    }
-
-    public static boolean hasProduct(int productId) {
+    public static boolean hasProduct(int productId, Account account) {
         Product product = getProductById(productId);
         if (product == null) {
             return false;
-        } else if (product.getGeneralFeature().getSeller().equals(AllAccountZone.getCurrentAccount().getUsername())) {
+        } else if (product.getGeneralFeature().getSeller().equals(account.getUsername())) {
             return true;
         }
         return false;
     }
 
 
-    public static void removeProductFromAuction(int auctionId, int productId) {
-        Auction auction = getSellerAuctionById(auctionId);
+    public static void removeProductFromAuction(int auctionId, int productId, Account account) {
+        Auction auction = getSellerAuctionById(auctionId, account);
         Product product = getProductById(productId);
         auction.getProductList().remove(product);
     }
 
-    public static void addProductToAuction(int auctionId, int productId) {
-        Auction auction = getSellerAuctionById(auctionId);
+    public static void addProductToAuction(int auctionId, int productId, Account account) {
+        Auction auction = getSellerAuctionById(auctionId, account);
         Product product = getProductById(productId);
         auction.getProductList().add(product);
+    }
+
+    public static boolean hasProductAuction(int productId) {
+        Product product = getProductById(productId);
+        for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
+            if (auction.getProductList().contains(product))
+                return true;
+        }
+        return false;
     }
 }

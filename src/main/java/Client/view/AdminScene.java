@@ -1,7 +1,7 @@
-package view;
+package Client.view;
 
-import controller.AdminZone;
-import controller.AllAccountZone;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,16 +12,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.Request;
-import view.tableViewData.Account;
-import view.tableViewData.Product;
+import Client.view.tableViewData.Account;
+import Client.view.tableViewData.Product;
 
-import java.text.ParseException;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static view.MainScenes.*;
+import static Client.view.MainScenes.*;
+import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.ClientHandler.getDataInputStream;
 
 public class AdminScene {
+    private static Gson gson = new Gson();
 
     public static Parent getAdminRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
@@ -72,7 +76,16 @@ public class AdminScene {
         Label usernameLabel = createLabel("Username : ", 150);
         Label passwordLabel = createLabel("Password : ", 150);
 
-        ArrayList<String> personalInfo = new ArrayList<>(AllAccountZone.getPersonalInfo());
+        ArrayList<String> personalInfo = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get personal info");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            personalInfo = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         TextField firstNameText = createTextField("First Name", 200);
         firstNameText.setText(personalInfo.get(0));
@@ -197,7 +210,15 @@ public class AdminScene {
             accountSelected.forEach(account -> {
                 if (!account.getAccountType().equals("Admin")) {
                     allAccounts.remove(account);
-                    AdminZone.deleteUser(account.getUsername());
+                    try {
+                        getDataOutputStream().writeUTF("delete user");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(account.getUsername());
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         });
@@ -221,7 +242,16 @@ public class AdminScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        ArrayList<String> discounts = new ArrayList<>(AdminZone.getDiscountCodes());
+        ArrayList<String> discounts = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get discounts");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            discounts = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (String code : discounts) {
             Hyperlink hyperlink = new Hyperlink(code);
 
@@ -245,7 +275,18 @@ public class AdminScene {
                 Label repeatLabel = createLabel("Repeated Times : ", 150);
                 Label usersLabel = createLabel("Allowed Users : ", 150);
 
-                ArrayList<String> info = new ArrayList<>(AdminZone.getDiscountInfo(hyperlink.getText()));
+                ArrayList<String> info = new ArrayList<>();
+                try {
+                    getDataOutputStream().writeUTF("get discount info");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(hyperlink.getText());
+                    getDataOutputStream().flush();
+                    String data = getDataInputStream().readUTF();
+                    Type foundTypeList = new TypeToken<ArrayList<String>>() {}.getType();
+                    info.addAll(gson.fromJson(data, foundTypeList));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 TextField codeText = createTextField("Discount Code", 500);
                 codeText.setText(info.get(0));
@@ -279,8 +320,16 @@ public class AdminScene {
                     Button userButton = createButton("Remove", 100);
                     userButton.setOnMouseClicked(event -> {
                         try {
-                            AdminZone.editDiscount("remove user", userText.getText(), info.get(0));
-                        } catch (ParseException ex) {
+                            getDataOutputStream().writeUTF("edit discount");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF("remove user");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(userText.getText());
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(info.get(0));
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                        } catch (IOException ex) {
                             ex.printStackTrace();
                         }
                         textFields.getChildren().remove(userText);
@@ -295,12 +344,12 @@ public class AdminScene {
                 Button startButton = createButton("Edit", 100);
                 startButton.setOnMouseClicked(event -> {
                     Actions.editDiscount(startButton, startText, hyperlink.getText());
-                    startText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(1));
+//                    startText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(1)); // TODO : ?????
                 });
                 Button endButton = createButton("Edit", 100);
                 endButton.setOnMouseClicked(event -> {
                     Actions.editDiscount(endButton, endText, hyperlink.getText());
-                    endText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(2));
+//                    endText.setText(AdminZone.getDiscountInfo(hyperlink.getText()).get(2)); // TODO : ?????
                 });
                 Button percentButton = createButton("Edit", 100);
                 percentButton.setOnMouseClicked(event -> Actions.editDiscount(percentButton, percentText, hyperlink.getText()));
@@ -316,39 +365,59 @@ public class AdminScene {
                 Button addUserButton = createButton("Add", 100);
                 addUserButton.setOnMouseClicked(event -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    if (AdminZone.getBuyerByUsername(addUserText.getText()) == null) {
-                        alert.setContentText("There is no user with this username.");
-                        alert.show();
-                    } else {
-                        if (info.contains(addUserText.getText())) {
-                            alert.setContentText("Already exist.");
-                            alert.show();
-                        } else {
-                            try {
-                                AdminZone.editDiscount("add user", addUserText.getText(), info.get(0));
-                            } catch (ParseException ex) {
-                                ex.printStackTrace();
-                            }
-                            TextField userText = createTextField("Username", 500);
-                            userText.setText(addUserText.getText());
-                            userText.setDisable(true);
+                    try {
+                        getDataOutputStream().writeUTF("get buyer");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(addUserText.getText());
+                        getDataOutputStream().flush();
+                        if (getDataInputStream().readBoolean()) {
+                            if (info.contains(addUserText.getText())) {
+                                alert.setContentText("Already exist.");
+                                alert.show();
+                            } else {
+                                getDataOutputStream().writeUTF("edit disccount");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF("add user");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(addUserText.getText());
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(info.get(0));
+                                getDataOutputStream().flush();
+                                getDataInputStream().readUTF();
+                                TextField userText = createTextField("Username", 500);
+                                userText.setText(addUserText.getText());
+                                userText.setDisable(true);
 
-                            Button userButton = createButton("Remove", 100);
-                            userButton.setOnMouseClicked(ev -> {
-                                try {
-                                    AdminZone.editDiscount("remove user", userText.getText(), info.get(0));
+                                Button userButton = createButton("Remove", 100);
+                                userButton.setOnMouseClicked(ev -> {
+                                    try {
+                                        getDataOutputStream().writeUTF("edit discount");
+                                        getDataOutputStream().flush();
+                                        getDataOutputStream().writeUTF("remove user");
+                                        getDataOutputStream().flush();
+                                        getDataOutputStream().writeUTF(userText.getText());
+                                        getDataOutputStream().flush();
+                                        getDataOutputStream().writeUTF(info.get(0));
+                                        getDataOutputStream().flush();
+                                        getDataInputStream().readUTF();
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gridPane.getChildren().removeAll(userText, userButton);
-                                } catch (ParseException ex) {
-                                    ex.printStackTrace();
-                                }
-                                info.add(userText.getText());
-                            });
+                                    info.remove(userText.getText());
+                                });
 
-                            textFields.getChildren().add(userText);
-                            removeButtons.getChildren().add(userButton);
-                            addUserText.clear();
-                            info.add(addUserText.getText());
+                                textFields.getChildren().add(userText);
+                                removeButtons.getChildren().add(userButton);
+                                addUserText.clear();
+                                info.add(addUserText.getText());
+                            }
+                        } else {
+                            alert.setContentText("There is no user with this username.");
+                            alert.show();
                         }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
                     }
                 });
 
@@ -445,7 +514,17 @@ public class AdminScene {
 
         finish.setOnMouseClicked(e -> {
             vBox.getChildren().remove(allowedUserHBox);
-            AdminZone.createDiscount(discountInfo, allowedUsers);
+            try {
+                getDataOutputStream().writeUTF("create discount");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(gson.toJson(discountInfo));
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(gson.toJson(allowedUsers));
+                getDataOutputStream().flush();
+                getDataInputStream().readUTF();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             MainScenes.getBorderPane().setCenter(manageDiscounts());
         });
 
@@ -537,7 +616,17 @@ public class AdminScene {
         gridPane.setVgap(20);
 
         int i = 0;
-        for (Request request : AdminZone.getAllRequests()) {
+        ArrayList<Request> requests = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get requests");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<Request>>() {}.getType();
+            requests = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (Request request : requests) {
             Hyperlink idHyperlink = new Hyperlink(String.valueOf(request.getId()));
             idHyperlink.setOnMouseClicked(e -> {
                 GridPane requestGridPane = new GridPane();
@@ -571,7 +660,15 @@ public class AdminScene {
             Button declineButton = createButton("Decline", 100);
             Button removeButton = createButton("Remove", 100);
             removeButton.setOnMouseClicked(e -> {
-                AdminZone.removeRequest(Integer.parseInt(idHyperlink.getText()));
+                try {
+                    getDataOutputStream().writeUTF("remove request");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(idHyperlink.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 gridPane.getChildren().removeAll(idHyperlink, topic, sender, removeButton);
             });
 
@@ -580,12 +677,28 @@ public class AdminScene {
                 gridPane.add(acceptButton, 3, i);
                 gridPane.add(declineButton, 4, i);
                 acceptButton.setOnMouseClicked(e -> {
-                    AdminZone.acceptRequest(request.getId());
+                    try {
+                        getDataOutputStream().writeUTF("accept request");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(idHyperlink.getText());
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     gridPane.getChildren().removeAll(acceptButton, declineButton);
                     removeButton.setDisable(false);
                 });
                 declineButton.setOnMouseClicked(e -> {
-                    AdminZone.declineRequest(request.getId());
+                    try {
+                        getDataOutputStream().writeUTF("decline request");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(idHyperlink.getText());
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     gridPane.getChildren().removeAll(acceptButton, declineButton);
                     removeButton.setDisable(false);
                 });
@@ -616,7 +729,16 @@ public class AdminScene {
         VBox removeVBox = new VBox(20);
         removeVBox.setAlignment(Pos.CENTER);
 
-        ArrayList<String> categories = new ArrayList<>(AllAccountZone.getCategories());
+        ArrayList<String> categories = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get categories");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            categories = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (String category : categories) {
             Hyperlink hyperlink = new Hyperlink(category);
 
@@ -629,7 +751,18 @@ public class AdminScene {
                 Label nameLabel = createLabel("Name : ", 100);
                 Label featureLabel = createLabel("Feature : ", 100);
 
-                ArrayList<String> feature = new ArrayList<>(AdminZone.getCategoryFeature(hyperlink.getText()));
+                ArrayList<String> feature = new ArrayList<>();
+                try {
+                    getDataOutputStream().writeUTF("get category feature");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(hyperlink.getText());
+                    getDataOutputStream().flush();
+                    String data = getDataInputStream().readUTF();
+                    Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+                    feature.addAll(gson.fromJson(data, foundListType));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 TextField nameText = createTextField("Name", 500);
                 nameText.setText(hyperlink.getText());
@@ -658,7 +791,21 @@ public class AdminScene {
 
                     Button remove = createButton("Remove", 100);
                     remove.setOnMouseClicked(event -> {
-                        AdminZone.editCategory("remove feature", featureText.getText(), nameText.getText(), "");
+                        try {
+                            getDataOutputStream().writeUTF("edit category");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF("remove feature");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(featureText.getText());
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(nameText.getText());
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF("");
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                         textFields.getChildren().remove(featureText);
                         removeButtons.getChildren().remove(remove);
                         editButtons.getChildren().remove(editFeatureButton);
@@ -685,14 +832,42 @@ public class AdminScene {
                             alert.setContentText("Already exist.");
                             alert.show();
                         } else {
-                            AdminZone.editCategory("add feature", addFeatureText.getText(), nameText.getText(), "");
+                            try {
+                                getDataOutputStream().writeUTF("edit category");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF("add feature");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(addFeatureText.getText());
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(nameText.getText());
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF("");
+                                getDataOutputStream().flush();
+                                getDataInputStream().readUTF();
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
                             TextField featureText = createTextField("Feature", 500);
                             featureText.setText(addFeatureText.getText());
                             featureText.setDisable(true);
 
                             Button removeFeatureButton = createButton("Remove", 100);
                             removeFeatureButton.setOnMouseClicked(ev -> {
-                                AdminZone.editCategory("remove feature", featureText.getText(), nameText.getText(), "");
+                                try {
+                                    getDataOutputStream().writeUTF("edit category");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF("remove feature");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(featureText.getText());
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(nameText.getText());
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF("");
+                                    getDataOutputStream().flush();
+                                    getDataInputStream().readUTF();
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
                                 textFields.getChildren().remove(featureText);
                                 removeButtons.getChildren().remove(removeFeatureButton);
                                 feature.remove(featureText.getText());
@@ -727,7 +902,15 @@ public class AdminScene {
             remove.setOnMouseClicked(e -> {
                 nameVBox.getChildren().remove(hyperlink);
                 removeVBox.getChildren().remove(remove);
-                AdminZone.removeCategory(hyperlink.getText());
+                try {
+                    getDataOutputStream().writeUTF("remove category");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(hyperlink.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             });
 
             nameVBox.getChildren().add(hyperlink);
@@ -769,7 +952,17 @@ public class AdminScene {
                 });
 
                 finish.setOnMouseClicked(event -> {
-                    AdminZone.createCategory(name[0], feature);
+                    try {
+                        getDataOutputStream().writeUTF("create discount");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(name[0]);
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(gson.toJson(feature));
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     MainScenes.getBorderPane().setCenter(manageCategories());
                 });
 

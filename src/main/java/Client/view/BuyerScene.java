@@ -1,8 +1,7 @@
-package view;
+package Client.view;
 
-import controller.AllAccountZone;
-import controller.BuyerZone;
-import controller.SellerZone;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -10,21 +9,25 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static view.MainScenes.createButton;
-import static view.MainScenes.createTextField;
-import static view.MainScenes.createLabel;
-import static view.ProductScene.getProductRoot;
+import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.MainScenes.createButton;
+import static Client.view.MainScenes.createTextField;
+import static Client.view.MainScenes.createLabel;
+import static Client.view.ProductScene.getProductRoot;
 
 public class BuyerScene {
+    private static Gson gson = new Gson();
 
     public static Parent getBuyerRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
@@ -66,7 +69,16 @@ public class BuyerScene {
         Label passwordLabel = createLabel("Password : ", 150);
         Label walletLabel = createLabel("Balance : ", 150);
 
-        ArrayList<String> personalInfo = new ArrayList<>(AllAccountZone.getPersonalInfo());
+        ArrayList<String> personalInfo = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get personal info");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            personalInfo = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         TextField firstNameText = createTextField("First Name", 200);
         firstNameText.setText(personalInfo.get(0));
@@ -134,7 +146,13 @@ public class BuyerScene {
 
         Label priceLabel = createLabel("Total Price", 50);
         TextField priceText = createTextField("Price", 50);
-        priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+        try {
+            getDataOutputStream().writeUTF("price with auction");
+            getDataOutputStream().flush();
+            priceText.setText(String.valueOf(getDataInputStream().readLong()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         priceText.setDisable(true);
         Button purchase = createButton("Purchase", 50);
         purchase.setOnMouseClicked(e -> {
@@ -145,7 +163,16 @@ public class BuyerScene {
             Button applyDiscount = createButton("Apply Discount", 500);
             applyDiscount.setOnMouseClicked(event -> {
                 if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText())) {
-                    String result = BuyerZone.checkDiscountCode(discount.getText());
+                    String result = "";
+                    try {
+                        getDataOutputStream().writeUTF("check discount");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(discount.getText());
+                        getDataOutputStream().flush();
+                        result = getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     if (result.equals("Discount applied.")) {
                         alert.setContentText("Discount applied.");
@@ -173,7 +200,16 @@ public class BuyerScene {
             MainScenes.getBorderPane().setCenter(infoVBox);
         });
 
-        HashMap<String, Integer> products = new HashMap<>(BuyerZone.getProductsInCart());
+        HashMap<String, Integer> products = new HashMap<>();
+        try {
+            getDataOutputStream().writeUTF("product in cart");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundType = new TypeToken<HashMap<String, Integer>>() {}.getType();
+            products = gson.fromJson(data, foundType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (Map.Entry<String, Integer> entry : products.entrySet()) {
             Hyperlink hyperlink = new Hyperlink(entry.getKey());
             hyperlink.setOnMouseClicked(e ->
@@ -197,10 +233,23 @@ public class BuyerScene {
             }
             increase.setFitHeight(25);
             increase.setFitWidth(40);
-            Label name = createLabel(SellerZone.getProductById(Integer.parseInt(entry.getKey()))
-                            .getGeneralFeature().getName(), 50);
-            Label price = createLabel(SellerZone.getProductById(Integer.parseInt(entry.getKey()))
-                    .getGeneralFeature().getAuctionPrice() + "$", 50);
+            String productName = "", auctionPrice = "";
+            try {
+                getDataOutputStream().writeUTF("get product name");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeInt(Integer.parseInt(entry.getKey()));
+                getDataOutputStream().flush();
+                productName = getDataInputStream().readUTF();
+                getDataOutputStream().writeUTF("get auction price");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeInt(Integer.parseInt(entry.getKey()));
+                getDataOutputStream().flush();
+                auctionPrice = getDataInputStream().readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Label name = createLabel(productName, 50);
+            Label price = createLabel(auctionPrice + "$", 50);
             ImageView productImage = null;
             try {
                 productImage = new ImageView(new Image(new FileInputStream("Styles/Photos/p" +
@@ -220,22 +269,56 @@ public class BuyerScene {
             vBox.getChildren().add(hBox);
 
             decrease.setOnMouseClicked(e -> {
-                BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), -1);
+                try {
+                    getDataOutputStream().writeUTF("change number");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(Integer.parseInt(hyperlink.getText()));
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(-1);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readBoolean();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 textField.setText(String.valueOf(Integer.parseInt(textField.getText()) - 1));
-                priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
+                try {
+                    getDataOutputStream().writeUTF("price with auction");
+                    getDataOutputStream().flush();
+                    priceText.setText(String.valueOf(getDataInputStream().readLong()));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 if (textField.getText().equals("0")) {
-                    BuyerZone.removeProductFromCart();
+                    try {
+                        getDataOutputStream().writeUTF("remove product in cart");
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     vBox.getChildren().remove(hBox);
                 }
             });
             increase.setOnMouseClicked(e -> {
-                if (BuyerZone.changeNumberOFProductInCart(Integer.parseInt(hyperlink.getText()), 1)) {
-                    textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
-                    priceText.setText(String.valueOf(BuyerZone.calculatePriceWithAuctions()));
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("There isn't any more of this product.");
-                    alert.show();
+                try {
+                    getDataOutputStream().writeUTF("change number");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(Integer.parseInt(hyperlink.getText()));
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(-1);
+                    getDataOutputStream().flush();
+                    if (getDataInputStream().readBoolean()) {
+                        textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
+                        getDataOutputStream().writeUTF("price with auction");
+                        getDataOutputStream().flush();
+                        priceText.setText(String.valueOf(getDataInputStream().readLong()));
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText("There isn't any more of this product.");
+                        alert.show();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             });
         }
@@ -250,23 +333,40 @@ public class BuyerScene {
     }
 
     private static void paymentRoot() {
-        long priceWithDiscount = BuyerZone.calculatePriceWithDiscountsAndAuctions();
-        long totalPrice = BuyerZone.calculatePriceWithAuctions();
+        long priceWithDiscount = 0, totalPrice = 0;
+        try {
+            getDataOutputStream().writeUTF("price with auction");
+            getDataOutputStream().flush();
+            totalPrice = getDataInputStream().readLong();
+            getDataOutputStream().writeUTF("buyer price");
+            getDataOutputStream().flush();
+            priceWithDiscount = getDataInputStream().readLong();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Label price = createLabel("Total Price : " + priceWithDiscount + "$", 200);
         Label discountAmount =
                 createLabel("Discount : " + (totalPrice - priceWithDiscount) + "$", 200);
         Button payment = createButton("Pay", 200);
         payment.setOnMouseClicked(ev -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            if (BuyerZone.canPayMoney()) {
-                BuyerZone.payMoney();
-                alert.setContentText("Purchase Completed.\nThank you for buying.");
-                alert.show();
-                MainScenes.getBorderPane().setCenter(viewOrders());
-            } else {
-                alert.setAlertType(Alert.AlertType.ERROR);
-                alert.setContentText("You don't have enough money.");
-                alert.show();
+            try {
+                getDataOutputStream().writeUTF("can pay");
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("pay");
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                    alert.setContentText("Purchase Completed.\nThank you for buying.");
+                    alert.show();
+                    MainScenes.getBorderPane().setCenter(viewOrders());
+                } else {
+                    alert.setAlertType(Alert.AlertType.ERROR);
+                    alert.setContentText("You don't have enough money.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
 
@@ -280,7 +380,18 @@ public class BuyerScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        for (String order : BuyerZone.getOrdersInfo()) {
+        ArrayList<String> orders = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get orders");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            orders = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (String order : orders) {
             Label label = createLabel(order, 600);
             vBox.getChildren().add(label);
         }
@@ -296,7 +407,16 @@ public class BuyerScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        ArrayList<String> discounts = new ArrayList<>(BuyerZone.getBuyerDiscounts());
+        ArrayList<String> discounts = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get buyer discounts");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            discounts = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (String discount : discounts) {
             Label label = createLabel(discount, 500);
             vBox.getChildren().add(label);

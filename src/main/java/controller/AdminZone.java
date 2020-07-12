@@ -188,19 +188,19 @@ public class AdminZone {
         auction.setStatus("accepted");
     }
 
-    public static ArrayList<view.tableViewData.Account> getUsers() {
-        ArrayList<view.tableViewData.Account> accounts = new ArrayList<>();
+    public static ArrayList<Client.view.tableViewData.Account> getUsers() {
+        ArrayList<Client.view.tableViewData.Account> accounts = new ArrayList<>();
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account instanceof  Buyer) {
-                accounts.add(new view.tableViewData.Account("Buyer", account.getFirstName(),
+                accounts.add(new Client.view.tableViewData.Account("Buyer", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
                         account.getUsername(), account.getPassword(), ((Buyer) account).getWallet(), ""));
             } else if (account instanceof Seller) {
-                accounts.add(new view.tableViewData.Account("Seller", account.getFirstName(),
+                accounts.add(new Client.view.tableViewData.Account("Seller", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(), account.getUsername(),
                         account.getPassword(), ((Seller) account).getWallet(), ((Seller) account).getCompanyName()));
             } else {
-                accounts.add(new view.tableViewData.Account("Admin", account.getFirstName(),
+                accounts.add(new Client.view.tableViewData.Account("Admin", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
                         account.getUsername(), account.getPassword(), 0, ""));
             }
@@ -266,10 +266,10 @@ public class AdminZone {
         DataBase.getDataBase().getAllProducts().remove(removedProduct);
     }
 
-    public static ArrayList<view.tableViewData.Product> getAllProducts() {
-        ArrayList<view.tableViewData.Product> products = new ArrayList<>();
+    public static ArrayList<Client.view.tableViewData.Product> getAllProducts() {
+        ArrayList<Client.view.tableViewData.Product> products = new ArrayList<>();
         for (Product product : DataBase.getDataBase().getAllProducts()) {
-            products.add(new view.tableViewData.Product(product.getId(), product.getStatus(),
+            products.add(new Client.view.tableViewData.Product(product.getId(), product.getStatus(),
                     product.getGeneralFeature().getName(), product.getGeneralFeature().getPrice(),
                     product.getGeneralFeature().getSeller(), product.getGeneralFeature().getStockStatus(),
                     product.getCategoryName(), product.getCategoryFeature(), product.getAverageScore()));
@@ -360,7 +360,7 @@ public class AdminZone {
     }
 
     public static void removeCategory(String name) {
-        Category category = Category.getCategoryByName(name);
+        Category category = AllAccountZone.getCategoryByName(name);
         while (!category.getProductList().isEmpty()) {
             removeProduct(category.getProductList().get(0).getId());
         }
@@ -408,7 +408,7 @@ public class AdminZone {
     }
 
     public static ArrayList<String> getCategoryFeature(String name) {
-        Category category = Category.getCategoryByName(name);
+        Category category = AllAccountZone.getCategoryByName(name);
         if (category != null) {
             return category.getSpecialFeatures();
         } else {
@@ -417,7 +417,7 @@ public class AdminZone {
     }
 
     public static void editCategory(String field, String value, String categoryName, String lastFeature) {
-        Category category = Category.getCategoryByName(categoryName);
+        Category category = AllAccountZone.getCategoryByName(categoryName);
         assert category != null;
         if (field.equals("remove feature")) {
             category.getSpecialFeatures().remove(value);

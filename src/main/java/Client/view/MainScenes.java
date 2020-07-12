@@ -1,4 +1,4 @@
-package view;
+package Client.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -75,8 +75,8 @@ public class MainScenes {
                     firstName.getText(), lastName.getText(), email.getText(),
                     phoneNumber.getText(), username.getText(), password.getText()));
             if (Actions.register(info)) {
-                CommandProcessor.getStage().getScene().setRoot(getMainMenuScene());
-                CommandProcessor.getStage().setMaximized(true);
+                ClientHandler.getStage().getScene().setRoot(getMainMenuScene());
+                ClientHandler.getStage().setMaximized(true);
             }
         });
 
@@ -93,9 +93,7 @@ public class MainScenes {
     public static Parent getMainMenuScene() {
         Button signIn;
         signIn = createButton("Sign in", 200);
-        signIn.setOnMouseClicked(e -> {
-            borderPane.setCenter(getSignInRoot());
-        });
+        signIn.setOnMouseClicked(e -> borderPane.setCenter(getSignInRoot()));
         signIn.getStyleClass().add("top-buttons");
         signInOrOut = signIn;
         Button products = createButton("Products", 200);
@@ -147,16 +145,12 @@ public class MainScenes {
         });
 
         Hyperlink createAccount = new Hyperlink("Create Account");
-        createAccount.setOnMouseClicked(e -> {
-            borderPane.setCenter(getCreateAccountRoot());
-        });
+        createAccount.setOnMouseClicked(e -> borderPane.setCenter(getCreateAccountRoot()));
 
         type.setOnAction(e -> signIn.setDisable(false));
 
         Button back = createButton("Back", 150);
-        back.setOnMouseClicked(e -> {
-            borderPane.setCenter(ProductScene.getProductsRoot());
-        });
+        back.setOnMouseClicked(e -> borderPane.setCenter(ProductScene.getProductsRoot()));
 
         VBox vBox = new VBox(25, type, username, password, signIn, createAccount, back);
         vBox.setAlignment(Pos.CENTER);
@@ -200,9 +194,7 @@ public class MainScenes {
         });
 
         Button back = createButton("Back", 150);
-        back.setOnMouseClicked(e -> {
-            borderPane.setCenter(getSignInRoot());
-        });
+        back.setOnMouseClicked(e -> borderPane.setCenter(getSignInRoot()));
 
         VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, balance, register, back);
         vBox.setAlignment(Pos.CENTER);

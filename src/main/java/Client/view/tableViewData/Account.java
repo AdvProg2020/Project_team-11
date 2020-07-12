@@ -1,8 +1,14 @@
-package view.tableViewData;
+package Client.view.tableViewData;
 
-import controller.AdminZone;
+import Client.view.ClientHandler;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class Account {
     private String accountType;
@@ -102,7 +108,16 @@ public class Account {
 
     public static ObservableList<Account> getAccounts() {
         ObservableList<Account> list = FXCollections.observableArrayList();
-        list.addAll(AdminZone.getUsers());
+        try {
+            ClientHandler.getDataOutputStream().writeUTF("get users");
+            ClientHandler.getDataOutputStream().flush();
+            String data = ClientHandler.getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<Account>>() {}.getType();
+            Gson gson = new Gson();
+            list.addAll(new ArrayList<>(gson.fromJson(data, foundListType)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 }

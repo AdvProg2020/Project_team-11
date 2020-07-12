@@ -1,4 +1,4 @@
-package view;
+package Client.view;
 
 import java.util.HashMap;
 

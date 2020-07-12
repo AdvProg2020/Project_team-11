@@ -9,16 +9,16 @@ import java.util.Map;
 
 public class BuyerZone {
 
-    public static HashMap<String, Integer> getProductsInCart() {
+    public static HashMap<String, Integer> getProductsInCart(Account account) {
         HashMap<String, Integer> products = new HashMap<>();
-        for (Integer productId : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().keySet()) {
-            products.put(String.valueOf(productId),((Buyer) AllAccountZone.getCurrentAccount()).getCart().get(productId));
+        for (Integer productId : ((Buyer) account).getCart().keySet()) {
+            products.put(String.valueOf(productId),((Buyer) account).getCart().get(productId));
         }
         return products;
     }
 
-    public static boolean changeNumberOFProductInCart(int productId, int number) {
-        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+    public static boolean changeNumberOFProductInCart(int productId, int number, Account account) {
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) account).getCart().entrySet()) {
             if (entry.getKey() == productId) {
                 if (SellerZone.getProductById(productId).getGeneralFeature().getStockStatus() < entry.getValue() + number)
                     return false;
@@ -29,25 +29,25 @@ public class BuyerZone {
         return false;
     }
 
-    public static void removeProductFromCart() {
+    public static void removeProductFromCart(Account account) {
         int removeProductId = 0;
-        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) account).getCart().entrySet()) {
             if (entry.getValue() == 0) {
                 removeProductId = entry.getKey();
                 break;
             }
         }
-        ((Buyer) AllAccountZone.getCurrentAccount()).getCart().remove(removeProductId);
+        ((Buyer) account).getCart().remove(removeProductId);
     }
 
-    public static String checkDiscountCode(String discountCode) {
+    public static String checkDiscountCode(String discountCode, Account account) {
         Buyer buyer = null;
         Discount discount = getDiscountByCode(discountCode);
         if (discount == null) {
             return "This code doesn't exist.";
         }
         for (String username : discount.getAllowedUsers()) {
-            if (username.equals(AllAccountZone.getCurrentAccount().getUsername())) {
+            if (username.equals(account.getUsername())) {
                 buyer = AdminZone.getBuyerByUsername(username);
             }
         }
@@ -77,24 +77,24 @@ public class BuyerZone {
         return null;
     }
 
-    public static boolean canPayMoney() {
-        Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
-        long totalPriceAfterDiscount = calculatePriceWithDiscountsAndAuctions();
+    public static boolean canPayMoney(Account account) {
+        Buyer buyer = (Buyer) account;
+        long totalPriceAfterDiscount = calculatePriceWithDiscountsAndAuctions(account);
         return totalPriceAfterDiscount <= buyer.getWallet();
     }
 
-    public static long calculatePriceWithAuctions() {
+    public static long calculatePriceWithAuctions(Account account) {
         setAuctionPrice();
         long totalPrice = 0;
-        for (Map.Entry<Integer, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getCart().entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : ((Buyer) account).getCart().entrySet()) {
             totalPrice += SellerZone.getProductById(entry.getKey()).getGeneralFeature().getAuctionPrice() * entry.getValue();
         }
         return totalPrice;
     }
 
-    public static long calculatePriceWithDiscountsAndAuctions() {
-        Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
-        long totalPrice = calculatePriceWithAuctions();
+    public static long calculatePriceWithDiscountsAndAuctions(Account account) {
+        Buyer buyer = (Buyer) account;
+        long totalPrice = calculatePriceWithAuctions(account);
         if (buyer.getActiveDiscount() == null) {
             return totalPrice;
         } else {
@@ -108,8 +108,8 @@ public class BuyerZone {
         }
     }
 
-    public static void payMoney() {
-        Buyer buyer = ((Buyer) AllAccountZone.getCurrentAccount());
+    public static void payMoney(Account account) {
+        Buyer buyer = ((Buyer) account);
         decreaseBuyerMoney(buyer);
         increaseSellerMoney(buyer);
         createLogs(buyer);
@@ -118,7 +118,7 @@ public class BuyerZone {
     }
 
     private static void decreaseBuyerMoney(Buyer buyer) {
-        long newMoney = buyer.getWallet() - calculatePriceWithDiscountsAndAuctions();
+        long newMoney = buyer.getWallet() - calculatePriceWithDiscountsAndAuctions(buyer);
         buyer.setWallet(newMoney);
     }
 
@@ -140,8 +140,8 @@ public class BuyerZone {
     }
 
     private static void createLogs(Buyer buyer) {
-        long paidAmount = calculatePriceWithDiscountsAndAuctions();
-        long totalPrice = calculatePriceWithAuctions();
+        long paidAmount = calculatePriceWithDiscountsAndAuctions(buyer);
+        long totalPrice = calculatePriceWithAuctions(buyer);
         HashMap<Integer, String> purchasedProducts = new HashMap<>();
         HashMap<Integer, Integer> numOfProduct = new HashMap<>();
         for (Integer productId : buyer.getCart().keySet()) {
@@ -151,15 +151,14 @@ public class BuyerZone {
             numOfProduct.put(productId, buyer.getCart().get(productId));
         }
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), paidAmount, totalPrice - paidAmount,
-                purchasedProducts, numOfProduct, AllAccountZone.getCurrentAccount().getUsername(), "sending");
+                purchasedProducts, numOfProduct, buyer.getUsername(), "sending");
         buyer.addBuyHistory(buyLog);
         for (Integer productId : buyer.getCart().keySet()) {
             Product product = SellerZone.getProductById(productId);
             SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(), product.getGeneralFeature().getAuctionPrice(),
                     product.getGeneralFeature().getPrice() - product.getGeneralFeature().getAuctionPrice(),
                     product.getGeneralFeature().getName(), buyer.getCart().get(productId),
-                    AllAccountZone.getCurrentAccount().getFirstName() + " " +
-                    AllAccountZone.getCurrentAccount().getLastName(), product.getGeneralFeature().getSeller(),
+                    buyer.getFirstName() + " " + buyer.getLastName(), product.getGeneralFeature().getSeller(),
                     "sending");
             Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
             seller.addSellHistory(sellLog);
@@ -183,10 +182,10 @@ public class BuyerZone {
         }
     }
 
-    public static ArrayList<String> getOrdersInfo() {
+    public static ArrayList<String> getOrdersInfo(Account account) {
         ArrayList<String> orders = new ArrayList<>();
         StringBuilder productList = new StringBuilder();
-        for (BuyLog buyLog  : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
+        for (BuyLog buyLog  : ((Buyer) account).getBuyHistory()) {
             for (Map.Entry<Integer, String> entry : buyLog.getPurchasedProductionsAndSellers().entrySet()) {
                 productList.append(SellerZone.getProductById(entry.getKey()).getGeneralFeature().getName())
                         .append(" seller : ").append(entry.getValue()).append("\n");
@@ -198,8 +197,8 @@ public class BuyerZone {
         return orders;
     }
 
-    public static boolean hasUserBoughtProduct(int productId) {
-        for (BuyLog buyLog  : ((Buyer) AllAccountZone.getCurrentAccount()).getBuyHistory()) {
+    public static boolean hasUserBoughtProduct(int productId, Account account) {
+        for (BuyLog buyLog  : ((Buyer) account).getBuyHistory()) {
             for (Integer boughtProductId : buyLog.getPurchasedProductionsAndSellers().keySet()) {
                 if (boughtProductId == productId)
                     return true;
@@ -208,17 +207,17 @@ public class BuyerZone {
         return false;
     }
 
-    public static void createRate(int productId, int score) {
+    public static void createRate(int productId, int score, Account account) {
         Product product = SellerZone.getProductById(productId);
-        new Rate(AllAccountZone.getCurrentAccount().getUsername(), score, productId);
+        new Rate(account.getUsername(), score, productId);
         double newScore = (product.getAverageScore() * product.getNumOfUsersRated() + score) / (product.getNumOfUsersRated() + 1);
         product.setAverageScore(newScore);
         product.addNumOfUsersRated();
     }
 
-    public static ArrayList<String> getBuyerDiscounts() {
+    public static ArrayList<String> getBuyerDiscounts(Account account) {
         ArrayList<String> discounts = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : ((Buyer) AllAccountZone.getCurrentAccount()).getDiscountCodes().entrySet()) {
+        for (Map.Entry<String, Integer> entry : ((Buyer) account).getDiscountCodes().entrySet()) {
             Discount discount = getDiscountByCode(entry.getKey());
             discounts.add(discount.getCode() + " : " + entry.getValue() + " times " + discount.getAmount()[0] +
                     "% discount Max = " + discount.getAmount()[1] + "$ from '" + discount.getStartDate()

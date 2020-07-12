@@ -1,15 +1,13 @@
-package view;
+package Client.view;
 
-import controller.AdminZone;
-import controller.AllAccountZone;
-import controller.SellerZone;
+import com.google.gson.Gson;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import model.Category;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,9 +20,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static view.MainScenes.getSignInRoot;
+import static Client.view.MainScenes.getSignInRoot;
+import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ClientHandler.getDataOutputStream;
 
 public class Actions {
+    private static Gson gson = new Gson();
 
     public static boolean register(ArrayList<String> info) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -55,11 +56,26 @@ public class Actions {
         } else if (info.get(0).equals("seller") && !Validation.validateNames(info.get(8))) {
             alert.setContentText("Enter Company name.");
             alert.show();
-        } else if (!AllAccountZone.isUsernameValid(info.get(5))) {
-            alert.setContentText("This username is already occupied.");
-            alert.show();
         } else {
-            AllAccountZone.createAccount(info);
+            try {
+                getDataOutputStream().writeUTF("check username");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(info.get(5));
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("register");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(gson.toJson(info));
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } else {
+                    alert.setContentText("This username is already occupied.");
+                    alert.show();
+                    return false;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return true;
         }
         return false;
@@ -74,9 +90,53 @@ public class Actions {
             alert.setContentText("Enter your password.");
             alert.show();
         } else {
-            String result = AllAccountZone.loginUser(info);
-            if (result.equals("Login successfully.")) {
+            String result = "";
+            try {
+                getDataOutputStream().writeUTF("sign in");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(gson.toJson(info));
+                getDataOutputStream().flush();
+                result = getDataInputStream().readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (result.startsWith("Login successfully")) {
                 MainScenes.getSignInOrOut().setText("Logout");
+                if (result.contains("admin")) {
+                    Button button = new Button("Admin");
+                    button.setOnAction(e -> {
+                        MainScenes.getBorderPane().setLeft(AdminScene.getAdminRoot());
+                        MainScenes.getBorderPane().setCenter(AdminScene.getPersonalInfo());
+                    });
+                    button.setMinWidth(200);
+                    button.setAlignment(Pos.CENTER);
+                    button.getStyleClass().add("top-buttons");
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    button.fire();
+                } else if (result.contains("seller")) {
+                    Button button = new Button("Seller");
+                    button.setOnAction(e -> {
+                        MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot());
+                        MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
+                    });
+                    button.setMinWidth(200);
+                    button.setAlignment(Pos.CENTER);
+                    button.getStyleClass().add("top-buttons");
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    button.fire();
+                } else {
+                    Button button = new Button("Buyer");
+                    button.setOnAction(e -> {
+                        MainScenes.getBorderPane().setLeft(BuyerScene.getBuyerRoot());
+                        MainScenes.getBorderPane().setCenter(BuyerScene.getPersonalInfo());
+                    });
+                    button.setMinWidth(200);
+                    button.setAlignment(Pos.CENTER);
+                    button.getStyleClass().add("top-buttons");
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    button.fire();
+                }
 
                 MainScenes.getSignInOrOut().setOnMouseClicked(e -> logout());
             } else {
@@ -88,12 +148,16 @@ public class Actions {
 
     public static void logout() {
         ((HBox) MainScenes.getBorderPane().getTop()).getChildren().remove(2);
-        AllAccountZone.setCurrentAccount(null);
+        try {
+            getDataOutputStream().writeUTF("logout");
+            getDataOutputStream().flush();
+            getDataInputStream().readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         MainScenes.getSignInOrOut().setText("Sign In");
-        MainScenes.getSignInOrOut().setOnMouseClicked(event -> {
-            MainScenes.getBorderPane().setCenter(getSignInRoot());
-        });
+        MainScenes.getSignInOrOut().setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(getSignInRoot()));
 
         MainScenes.getBorderPane().setCenter(ProductScene.getProductsRoot());
         MainScenes.getBorderPane().setLeft(null);
@@ -122,7 +186,19 @@ public class Actions {
             if (isValid) {
                 button.setText("Edit");
                 textField.setDisable(true);
-                AllAccountZone.editPersonalInfo(textField.getPromptText(), textField.getText());
+
+                try {
+                    getDataOutputStream().writeUTF("edit personal info");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getPromptText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 button.setOnMouseClicked(e -> editPersonalInfo(button, textField));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -155,25 +231,35 @@ public class Actions {
         }  else if (Integer.parseInt(info.get(5)) == 0) {
             alert.setContentText("Repeated Times is not valid.");
             alert.show();
-        } else if (AdminZone.getDiscountByCode(info.get(0)) != null) {
-            alert.setContentText("This code is already occupied.");
-            alert.show();
         } else {
-            Date start = null, end = null;
             try {
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                start = format.parse(info.get(1));
-                end = format.parse(info.get(2));
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-            if (end.before(start)) {
-                alert.setContentText("End date should be after start date.");
-                alert.show();
-            } else {
-                info.set(1, String.valueOf(start.getTime()));
-                info.set(2, String.valueOf(end.getTime()));
-                return true;
+                getDataOutputStream().writeUTF("check discount code");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(info.get(0));
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    Date start = null, end = null;
+                    try {
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        start = format.parse(info.get(1));
+                        end = format.parse(info.get(2));
+                    } catch (ParseException ex) {
+                        ex.printStackTrace();
+                    }
+                    if (end.before(start)) {
+                        alert.setContentText("End date should be after start date.");
+                        alert.show();
+                    } else {
+                        info.set(1, String.valueOf(start.getTime()));
+                        info.set(2, String.valueOf(end.getTime()));
+                        return true;
+                    }
+                } else {
+                    alert.setContentText("This code is already occupied.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return false;
@@ -184,12 +270,26 @@ public class Actions {
         if (!Validation.validateNames(code)) {
             alert.setContentText("Enter Code.");
             alert.show();
-        } else if (AdminZone.getDiscountByCode(code) == null) {
-            alert.setContentText("There is no discount with this code.");
-            alert.show();
         } else {
-            AdminZone.removeDiscount(code);
-            return true;
+            try {
+                getDataOutputStream().writeUTF("check discount code");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(code);
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("remove discount");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(code);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                    return true;
+                } else {
+                    alert.setContentText("There is no discount with this code.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -199,11 +299,21 @@ public class Actions {
         if (!Validation.validateNames(username)) {
             alert.setContentText("Enter username.");
             alert.show();
-        } else if (AdminZone.getBuyerByUsername(username) == null) {
-            alert.setContentText("There is no user with this username.");
-            alert.show();
         } else {
-            return true;
+            try {
+                getDataOutputStream().writeUTF("check username");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(username);
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    alert.setContentText("There is no user with this username.");
+                    alert.show();
+                } else {
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -232,8 +342,16 @@ public class Actions {
                 button.setText("Edit");
                 textField.setDisable(true);
                 try {
-                    AdminZone.editDiscount(textField.getPromptText(), textField.getText(), discountCode);
-                } catch (ParseException e) {
+                    getDataOutputStream().writeUTF("edit discount");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getPromptText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(discountCode);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 button.setOnMouseClicked(e -> editDiscount(button, textField, discountCode));
@@ -250,11 +368,21 @@ public class Actions {
         if (!Validation.validateNames(name)) {
             alert.setContentText("Enter category name.");
             alert.show();
-        } else if (Category.getCategoryByName(name) != null) {
-            alert.setContentText("This name is already occupied.");
-            alert.show();
         } else {
-            return true;
+            try {
+                getDataOutputStream().writeUTF("check category name");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(name);
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    return true;
+                } else {
+                    alert.setContentText("This name is already occupied.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -275,7 +403,21 @@ public class Actions {
             if (isValid) {
                 button.setText("Edit");
                 textField.setDisable(true);
-                AdminZone.editCategory(textField.getPromptText(), textField.getText(), categoryName, lastField);
+                try {
+                    getDataOutputStream().writeUTF("edit category");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getPromptText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(categoryName);
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(lastField);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 button.setOnMouseClicked(e -> editCategory(textField, button, categoryName));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -306,8 +448,15 @@ public class Actions {
             if (isValid) {
                 button.setText("Edit");
                 textField.setDisable(true);
-                SellerZone.sendEditProductRequest(productId + "," + textField.getPromptText() + ","
-                        + textField.getText());
+                try {
+                    getDataOutputStream().writeUTF("edit product");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(productId + "," + textField.getPromptText() + "," + textField.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 button.setOnMouseClicked(event -> editProduct(textField, button, productId));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -348,7 +497,19 @@ public class Actions {
             alert.setContentText("Complete features.");
             alert.show();
         } else {
-            int productId = SellerZone.sendAddNewProductRequest(info, features);
+            String id = "";
+            try {
+                getDataOutputStream().writeUTF("add product");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(gson.toJson(info));
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(gson.toJson(features));
+                getDataOutputStream().flush();
+                id = getDataInputStream().readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int productId = Integer.parseInt(id);
             if (hasImage) {
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
                 try {
@@ -389,7 +550,15 @@ public class Actions {
             } else {
                 info.set(1, String.valueOf(start.getTime()));
                 info.set(2, String.valueOf(end.getTime()));
-                SellerZone.createAuction(info);
+                try {
+                    getDataOutputStream().writeUTF("add auction");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(gson.toJson(info));
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return true;
             }
         }
@@ -413,7 +582,19 @@ public class Actions {
             if (isValid) {
                 button.setText("Edit");
                 textField.setDisable(true);
-                SellerZone.sendEditAuctionRequest(textField.getPromptText(), textField.getText(), auctionId);
+                try {
+                    getDataOutputStream().writeUTF("edit auction");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getPromptText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(String.valueOf(auctionId));
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 button.setOnMouseClicked(e -> editAuction(textField, button, auctionId));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -448,16 +629,32 @@ public class Actions {
         } else if (productId1 == Integer.parseInt(productId2)) {
             alert.setContentText("Choose a different product.");
             alert.show();
-        } else if (SellerZone.getProductById(Integer.parseInt(productId2)) == null) {
-            alert.setContentText("Invalid ID.");
-            alert.show();
         } else {
-            String output = AllAccountZone.compareTwoProduct(productId1, Integer.parseInt(productId2));
-            if (output.startsWith("Cannot")) {
-                alert.setContentText(output);
-                alert.show();
-            } else {
-                return true;
+            try {
+                getDataOutputStream().writeUTF("check product id");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(productId2);
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("can compare product");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(String.valueOf(productId1));
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(productId2);
+                    getDataOutputStream().flush();
+                    String output = getDataInputStream().readUTF();
+                    if (output.startsWith("Cannot")) {
+                        alert.setContentText(output);
+                        alert.show();
+                    } else {
+                        return true;
+                    }
+                } else {
+                    alert.setContentText("Invalid ID.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return false;

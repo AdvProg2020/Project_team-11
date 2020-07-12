@@ -1,10 +1,7 @@
-package view;
+package Client.view;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import controller.AdminZone;
-import controller.AllAccountZone;
-import controller.SellerZone;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -20,10 +17,13 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static view.MainScenes.*;
-import static view.MainScenes.createTextField;
+import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.MainScenes.*;
+import static Client.view.MainScenes.createTextField;
 
 public class SellerScene {
+    private static Gson gson = new Gson();
 
     public static Parent getSellerRoot() {
         Button personalInfo = createButton("View Personal Info", 300);
@@ -71,7 +71,16 @@ public class SellerScene {
         Label companyLabel = createLabel("Company : ", 150);
         Label walletLabel = createLabel("Balance : ", 150);
 
-        ArrayList<String> personalInfo = new ArrayList<>(AllAccountZone.getPersonalInfo());
+        ArrayList<String> personalInfo = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get personal info");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            personalInfo = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         TextField firstNameText = createTextField("First Name", 200);
         firstNameText.setText(personalInfo.get(0));
@@ -144,7 +153,16 @@ public class SellerScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        ArrayList<String> salesHistory = new ArrayList<>(SellerZone.getSellerHistory());
+        ArrayList<String> salesHistory = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get sales history");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            salesHistory = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (String sale : salesHistory) {
             Label label = createLabel(sale, 500);
             vBox.getChildren().add(label);
@@ -167,7 +185,16 @@ public class SellerScene {
         VBox removeVBox = new VBox(20);
         removeVBox.setAlignment(Pos.CENTER);
 
-        HashMap<Integer, String> products = new HashMap<>(SellerZone.getSellerProducts());
+        HashMap<Integer, String> products = new HashMap<>();
+        try {
+            getDataOutputStream().writeUTF("get seller products");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<HashMap<String, String>>() {}.getType();
+            products = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (Map.Entry<Integer, String> entry : products.entrySet()) {
             Hyperlink id = new Hyperlink(String.valueOf(entry.getKey()));
             Label name = createLabel(entry.getValue(), 150);
@@ -181,12 +208,30 @@ public class SellerScene {
                 idVBox.getChildren().remove(id);
                 nameVBox.getChildren().remove(name);
                 removeVBox.getChildren().remove(remove);
-                SellerZone.removeProduct(entry.getKey());
+                try {
+                    getDataOutputStream().writeUTF("remove seller product");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(entry.getKey());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             });
 
             id.setOnMouseClicked(e -> {
-                HashMap<String, String> productDetails =
-                        new HashMap<>(SellerZone.getSellerProductDetails(Integer.parseInt(id.getText())));
+                HashMap<String, String> productDetails = new HashMap<>();
+                try {
+                    getDataOutputStream().writeUTF("product details");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(id.getText());
+                    getDataOutputStream().flush();
+                    String data = getDataInputStream().readUTF();
+                    Type foundListType = new TypeToken<HashMap<String, String>>() {}.getType();
+                    productDetails = gson.fromJson(data, foundListType);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 Label statusLabel = createLabel("Status : ", 100);
                 TextField statusText = createTextField(productDetails.get("status"), 500);
@@ -364,18 +409,36 @@ public class SellerScene {
             gridPane.add(apply, 1, 6);
 
             apply.setOnMouseClicked(event -> {
-                if (AdminZone.isCategoryNameValid(category.getText())) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("There is no category with this name.");
-                    alert.show();
-                } else {
-                    features.getChildren().clear();
-                    ArrayList<String> categoryFeature =
-                            new ArrayList<>(Objects.requireNonNull(SellerZone.getCategoryFeature(category.getText())));
-                    for (String s : categoryFeature) {
-                        TextField feature = createTextField(s, 300);
-                        features.getChildren().add(feature);
+                try {
+                    getDataOutputStream().writeUTF("check category name");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(category.getText());
+                    getDataOutputStream().flush();
+                    if (getDataInputStream().readBoolean()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText("There is no category with this name.");
+                        alert.show();
+                    } else {
+                        features.getChildren().clear();
+                        ArrayList<String> categoryFeature = new ArrayList<>();
+                        try {
+                            getDataOutputStream().writeUTF("get category feature");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(category.getText());
+                            getDataOutputStream().flush();
+                            String data = getDataInputStream().readUTF();
+                            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+                            categoryFeature = gson.fromJson(data, foundListType);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        for (String s : categoryFeature) {
+                            TextField feature = createTextField(s, 300);
+                            features.getChildren().add(feature);
+                        }
                     }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             });
 
@@ -434,14 +497,36 @@ public class SellerScene {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
 
-        for (String category : AllAccountZone.getCategories()) {
+        ArrayList<String> categories = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get categories");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            categories = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (String category : categories) {
             Hyperlink hyperlink = new Hyperlink(category);
 
             hyperlink.setOnMouseClicked(e -> {
                 VBox featureVBox = new VBox(20);
                 featureVBox.setAlignment(Pos.CENTER);
 
-                for (String feature : AdminZone.getCategoryFeature(hyperlink.getText())) {
+                ArrayList<String> features = new ArrayList<>();
+                try {
+                    getDataOutputStream().writeUTF("get category feature");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(hyperlink.getText());
+                    getDataOutputStream().flush();
+                    String data = getDataInputStream().readUTF();
+                    Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+                    features = gson.fromJson(data, foundListType);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                for (String feature : features) {
                     Label label = createLabel(feature, 300);
                     featureVBox.getChildren().add(label);
                 }
@@ -469,11 +554,19 @@ public class SellerScene {
     }
 
     private static Parent manageAuctions() {
-        //TODO : one product one auction
         VBox idVBox = new VBox(20);
         idVBox.setAlignment(Pos.CENTER);
 
-        ArrayList<Integer> auctionsId = new ArrayList<>(SellerZone.getSellerAuctions());
+        ArrayList<Integer> auctionsId = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get seller auctions");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<Integer>>() {}.getType();
+            auctionsId = gson.fromJson(data, foundListType);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
         for (Integer id : auctionsId) {
             Hyperlink hyperlink = new Hyperlink(String.valueOf(id));
@@ -486,8 +579,18 @@ public class SellerScene {
                 Label endLabel = createLabel("End Date : ", 100);
                 Label productLabel = createLabel("Products : ", 100);
 
-                ArrayList<String> auctionDetail =
-                        new ArrayList<>(SellerZone.getAuctionDetail(Integer.parseInt(hyperlink.getText())));
+                ArrayList<String> auctionDetail = new ArrayList<>();
+                try {
+                    getDataOutputStream().writeUTF("get auction details");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(hyperlink.getText());
+                    getDataOutputStream().flush();
+                    String data = getDataInputStream().readUTF();
+                    Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+                    auctionDetail = gson.fromJson(data, foundListType);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 TextField statusText = createTextField("Status", 400);
                 statusText.setText(auctionDetail.get(0));
@@ -519,8 +622,17 @@ public class SellerScene {
 
                     Button removeProduct = createButton("Remove", 100);
                     removeProduct.setOnMouseClicked(event -> {
-                        SellerZone.removeProductFromAuction(Integer.parseInt(hyperlink.getText()),
-                                Integer.parseInt(productText.getText().substring(0, productText.getText().indexOf("."))));
+                        try {
+                            getDataOutputStream().writeUTF("remove auction product");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(hyperlink.getText());
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(productText.getText().substring(0, productText.getText().indexOf(".")));
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                         productTextFields.getChildren().remove(productText);
                         productButton.getChildren().remove(removeProduct);
                     });
@@ -542,32 +654,62 @@ public class SellerScene {
                 addProduct.setOnMouseClicked(event -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     if (Validation.validateInteger(addText.getText())) {
-                        if (SellerZone.getSellerAuctionById(Integer.parseInt(hyperlink.getText())).getProductList()
-                                .contains(SellerZone.getProductById(Integer.parseInt(addText.getText())))) {
-                            alert.setContentText("Already exist.");
-                            alert.show();
-                        } else if (SellerZone.hasProduct(Integer.parseInt(addText.getText()))) {
-                            TextField productText = createTextField("Product", 400);
-                            productText.setText(addText.getText() + ". " +
-                                    SellerZone.getProductById(Integer.parseInt(addText.getText())).getGeneralFeature().getName());
-                            productText.setDisable(true);
-                            productTextFields.getChildren().add(productText);
+                        try {
+                            getDataOutputStream().writeUTF("has auction");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(addText.getText());
+                            getDataOutputStream().flush();
+                            if (getDataInputStream().readBoolean()) {
+                                alert.setContentText("This product has an auction.");
+                                alert.show();
+                            } else {
+                                getDataOutputStream().writeUTF("seller has product");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(addText.getText());
+                                getDataOutputStream().flush();
+                                if (getDataInputStream().readBoolean()) {
+                                    TextField productText = createTextField("Product", 400);
+                                    getDataOutputStream().writeUTF("get product name");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(addText.getText());
+                                    getDataOutputStream().flush();
+                                    productText.setText(addText.getText() + ". " + getDataInputStream().readUTF());
+                                    productText.setDisable(true);
+                                    productTextFields.getChildren().add(productText);
+                                    Button removeProduct = createButton("Remove", 100);
+                                    removeProduct.setOnMouseClicked(ev -> {
+                                        try {
+                                            getDataOutputStream().writeUTF("remove auction product");
+                                            getDataOutputStream().flush();
+                                            getDataOutputStream().writeUTF(hyperlink.getText());
+                                            getDataOutputStream().flush();
+                                            getDataOutputStream().writeUTF(productText.getText()
+                                                    .substring(0, productText.getText().indexOf(".")));
+                                            getDataOutputStream().flush();
+                                            getDataInputStream().readUTF();
+                                        } catch (IOException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        productTextFields.getChildren().remove(productText);
+                                        productButton.getChildren().remove(removeProduct);
+                                    });
+                                    productButton.getChildren().add(removeProduct);
 
-                            Button removeProduct = createButton("Remove", 100);
-                            removeProduct.setOnMouseClicked(ev -> {
-                                productTextFields.getChildren().remove(productText);
-                                productButton.getChildren().remove(removeProduct);
-                                SellerZone.removeProductFromAuction(Integer.parseInt(hyperlink.getText()),
-                                        Integer.parseInt(productText.getText().substring(0, productText.getText().indexOf("."))));
-                            });
-                            productButton.getChildren().add(removeProduct);
-
-                            SellerZone.addProductToAuction(Integer.parseInt(hyperlink.getText()),
-                                    Integer.parseInt(addText.getText()));
-                            addText.clear();
-                        } else {
-                            alert.setContentText("You haven't this product.");
-                            alert.show();
+                                    getDataOutputStream().writeUTF("add auction product");
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(hyperlink.getText());
+                                    getDataOutputStream().flush();
+                                    getDataOutputStream().writeUTF(addText.getText());
+                                    getDataOutputStream().flush();
+                                    getDataInputStream().readUTF();
+                                    addText.clear();
+                                } else {
+                                    alert.setContentText("You haven't this product.");
+                                    alert.show();
+                                }
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         }
                     } else {
                         alert.setContentText("invalid product ID.");
@@ -618,33 +760,49 @@ public class SellerScene {
             Button addProduct = createButton("Add", 100);
             addProduct.setOnMouseClicked(event -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                if (product.getText().isEmpty()) {
-                    alert.setContentText("Enter product ID.");
-                    alert.show();
-                } else if (SellerZone.hasProduct(Integer.parseInt(product.getText()))) {
-                    if (productsId.contains(product.getText())) {
-                        alert.setContentText("Already exist.");
-                        alert.show();
-                    } else {
-                        productsId.add(product.getText());
-                        TextField productText = createTextField("Product", 400);
-                        productText.setText(product.getText() + ". " +
-                                SellerZone.getProductById(Integer.parseInt(product.getText())).getGeneralFeature().getName());
-                        productText.setDisable(true);
-                        productVBox.getChildren().add(productText);
+                if (Validation.validateInteger(product.getText())) {
+                    try {
+                        getDataOutputStream().writeUTF("has auction");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(product.getText());
+                        getDataOutputStream().flush();
+                        if (getDataInputStream().readBoolean()) {
+                            alert.setContentText("This product has an auction.");
+                            alert.show();
+                        } else {
+                            getDataOutputStream().writeUTF("seller has product");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(product.getText());
+                            getDataOutputStream().flush();
+                            if (getDataInputStream().readBoolean()) {
+                                productsId.add(product.getText());
+                                TextField productText = createTextField("Product", 400);
+                                getDataOutputStream().writeUTF("get product name");
+                                getDataOutputStream().flush();
+                                getDataOutputStream().writeUTF(product.getText());
+                                getDataOutputStream().flush();
+                                productText.setText(product.getText() + ". " + getDataInputStream().readUTF());
+                                productText.setDisable(true);
+                                productVBox.getChildren().add(productText);
 
-                        Button removeProduct = createButton("Remove", 100);
-                        removeVBox.getChildren().add(removeProduct);
-                        removeProduct.setOnMouseClicked(ev -> {
-                            productsId.remove(productText.getText().substring(0, productText.getText().indexOf(".")));
-                            productVBox.getChildren().remove(productText);
-                            removeVBox.getChildren().remove(removeProduct);
-                        });
-
-                        product.clear();
+                                Button removeProduct = createButton("Remove", 100);
+                                removeVBox.getChildren().add(removeProduct);
+                                removeProduct.setOnMouseClicked(ev -> {
+                                    productsId.remove(productText.getText().substring(0, productText.getText().indexOf(".")));
+                                    productVBox.getChildren().remove(productText);
+                                    removeVBox.getChildren().remove(removeProduct);
+                                });
+                                product.clear();
+                            } else {
+                                alert.setContentText("You haven't this product.");
+                                alert.show();
+                            }
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
                     }
                 } else {
-                    alert.setContentText("You haven't this product.");
+                    alert.setContentText("invalid product ID.");
                     alert.show();
                 }
             });

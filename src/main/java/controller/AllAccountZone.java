@@ -1,25 +1,13 @@
 package controller;
 
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 import model.*;
-import view.*;
+import Client.view.*;
 
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AllAccountZone {
-    private static Account currentAccount = null;
-
-    public static Account getCurrentAccount() {
-        return currentAccount;
-    }
-
-    public static void setCurrentAccount(Account currentAccount) {
-        AllAccountZone.currentAccount = currentAccount;
-    }
 
     public static Date getCurrentDate() {
         Date UTCDate = new Date();
@@ -39,7 +27,7 @@ public class AllAccountZone {
     public static void setFilterCategoryFeature(String categoryName, String className) {
         HashMap<String, String> feature = new HashMap<>();
         if (!categoryName.equals("--------")) {
-            for (String specialFeature : Category.getCategoryByName(categoryName).getSpecialFeatures()) {
+            for (String specialFeature : getCategoryByName(categoryName).getSpecialFeatures()) {
                 feature.put(specialFeature, "");
             }
         }
@@ -49,21 +37,19 @@ public class AllAccountZone {
             AuctionScene.getFilterInfo().setFeature(feature);
     }
 
-    public static ArrayList<Product> getProductsInSortAndFiltered(String className) {
-        BuyerZone.setAuctionPrice();
-        List<Product> products =
-                getSortedProducts(getFilteredProduct(DataBase.getDataBase().getAllProducts(), className), className);
-        return new ArrayList<>(products);
+    public static ArrayList<Product> getProductsInSortAndFiltered(ArrayList<Product> products, String className) {
+        List<Product> productsOut =
+                getSortedProducts(getFilteredProduct(products, className), className);
+        return new ArrayList<>(productsOut);
     }
 
-    public static ArrayList<Product> getAuctionProductsInSortAndFiltered(String className) {
-        BuyerZone.setAuctionPrice();
-        List<Product> auctionProducts = DataBase.getDataBase().getAllProducts().stream()
+    public static ArrayList<Product> getAuctionProductsInSortAndFiltered(ArrayList<Product> products, String className) {
+        List<Product> auctionProducts = products.stream()
                 .filter(product ->
                         product.getGeneralFeature().getPrice() != product.getGeneralFeature().getAuctionPrice())
                 .collect(Collectors.toList());
-        List<Product> products = getSortedProducts(getFilteredProduct(auctionProducts, className), className);
-        return new ArrayList<>(products);
+        List<Product> productsOut = getSortedProducts(getFilteredProduct(auctionProducts, className), className);
+        return new ArrayList<>(productsOut);
     }
 
     private static List<Product> getFilteredProduct(List<Product> products, String className) {
@@ -120,33 +106,32 @@ public class AllAccountZone {
         }).collect(Collectors.toList());
     }
 
-    public static long viewUserBalance() {
-        Account account = AllAccountZone.getCurrentAccount();
+    public static long viewUserBalance(Account account) {
         if (account instanceof Buyer)
             return ((Buyer) account).getWallet();
         else
             return ((Seller) account).getWallet();
     }
 
-    public static ArrayList<String> getPersonalInfo() {
-        if (getCurrentAccount() instanceof Admin) {
-            Admin admin = (Admin) AllAccountZone.getCurrentAccount();
+    public static ArrayList<String> getPersonalInfo(Account account) {
+        if (account instanceof Admin) {
+            Admin admin = (Admin) account;
             return new ArrayList<>(Arrays.asList(admin.getFirstName(), admin.getLastName(), admin.getEmailAddress(),
                     admin.getPhoneNumber(), admin.getUsername(), admin.getPassword()));
-        } else if (getCurrentAccount() instanceof Seller) {
-            Seller seller = (Seller) AllAccountZone.getCurrentAccount();
+        } else if (account instanceof Seller) {
+            Seller seller = (Seller) account;
             return new ArrayList<>(Arrays.asList(seller.getFirstName(), seller.getLastName(), seller.getEmailAddress(),
                     seller.getPhoneNumber(), seller.getUsername(), seller.getPassword(), seller.getCompanyName(),
                     String.valueOf(seller.getWallet())));
         } else {
-            Buyer buyer = (Buyer) AllAccountZone.getCurrentAccount();
+            Buyer buyer = (Buyer) account;
             return new ArrayList<>(Arrays.asList(buyer.getFirstName(), buyer.getLastName(), buyer.getEmailAddress(),
                     buyer.getPhoneNumber(), buyer.getUsername(), buyer.getPassword(), String.valueOf(buyer.getWallet())));
         }
     }
 
-    public static void addProductToCart(int productId) {
-        ((Buyer) AllAccountZone.getCurrentAccount()).setCart(productId);
+    public static void addProductToCart(int productId, Account account) {
+        ((Buyer) account).setCart(productId);
     }
 
     public static String compareTwoProduct(int productId1, int productId2) {
@@ -165,13 +150,12 @@ public class AllAccountZone {
         }
     }
 
-    public static void createComment(String text, int productId) {
-        Buyer buyer = (Buyer) getCurrentAccount();
+    public static void createComment(String text, int productId, Account account) {
         Product product = SellerZone.getProductById(productId);
-        boolean hasBought = BuyerZone.hasUserBoughtProduct(productId);
-        Comment comment = new Comment(buyer.getUsername(), productId, text, "unseen", hasBought);
+        boolean hasBought = BuyerZone.hasUserBoughtProduct(productId, account);
+        Comment comment = new Comment(account.getUsername(), productId, text, "unseen", hasBought);
         product.getComments().add(comment);
-        new Request(buyer.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
+        new Request(account.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
     }
 
     public static String createAccount(ArrayList<String> info) {
@@ -211,54 +195,21 @@ public class AllAccountZone {
             if (info.get(0).equalsIgnoreCase("admin")) {
                 if (account instanceof Admin && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
-                        setCurrentAccount(account);
-                        Button button = new Button("Admin");
-                        button.setOnAction(e -> {
-                            MainScenes.getBorderPane().setLeft(AdminScene.getAdminRoot());
-                            MainScenes.getBorderPane().setCenter(AdminScene.getPersonalInfo());
-                        });
-                        button.setMinWidth(200);
-                        button.setAlignment(Pos.CENTER);
-                        button.getStyleClass().add("top-buttons");
-                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
-                        button.fire();
-                        return "Login successfully.";
+                        return "Login successfully admin.";
                     }
                     return "Wrong password.";
                 }
             } else if (info.get(0).equalsIgnoreCase("seller")) {
                 if (account instanceof Seller && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
-                        setCurrentAccount(account);
-                        Button button = new Button("Seller");
-                        button.setOnAction(e -> {
-                            MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot());
-                            MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
-                        });
-                        button.setMinWidth(200);
-                        button.setAlignment(Pos.CENTER);
-                        button.getStyleClass().add("top-buttons");
-                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
-                        button.fire();
-                        return "Login successfully.";
+                        return "Login successfully seller.";
                     }
                     return "Wrong password.";
                 }
             } else if (info.get(0).equalsIgnoreCase("buyer")) {
                 if (account instanceof Buyer && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
-                        setCurrentAccount(account);
-                        Button button = new Button("Buyer");
-                        button.setOnAction(e -> {
-                            MainScenes.getBorderPane().setLeft(BuyerScene.getBuyerRoot());
-                            MainScenes.getBorderPane().setCenter(BuyerScene.getPersonalInfo());
-                        });
-                        button.setMinWidth(200);
-                        button.setAlignment(Pos.CENTER);
-                        button.getStyleClass().add("top-buttons");
-                        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
-                        button.fire();
-                        return "Login successfully.";
+                        return "Login successfully buyer.";
                     }
                     return "Wrong password.";
                 }
@@ -275,31 +226,39 @@ public class AllAccountZone {
         return null;
     }
 
-    public static void editPersonalInfo(String field, String value) {
+    public static void editPersonalInfo(String field, String value, Account account) {
         if (field.equalsIgnoreCase("first name")) {
-            currentAccount.setFirstName(value);
+            account.setFirstName(value);
         } else if (field.equalsIgnoreCase("last name")) {
-            currentAccount.setLastName(value);
+            account.setLastName(value);
         } else if (field.equalsIgnoreCase("email")) {
-            currentAccount.setEmailAddress(value);
+            account.setEmailAddress(value);
         } else if (field.equalsIgnoreCase("phone Number")) {
-            currentAccount.setPhoneNumber(value);
+            account.setPhoneNumber(value);
         } else if (field.equalsIgnoreCase("password")) {
-            currentAccount.setPassword(value);
+            account.setPassword(value);
         } else if (field.equalsIgnoreCase("company")) {
-            ((Seller) currentAccount).setCompanyName(value);
+            ((Seller) account).setCompanyName(value);
         } else if (field.equalsIgnoreCase("wallet")) {
             try {
-                ((Seller) currentAccount).setWallet(Long.parseLong(value));
-            } catch (Exception ex) {
-                ((Buyer) currentAccount).setWallet(Long.parseLong(value));
+                ((Seller) account).setWallet(Long.parseLong(value));
+            } catch (ClassCastException ex) {
+                ((Buyer) account).setWallet(Long.parseLong(value));
             }
         }
     }
 
-    public static boolean canUserBuyOrComment() {
-        if (currentAccount == null) {
+    public static boolean canUserBuyOrComment(Account account) {
+        if (account == null) {
             return false;
-        } else return currentAccount instanceof Buyer;
+        } else return account instanceof Buyer;
+    }
+
+    public static Category getCategoryByName(String name) {
+        for (Category category : DataBase.getDataBase().getAllCategories()) {
+            if (category.getName().equalsIgnoreCase(name))
+                return category;
+        }
+        return null;
     }
 }
