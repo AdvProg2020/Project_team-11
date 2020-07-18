@@ -24,10 +24,10 @@ public class AllAccountZone {
         return categories;
     }
 
-    public static void setFilterCategoryFeature(String categoryName, String className) {
+    public static void setFilterCategoryFeature(String categoryName, ArrayList<String> features, String className) {
         HashMap<String, String> feature = new HashMap<>();
         if (!categoryName.equals("--------")) {
-            for (String specialFeature : getCategoryByName(categoryName).getSpecialFeatures()) {
+            for (String specialFeature : features) {
                 feature.put(specialFeature, "");
             }
         }

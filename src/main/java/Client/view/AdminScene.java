@@ -375,7 +375,7 @@ public class AdminScene {
                                 alert.setContentText("Already exist.");
                                 alert.show();
                             } else {
-                                getDataOutputStream().writeUTF("edit disccount");
+                                getDataOutputStream().writeUTF("edit discount");
                                 getDataOutputStream().flush();
                                 getDataOutputStream().writeUTF("add user");
                                 getDataOutputStream().flush();
@@ -590,7 +590,17 @@ public class AdminScene {
             ObservableList<Product> productSelected, allProducts;
             allProducts = tableView.getItems();
             productSelected = tableView.getSelectionModel().getSelectedItems();
-
+            for (Product product : productSelected) {
+                try {
+                    getDataOutputStream().writeUTF("remove product");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(product.getId());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
             productSelected.forEach(allProducts::removeAll);
         });
 
@@ -953,7 +963,7 @@ public class AdminScene {
 
                 finish.setOnMouseClicked(event -> {
                     try {
-                        getDataOutputStream().writeUTF("create discount");
+                        getDataOutputStream().writeUTF("create category");
                         getDataOutputStream().flush();
                         getDataOutputStream().writeUTF(name[0]);
                         getDataOutputStream().flush();

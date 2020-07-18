@@ -98,8 +98,8 @@ public class SellerZone {
         for (Category category : DataBase.getDataBase().getAllCategories()) {
             category.getProductList().remove(product);
         }
-        DataBase.getDataBase().getAllComments().removeIf(comment -> comment.getProductId() == product.getId());
-        DataBase.getDataBase().getAllRates().removeIf(rate -> rate.getProductId() == product.getId());
+        DataBase.getDataBase().getAllComments().removeIf(comment -> comment.getProductId() == productId);
+        DataBase.getDataBase().getAllRates().removeIf(rate -> rate.getProductId() == productId);
         DataBase.getDataBase().getAllProducts().remove(product);
     }
 

@@ -294,7 +294,9 @@ public class Server {
                             dataOutputStream.flush();
                             break;
                         case "price with auction":
-                            dataOutputStream.writeLong(BuyerZone.calculatePriceWithAuctions(currentAccount));
+                            String price = String.valueOf(BuyerZone.calculatePriceWithAuctions(currentAccount));
+                            System.out.println(price);
+                            dataOutputStream.writeUTF(price);
                             dataOutputStream.flush();
                             break;
                         case "check discount":
@@ -322,6 +324,8 @@ public class Server {
                             int amount = dataInputStream.readInt();
                             dataOutputStream.writeBoolean(BuyerZone
                                     .changeNumberOFProductInCart(productId, amount, currentAccount));
+                            dataOutputStream.flush();
+                            break;
                         case "remove product in cart":
                             BuyerZone.removeProductFromCart(currentAccount);
                             dataOutputStream.writeUTF("done");
@@ -357,6 +361,7 @@ public class Server {
                             dataOutputStream.flush();
                             break;
                         case "remove seller product":
+                            //TODO : request
                             productId = dataInputStream.readInt();
                             SellerZone.removeProduct(productId);
                             dataOutputStream.writeUTF("done");
@@ -386,7 +391,7 @@ public class Server {
                         case "has auction":
                             productId = Integer.parseInt(dataInputStream.readUTF());
                             dataOutputStream.writeBoolean(SellerZone.hasProductAuction(productId));
-                            dataInputStream.readFloat();
+                            dataOutputStream.flush();
                             break;
                         case "seller has product":
                             productId = Integer.parseInt(dataInputStream.readUTF());
@@ -397,6 +402,12 @@ public class Server {
                             auctionId = Integer.parseInt(dataInputStream.readUTF());
                             productId = Integer.parseInt(dataInputStream.readUTF());
                             SellerZone.addProductToAuction(auctionId, productId, currentAccount);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "remove product":
+                            productId = dataInputStream.readInt();
+                            SellerZone.removeProduct(productId);
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;

@@ -19,7 +19,7 @@ public class DataBase {
         dataBase = this;
     }
 
-    public static DataBase getDataBase() {
+    public synchronized static DataBase getDataBase() {
         return dataBase;
     }
 

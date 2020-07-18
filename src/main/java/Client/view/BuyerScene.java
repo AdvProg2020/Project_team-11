@@ -145,11 +145,11 @@ public class BuyerScene {
         vBox.setAlignment(Pos.CENTER);
 
         Label priceLabel = createLabel("Total Price", 50);
-        TextField priceText = createTextField("Price", 50);
+        TextField priceText = createTextField("Price", 100);
         try {
             getDataOutputStream().writeUTF("price with auction");
             getDataOutputStream().flush();
-            priceText.setText(String.valueOf(getDataInputStream().readLong()));
+            priceText.setText(getDataInputStream().readUTF());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -284,7 +284,7 @@ public class BuyerScene {
                 try {
                     getDataOutputStream().writeUTF("price with auction");
                     getDataOutputStream().flush();
-                    priceText.setText(String.valueOf(getDataInputStream().readLong()));
+                    priceText.setText(getDataInputStream().readUTF());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -305,13 +305,15 @@ public class BuyerScene {
                     getDataOutputStream().flush();
                     getDataOutputStream().writeInt(Integer.parseInt(hyperlink.getText()));
                     getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(-1);
+                    getDataOutputStream().writeInt(1);
                     getDataOutputStream().flush();
                     if (getDataInputStream().readBoolean()) {
                         textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
                         getDataOutputStream().writeUTF("price with auction");
                         getDataOutputStream().flush();
-                        priceText.setText(String.valueOf(getDataInputStream().readLong()));
+                        String totalPrice = getDataInputStream().readUTF();
+                        System.out.println(totalPrice);
+                        priceText.setText(totalPrice);
                     } else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setContentText("There isn't any more of this product.");
@@ -337,7 +339,7 @@ public class BuyerScene {
         try {
             getDataOutputStream().writeUTF("price with auction");
             getDataOutputStream().flush();
-            totalPrice = getDataInputStream().readLong();
+            totalPrice = Long.parseLong(getDataInputStream().readUTF());
             getDataOutputStream().writeUTF("buyer price");
             getDataOutputStream().flush();
             priceWithDiscount = getDataInputStream().readLong();

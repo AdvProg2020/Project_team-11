@@ -190,7 +190,7 @@ public class SellerScene {
             getDataOutputStream().writeUTF("get seller products");
             getDataOutputStream().flush();
             String data = getDataInputStream().readUTF();
-            Type foundListType = new TypeToken<HashMap<String, String>>() {}.getType();
+            Type foundListType = new TypeToken<HashMap<Integer, String>>() {}.getType();
             products = gson.fromJson(data, foundListType);
         } catch (IOException e) {
             e.printStackTrace();
@@ -381,12 +381,10 @@ public class SellerScene {
                 });
 
                 imageView.setOnDragDropped(event -> {
-                    System.out.println("droped.");
                     List<File> files = event.getDragboard().getFiles();
                     try {
                         finalImageView.setImage(new Image(new FileInputStream(files.get(0))));
                         hasImage[0] = true;
-                        System.out.println("done");
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -779,7 +777,7 @@ public class SellerScene {
                                 TextField productText = createTextField("Product", 400);
                                 getDataOutputStream().writeUTF("get product name");
                                 getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(product.getText());
+                                getDataOutputStream().writeInt(Integer.parseInt(product.getText()));
                                 getDataOutputStream().flush();
                                 productText.setText(product.getText() + ". " + getDataInputStream().readUTF());
                                 productText.setDisable(true);

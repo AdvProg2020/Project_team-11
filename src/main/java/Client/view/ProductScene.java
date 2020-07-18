@@ -139,7 +139,6 @@ public class ProductScene {
 
         categoryFilter.setOnAction(e -> {
             filterInfo.setCategory(categoryFilter.getValue());
-            AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), "products");
             ArrayList<String> features = new ArrayList<>();
             try {
                 getDataOutputStream().writeUTF("get category feature");
@@ -149,6 +148,7 @@ public class ProductScene {
                 String data = getDataInputStream().readUTF();
                 foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
                 features = gson.fromJson(data, foundListType[0]);
+                AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), features, "products");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

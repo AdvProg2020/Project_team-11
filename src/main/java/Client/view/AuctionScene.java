@@ -42,7 +42,7 @@ public class AuctionScene {
         productsGridPane.setHgap(20);
         productsGridPane.setVgap(20);
         setProducts(productsGridPane,
-                new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
 
         ComboBox<String> sort = new ComboBox<>();
         sort.getItems().addAll("Price(Ascending)", "Price(Descending)", "Score", "Date");
@@ -52,7 +52,7 @@ public class AuctionScene {
             AuctionScene.sort = sort.getValue().toLowerCase();
             productsGridPane.getChildren().clear();
             setProducts(productsGridPane,
-                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
         });
 
         TextField nameFilter = createTextField("Product Name / Company / Seller Name", 500);
@@ -60,7 +60,7 @@ public class AuctionScene {
             filterInfo.setSearchBar(newText);
             productsGridPane.getChildren().clear();
             setProducts(productsGridPane,
-                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
         });
 
         HBox hBox = new HBox(150, sort, nameFilter);
@@ -73,12 +73,12 @@ public class AuctionScene {
                 filterInfo.setMinimumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumPrice(0);
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             }
         });
         TextField maxPrice = createTextField("Maximum Price", 200);
@@ -87,12 +87,12 @@ public class AuctionScene {
                 filterInfo.setMaximumPrice(Long.parseLong(newText));
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMaximumPrice(Long.MAX_VALUE);
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             }
         });
         TextField stock = createTextField("Minimum Stock", 200);
@@ -101,12 +101,12 @@ public class AuctionScene {
                 filterInfo.setMinimumStockStatus(Integer.parseInt(newText));
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             } else if (newText.isEmpty()) {
                 filterInfo.setMinimumStockStatus(0);
                 productsGridPane.getChildren().clear();
                 setProducts(productsGridPane,
-                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                        new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
             }
         });
 
@@ -131,7 +131,6 @@ public class AuctionScene {
 
         categoryFilter.setOnAction(e -> {
             filterInfo.setCategory(categoryFilter.getValue());
-            AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), "products");
             ArrayList<String> features = new ArrayList<>();
             try {
                 getDataOutputStream().writeUTF("get category feature");
@@ -141,6 +140,7 @@ public class AuctionScene {
                 String data = getDataInputStream().readUTF();
                 foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
                 features = gson.fromJson(data, foundListType[0]);
+                AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), features, "auction");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -153,7 +153,7 @@ public class AuctionScene {
                     filterInfo.getFeature().replace(textField.getPromptText(), newText);
                     productsGridPane.getChildren().clear();
                     setProducts(productsGridPane,
-                            new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                            new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
                 });
             }
             try {
@@ -162,7 +162,7 @@ public class AuctionScene {
             filterVBox.getChildren().add(filterFeature);
             productsGridPane.getChildren().clear();
             setProducts(productsGridPane,
-                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "products")));
+                    new ArrayList<>(AllAccountZone.getAuctionProductsInSortAndFiltered(getProducts(), "auction")));
         });
 
         BorderPane borderPane = new BorderPane();

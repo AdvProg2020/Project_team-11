@@ -238,6 +238,9 @@ public class Actions {
                 getDataOutputStream().writeUTF(info.get(0));
                 getDataOutputStream().flush();
                 if (getDataInputStream().readBoolean()) {
+                    alert.setContentText("This code is already occupied.");
+                    alert.show();
+                } else {
                     Date start = null, end = null;
                     try {
                         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -254,9 +257,6 @@ public class Actions {
                         info.set(2, String.valueOf(end.getTime()));
                         return true;
                     }
-                } else {
-                    alert.setContentText("This code is already occupied.");
-                    alert.show();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
