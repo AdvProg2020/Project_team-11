@@ -199,7 +199,6 @@ public class MainScenes {
         TextField email = createTextField("Email", 300);
         TextField phoneNumber = createTextField("Phone Number", 300);
         TextField username = createTextField("Username", 300);
-        TextField balance = createTextField("Balance", 300);
         TextField company = createTextField("Company", 300);
 
         PasswordField password = new PasswordField();
@@ -213,7 +212,7 @@ public class MainScenes {
         register.setOnMouseClicked(e -> {
                 ArrayList<String> info = new ArrayList<>(Arrays.asList(type.getValue().toLowerCase(), firstName.getText(),
                         lastName.getText(), email.getText(), phoneNumber.getText(), username.getText(), password.getText(),
-                        balance.getText(), company.getText()));
+                        company.getText()));
                 if (Actions.register(info)) {
                     borderPane.setCenter(ProductScene.getProductsRoot());
                 }
@@ -222,7 +221,7 @@ public class MainScenes {
         Button back = createButton("Back", 150);
         back.setOnMouseClicked(e -> borderPane.setCenter(getSignInRoot()));
 
-        VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, balance, register, back);
+        VBox vBox = new VBox(25, type, firstName, lastName, email, phoneNumber, username, password, register, back);
         vBox.setAlignment(Pos.CENTER);
 
         ArrayList<TextField> addedTextFields = new ArrayList<>();

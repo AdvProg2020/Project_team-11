@@ -1,7 +1,10 @@
 package controller;
 
+import Server.Server;
 import model.*;
 
+import java.io.*;
+import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,8 +79,21 @@ public class AdminZone {
     private static void acceptRequestCreateSellerAccount(Request request) {
         String info = request.getDescription();
         ArrayList<String> splitInfo = new ArrayList<>(Arrays.asList(info.split(",")));
+        long accountId = 0;
+        try {
+            Socket socket = new Socket("127.0.0.1", Server.getBankServerPort());
+            DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            dataOutputStream.writeUTF("create_account " + splitInfo.get(0) + " " + splitInfo.get(1) + " " +
+                    splitInfo.get(4) + " " + splitInfo.get(5) + " " + splitInfo.get(5));
+            dataOutputStream.flush();
+            System.out.println(dataInputStream.readUTF()); // TODO : debug mode
+            accountId = Long.parseLong(dataInputStream.readUTF());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         new Seller(splitInfo.get(0), splitInfo.get(1), splitInfo.get(2), splitInfo.get(3),
-                splitInfo.get(4), splitInfo.get(5), splitInfo.get(6),Long.parseLong(splitInfo.get(7)));
+                splitInfo.get(4), splitInfo.get(5), splitInfo.get(6), accountId);
     }
 
     private static void acceptRequestAddProduct(Request request) {

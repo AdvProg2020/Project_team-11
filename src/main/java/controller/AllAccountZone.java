@@ -1,8 +1,11 @@
 package controller;
 
+import Server.Server;
 import model.*;
 import Client.view.*;
 
+import java.io.*;
+import java.net.Socket;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,13 +170,24 @@ public class AllAccountZone {
             for (int i = 1; i <= 6; i++) {
                 requestDescription.append(info.get(i)).append(",");
             }
-            requestDescription.append(info.get(8)).append(",");
             requestDescription.append(info.get(7)).append(",");
             new Request(info.get(5), "create seller account", requestDescription.toString(), "unseen");
             return "Request sent. Wait for Admin agreement.";
         } else {
-            new Buyer(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6),
-                    Long.parseLong(info.get(7)));
+            long accountId = 0;
+            try {
+                Socket socket = new Socket("127.0.0.1", Server.getBankServerPort());
+                DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+                dataOutputStream.writeUTF("create_account " + info.get(1) + " " + info.get(2) + " " +
+                        info.get(5) + " " + info.get(6) + " " + info.get(6));
+                dataOutputStream.flush();
+                System.out.println(dataInputStream.readUTF()); // TODO : debug mode
+                accountId = Long.parseLong(dataInputStream.readUTF());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new Buyer(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6), accountId);
         }
         return "Successfully created.";
     }

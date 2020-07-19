@@ -5,15 +5,17 @@ import java.util.HashMap;
 
 public class Buyer extends Account {
     private long wallet;
+    private long bankAccountId;
     private final HashMap<String, Integer> discountCodes;//discount code, number
     private final ArrayList<BuyLog> buyHistory;
     private final HashMap<Integer, Integer> cart;// product ID & number
     private Discount activeDiscount;
 
     public Buyer(String firstName, String lastName, String emailAddress, String phoneNumber, String username,
-                 String password, long wallet) {
+                 String password, long bankAccountId) {
         super(firstName, lastName, emailAddress, phoneNumber, username, password);
-        this.wallet = wallet;
+        this.wallet = 0;
+        this.bankAccountId = bankAccountId;
         this.discountCodes = new HashMap<>();
         this.buyHistory = new ArrayList<>();
         this.cart = new HashMap<>();
@@ -21,6 +23,10 @@ public class Buyer extends Account {
 
     public long getWallet() {
         return wallet;
+    }
+
+    public long getBankAccountId() {
+        return bankAccountId;
     }
 
     public HashMap<String, Integer> getDiscountCodes() {

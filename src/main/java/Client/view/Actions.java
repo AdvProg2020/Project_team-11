@@ -50,10 +50,7 @@ public class Actions {
         } else if (!Validation.validateNames(info.get(6))) {
             alert.setContentText("Enter password.");
             alert.show();
-        } else if (!info.get(0).equals("admin") && !Validation.validateLong(info.get(7))) {
-            alert.setContentText("Balance format is not valid.");
-            alert.show();
-        } else if (info.get(0).equals("seller") && !Validation.validateNames(info.get(8))) {
+        } else if (info.get(0).equals("seller") && !Validation.validateNames(info.get(7))) {
             alert.setContentText("Enter Company name.");
             alert.show();
         } else {
