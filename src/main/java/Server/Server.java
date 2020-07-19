@@ -15,7 +15,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 public class Server {
-    private static final int serverPort = 8888;
+    private static final int storeServerPort = 8888;
+    private static final int bankServerPort = 9999;
+
+    public static int getBankServerPort() {
+        return bankServerPort;
+    }
 
     static class AppHandler extends Thread {
         private DataOutputStream dataOutputStream;
@@ -411,6 +416,25 @@ public class Server {
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
+                        case "set bank operation":
+                            int commission = Integer.parseInt(dataInputStream.readUTF());
+                            long minMoney = Long.parseLong(dataInputStream.readUTF());
+                            String password = dataInputStream.readUTF();
+                            new BankOperation(commission, minMoney, password);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "get bank operations":
+                            dataOutputStream.writeUTF(gson.toJson(DataBase.getDataBase().getBankOperation()));
+                            dataOutputStream.flush();
+                            break;
+                        case "edit bank operation":
+                            field = dataInputStream.readUTF();
+                            newValue = dataInputStream.readUTF();
+                            AdminZone.editBankOperation(field, newValue);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
                         case "exit":
                             FileProcess.writeDataBaseOnFile();
                             dataOutputStream.writeUTF("done");
@@ -431,7 +455,7 @@ public class Server {
         }
         setStaticValues();
         try {
-            ServerSocket serverSocket = new ServerSocket(serverPort);
+            ServerSocket serverSocket = new ServerSocket(storeServerPort);
             while (true) {
                 Socket socket = serverSocket.accept();
                 DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));

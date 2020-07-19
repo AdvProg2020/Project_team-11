@@ -11,8 +11,12 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ClientHandler.getDataOutputStream;
 
 public class MainScenes {
     private static Button signInOrOut;
@@ -62,25 +66,47 @@ public class MainScenes {
         TextField email = createTextField("Email", 300);
         TextField phoneNumber = createTextField("Phone Number", 300);
         TextField username = createTextField("Username", 300);
+        TextField commission = createTextField("Commission", 300);
+        TextField minimumMoney = createTextField("Minimum Money", 300);
 
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
         password.setMaxWidth(300);
         password.setAlignment(Pos.CENTER);
+        PasswordField bankPassword = new PasswordField();
+        bankPassword.setPromptText("Bank Password");
+        bankPassword.setMaxWidth(300);
+        bankPassword.setAlignment(Pos.CENTER);
 
         Button register = new Button("Create Account");
         register.setAlignment(Pos.CENTER);
         register.setOnMouseClicked(e -> {
-            ArrayList<String> info = new ArrayList(Arrays.asList("admin",
-                    firstName.getText(), lastName.getText(), email.getText(),
-                    phoneNumber.getText(), username.getText(), password.getText()));
-            if (Actions.register(info)) {
-                ClientHandler.getStage().getScene().setRoot(getMainMenuScene());
-                ClientHandler.getStage().setMaximized(true);
+            if (Actions.checkBankInfo(commission.getText(), minimumMoney.getText(), bankPassword.getText())) {
+                ArrayList<String> info = new ArrayList(Arrays.asList("admin",
+                        firstName.getText(), lastName.getText(), email.getText(),
+                        phoneNumber.getText(), username.getText(), password.getText()));
+                if (Actions.register(info)) {
+                    try {
+                        getDataOutputStream().writeUTF("set bank operation");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(commission.getText());
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(minimumMoney.getText());
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(bankPassword.getText());
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    ClientHandler.getStage().getScene().setRoot(getMainMenuScene());
+                    ClientHandler.getStage().setMaximized(true);
+                }
             }
         });
 
-        VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, register);
+        VBox vBox = new VBox(25, firstName, lastName, email, phoneNumber, username, password, bankPassword,
+                commission, minimumMoney, register);
         vBox.setAlignment(Pos.CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);

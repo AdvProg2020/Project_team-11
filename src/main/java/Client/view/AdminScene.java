@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.BankOperation;
 import model.Request;
 import Client.view.tableViewData.Account;
 import Client.view.tableViewData.Product;
@@ -58,7 +59,12 @@ public class AdminScene {
         categories.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageCategories()));
         categories.getStyleClass().add("account-button");
 
-        VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories);
+        Button bankServices = createButton("Bank Services", 300);
+        bankServices.setMinHeight(50);
+        bankServices.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageBankServices()));
+        bankServices.getStyleClass().add("account-button");
+
+        VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories, bankServices);
         vBox.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
@@ -988,6 +994,59 @@ public class AdminScene {
         gridPane.addColumn(0, nameVBox);
         gridPane.addColumn(1, removeVBox);
         gridPane.add(add, 1, removeVBox.getChildren().size());
+
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent manageBankServices() {
+        Label commissionLabel = createLabel("Commission : ", 150);
+        Label minMoneyLabel = createLabel("Minimum User Money : ", 150);
+        Label passwordLabel = createLabel("Password : ", 150);
+        Label idLabel = createLabel("Account ID : ", 150);
+
+        BankOperation bankOperation = null;
+        try {
+            getDataOutputStream().writeUTF("get bank operations");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<BankOperation>() {}.getType();
+            bankOperation = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        TextField commissionText = createTextField("Commission", 200);
+        commissionText.setText(String.valueOf(bankOperation.getCommission()));
+        commissionText.setDisable(true);
+
+        TextField minMoneyText = createTextField("Minimum Money", 200);
+        minMoneyText.setText(String.valueOf(bankOperation.getMinimumMoney()));
+        minMoneyText.setDisable(true);
+
+        TextField passwordText = createTextField("Password", 200);
+        passwordText.setText(String.valueOf(bankOperation.getPassword()));
+        passwordText.setDisable(true);
+
+        TextField idText = createTextField("Account ID", 200);
+        idText.setText(String.valueOf(bankOperation.getAccountId()));
+        idText.setDisable(true);
+
+        Button commissionButton = createButton("Edit", 100);
+        commissionButton.setOnMouseClicked(e -> Actions.editBankInfo(commissionButton, commissionText));
+        Button minMoneyButton = createButton("Edit", 100);
+        minMoneyButton.setOnMouseClicked(e -> Actions.editBankInfo(minMoneyButton, minMoneyText));
+
+        GridPane gridPane = new GridPane();
+        gridPane.addColumn(0, commissionLabel, minMoneyLabel, passwordLabel, idLabel);
+        gridPane.addColumn(1, commissionText, minMoneyText, passwordText, idText);
+        gridPane.addColumn(2, commissionButton, minMoneyButton);
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(20);
+        gridPane.setVgap(20);
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
         scrollPane.setFitToWidth(true);

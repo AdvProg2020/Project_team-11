@@ -13,6 +13,7 @@ public class DataBase {
     private ArrayList<Product> allProducts = new ArrayList<>();
     private ArrayList<Rate> allRates = new ArrayList<>();
     private ArrayList<Request> allRequests = new ArrayList<>();
+    private BankOperation bankOperation;
     private boolean hasAdminAccountCreated = false;
 
     public DataBase() {
@@ -105,6 +106,10 @@ public class DataBase {
         this.allRequests.add(request);
     }
 
+    public void setBankOperation(BankOperation bankOperation) {
+        this.bankOperation = bankOperation;
+    }
+
     //getter
     public ArrayList<Account> getAllAccounts() {
         return allAccounts;
@@ -140,5 +145,9 @@ public class DataBase {
 
     public ArrayList<Request> getAllRequests() {
         return allRequests;
+    }
+
+    public BankOperation getBankOperation() {
+        return bankOperation;
     }
 }

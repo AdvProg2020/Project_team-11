@@ -113,6 +113,12 @@ public class FileProcess {
         ArrayList<Request> requests = gson.fromJson(data, foundListType);
         DataBase.getDataBase().setAllRequests(requests);
         scanner.close();
+        scanner = FileProcess.openFileToRead("resources\\bank operation.json");
+        data = scanner.nextLine();
+        foundListType = new TypeToken<BankOperation>(){}.getType();
+        BankOperation bankOperation = gson.fromJson(data, foundListType);
+        DataBase.getDataBase().setBankOperation(bankOperation);
+        scanner.close();
 
         scanner = FileProcess.openFileToRead("resources\\has admin.json");
         boolean hasAdmin = Boolean.parseBoolean(scanner.nextLine());
@@ -176,6 +182,9 @@ public class FileProcess {
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\requests.json");
         formatter.format(gson.toJson(DataBase.getDataBase().getAllRequests()));
+        formatter.close();
+        formatter = FileProcess.openFileToWrite("resources\\bank operation.json");
+        formatter.format(gson.toJson(DataBase.getDataBase().getBankOperation()));
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\has admin.json");
         formatter.format(gson.toJson(DataBase.getDataBase().getHasAdminAccountCreated()));

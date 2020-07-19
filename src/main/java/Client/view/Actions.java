@@ -679,4 +679,58 @@ public class Actions {
         }
         return false;
     }
+
+    public static boolean checkBankInfo(String commission, String minimumMoney, String bankPassword) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validatePercent(commission)) {
+            alert.setContentText("Enter a percent as commission.");
+            alert.show();
+        } else if (!Validation.validateLong(minimumMoney)) {
+            alert.setContentText("Minimum money format is not valid.");
+            alert.show();
+        } else if (!Validation.validateNames(bankPassword)) {
+            alert.setContentText("Enter Bank Password.");
+            alert.show();
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    public static void editBankInfo(Button button, TextField textField) {
+        button.setText("Save");
+        textField.setDisable(false);
+        button.setOnMouseClicked(event -> {
+            boolean isValid = false;
+            switch (textField.getPromptText()) {
+                case "Commission":
+                    isValid = Validation.validatePercent(textField.getText());
+                    break;
+                case "Minimum Money":
+                    isValid = Validation.validateLong(textField.getText());
+            }
+            if (isValid) {
+                button.setText("Edit");
+                textField.setDisable(true);
+
+                try {
+                    getDataOutputStream().writeUTF("edit bank operation");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getPromptText());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                button.setOnMouseClicked(e -> editPersonalInfo(button, textField));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Invalid format.");
+                alert.show();
+            }
+        });
+    }
 }

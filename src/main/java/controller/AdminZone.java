@@ -432,4 +432,15 @@ public class AdminZone {
             AdminZone.renameFeatureOfCategory(category, lastFeature, value);
         }
     }
+
+    public static void editBankOperation(String field, String newValue) {
+        switch (field) {
+            case "Commission":
+                DataBase.getDataBase().getBankOperation().setCommission(Integer.parseInt(newValue));
+                break;
+            case "Minimum Money":
+                DataBase.getDataBase().getBankOperation().setMinimumMoney(Long.parseLong(newValue));
+                break;
+        }
+    }
 }
