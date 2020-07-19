@@ -1,6 +1,6 @@
 package controller;
 
-import Server.Server;
+import server.Server;
 import model.*;
 import Client.view.*;
 
@@ -184,6 +184,15 @@ public class AllAccountZone {
                 dataOutputStream.flush();
                 System.out.println(dataInputStream.readUTF()); // TODO : debug mode
                 accountId = Long.parseLong(dataInputStream.readUTF());
+                dataOutputStream.writeUTF("get_token " + info.get(5) + " " + info.get(6));
+                dataOutputStream.flush();
+                String token = dataInputStream.readUTF();
+                dataOutputStream.writeUTF("create_receipt " + token + " deposit 100000000 -1 " + accountId);
+                dataOutputStream.flush();
+                String id = dataInputStream.readUTF();
+                dataOutputStream.writeUTF("pay " + id);
+                dataOutputStream.flush();
+                dataInputStream.readUTF();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -253,12 +262,6 @@ public class AllAccountZone {
             account.setPassword(value);
         } else if (field.equalsIgnoreCase("company")) {
             ((Seller) account).setCompanyName(value);
-        } else if (field.equalsIgnoreCase("wallet")) {
-            try {
-                ((Seller) account).setWallet(Long.parseLong(value));
-            } catch (ClassCastException ex) {
-                ((Buyer) account).setWallet(Long.parseLong(value));
-            }
         }
     }
 

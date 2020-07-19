@@ -3,6 +3,7 @@ package Client.view;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -67,7 +68,7 @@ public class BuyerScene {
         Label phoneNumberLabel = createLabel("Phone Number : ", 150);
         Label usernameLabel = createLabel("Username : ", 150);
         Label passwordLabel = createLabel("Password : ", 150);
-        Label walletLabel = createLabel("Balance : ", 150);
+        Label walletLabel = createLabel("Wallet : ", 150);
 
         ArrayList<String> personalInfo = new ArrayList<>();
         try {
@@ -118,8 +119,9 @@ public class BuyerScene {
         phoneNumberButton.setOnMouseClicked(e -> Actions.editPersonalInfo(phoneNumberButton, phoneNumberText));
         Button passwordButton = createButton("Edit", 100);
         passwordButton.setOnMouseClicked(e -> Actions.editPersonalInfo(passwordButton, passwordText));
-        Button walletButton = createButton("Edit", 100);
-        walletButton.setOnMouseClicked(e -> Actions.editPersonalInfo(walletButton, walletText));
+        Button charge = createButton("Charge", 100);
+        charge.setOnMouseClicked(e -> MainScenes.getBorderPane()
+                .setCenter(chargeWallet(Long.parseLong(walletText.getText()))));
 
         GridPane gridPane = new GridPane();
         gridPane.addColumn(0, firstNameLabel, lastNameLabel, emailLabel, phoneNumberLabel, usernameLabel,
@@ -128,12 +130,93 @@ public class BuyerScene {
                 walletText);
         gridPane.addColumn(2, firstNameButton, lastNameButton, emailButton, phoneNumberButton);
         gridPane.add(passwordButton, 2, 5);
-        gridPane.add(walletButton, 2, 6);
+        gridPane.add(charge, 2, 6);
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
         gridPane.setVgap(20);
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent chargeWallet(long wallet) {
+        Label info = createLabel("Enter the amount of money you want to charge the wallet.", 300);
+        TextField amount = createTextField("Amount", 200);
+        Button next = createButton("next", 200);
+        Button back = createButton("Back", 200);
+
+        back.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
+
+        next.setOnMouseClicked(e -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            if (Validation.validateLong(amount.getText())) {
+                int receiptId = 0;
+                try {
+                    getDataOutputStream().writeUTF("create charge receipt");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(amount.getText());
+                    getDataOutputStream().flush();
+                    receiptId = Integer.parseInt(getDataInputStream().readUTF());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                Label currentWallet = createLabel("Your current money in wallet : " + wallet + "$", 300);
+                Label chargeInfo = createLabel("Money to add your wallet : " + amount.getText() + "$", 300);
+                Label warning = createLabel("WARNING : You can't withdraw the money after charge.", 300);
+                Button charge = createButton("Charge", 150);
+                Button backToAmount = createButton("Back", 200);
+
+                backToAmount.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(chargeWallet(wallet)));
+
+                int finalReceiptId = receiptId;
+                charge.setOnMouseClicked(event -> {
+                    try {
+                        getDataOutputStream().writeUTF("pay receipt");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeInt(finalReceiptId);
+                        getDataOutputStream().flush();
+                        if (getDataInputStream().readUTF().startsWith("done")) {
+                            getDataOutputStream().writeUTF("increase money");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(amount.getText());
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                            alert.setAlertType(Alert.AlertType.INFORMATION);
+                            alert.setContentText("charge successfully.");
+                            MainScenes.getBorderPane().setCenter(getPersonalInfo());
+                        } else {
+                            alert.setContentText("You don't have enough money.");
+                        }
+                        alert.show();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+                VBox vBox = new VBox(20);
+                vBox.setAlignment(Pos.CENTER);
+                vBox.getChildren().addAll(currentWallet, chargeInfo, warning, charge, backToAmount);
+
+                ScrollPane scrollPane = new ScrollPane(vBox);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                MainScenes.getBorderPane().setCenter(scrollPane);
+            } else {
+                alert.setContentText("amount format is not valid.");
+                alert.show();
+            }
+        });
+
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(info, amount, next, back);
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 

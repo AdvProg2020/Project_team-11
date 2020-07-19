@@ -1,6 +1,6 @@
 package controller;
 
-import Server.Server;
+import server.Server;
 import model.*;
 
 import java.io.*;

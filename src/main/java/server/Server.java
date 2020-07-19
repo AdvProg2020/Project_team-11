@@ -1,4 +1,4 @@
-package Server;
+package server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,11 +26,19 @@ public class Server {
         private DataOutputStream dataOutputStream;
         private DataInputStream dataInputStream;
         private Account currentAccount;
+        private DataOutputStream bankDataOutputStream;
+        private DataInputStream bankDataInputStream;
+        private String bankToken;
 
-        public AppHandler(DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
+        public AppHandler(DataOutputStream dataOutputStream, DataInputStream dataInputStream) throws IOException {
             this.dataOutputStream = dataOutputStream;
             this.dataInputStream = dataInputStream;
             this.currentAccount = null;
+            this.bankToken = "";
+            Socket socket = new Socket("127.0.0.1", bankServerPort);
+            this.bankDataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            this.bankDataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            System.out.println(bankDataInputStream.readUTF());
         }
 
         @Override
@@ -432,6 +440,50 @@ public class Server {
                             field = dataInputStream.readUTF();
                             newValue = dataInputStream.readUTF();
                             AdminZone.editBankOperation(field, newValue);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "create charge receipt":
+                            long money = Long.parseLong(dataInputStream.readUTF());
+                            if (bankToken.isEmpty()) {
+                                bankDataOutputStream.writeUTF("get_token " + currentAccount.getUsername() + " " +
+                                        currentAccount.getPassword());
+                                bankDataOutputStream.flush();
+                                bankToken = bankDataInputStream.readUTF().trim();
+                            }
+                            bankDataOutputStream.writeUTF("create_receipt " + bankToken + " move " +
+                                    money + " " + ((Buyer) currentAccount).getBankAccountId() + " " +
+                                    DataBase.getDataBase().getBankOperation().getAccountId());
+                            bankDataOutputStream.flush();
+                            result = bankDataInputStream.readUTF();
+                            if (result.equals("token expired")) {
+                                bankDataOutputStream.writeUTF("get_token " + currentAccount.getUsername() + " " +
+                                        currentAccount.getPassword());
+                                bankDataOutputStream.flush();
+                                bankToken = bankDataInputStream.readUTF().trim();
+                                bankDataOutputStream.writeUTF("create_receipt " + bankToken + " move " +
+                                        money + " " + ((Buyer) currentAccount).getBankAccountId() + " " +
+                                        DataBase.getDataBase().getBankOperation().getAccountId());
+                                bankDataOutputStream.flush();
+                                result = bankDataInputStream.readUTF();
+                            }
+                            dataOutputStream.writeUTF(result);
+                            dataOutputStream.flush();
+                            break;
+                        case "pay receipt":
+                            int receiptId = dataInputStream.readInt();
+                            bankDataOutputStream.writeUTF("pay " + receiptId);
+                            bankDataOutputStream.flush();
+                            dataOutputStream.writeUTF(bankDataInputStream.readUTF());
+                            dataOutputStream.flush();
+                            break;
+                        case "increase money":
+                            money = Long.parseLong(dataInputStream.readUTF());
+                            if (currentAccount instanceof Buyer) {
+                                ((Buyer) currentAccount).setWallet(((Buyer) currentAccount).getWallet() + money);
+                            } else {
+                                ((Seller) currentAccount).setWallet(((Seller) currentAccount).getWallet() + money);
+                            }
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;

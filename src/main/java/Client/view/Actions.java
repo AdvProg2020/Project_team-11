@@ -176,7 +176,6 @@ public class Actions {
                     isValid = Validation.validateEmail(textField.getText());
                     break;
                 case "Phone Number":
-                case "Wallet":
                     isValid = Validation.validateLong(textField.getText());
                     break;
             }

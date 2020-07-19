@@ -1,6 +1,6 @@
 package model;
 
-import Server.Server;
+import server.Server;
 
 import java.io.*;
 import java.net.Socket;
