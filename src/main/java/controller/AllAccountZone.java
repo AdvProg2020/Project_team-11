@@ -278,4 +278,17 @@ public class AllAccountZone {
         }
         return null;
     }
+
+    public static Account getAccountByBankId(long id) {
+        for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            if (account instanceof Buyer) {
+                if (((Buyer) account).getBankAccountId() == id)
+                    return account;
+            } else if (account instanceof Seller) {
+                if (((Seller) account).getBankAccountId() == id)
+                    return account;
+            }
+        }
+        return null;
+    }
 }

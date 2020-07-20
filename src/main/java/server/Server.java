@@ -487,6 +487,59 @@ public class Server {
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
+                        case "create withdraw receipt":
+                            money = dataInputStream.readLong();
+                            long accountId = dataInputStream.readLong();
+                            if (bankToken.isEmpty()) {
+                                bankDataOutputStream.writeUTF("get_token admin " +
+                                        DataBase.getDataBase().getBankOperation().getPassword());
+                                bankDataOutputStream.flush();
+                                bankToken = bankDataInputStream.readUTF().trim();
+                            }
+                            bankDataOutputStream.writeUTF("create_receipt " + bankToken + " move " + money +
+                                    " " + DataBase.getDataBase().getBankOperation().getAccountId() + " " + accountId);
+                            bankDataOutputStream.flush();
+                            result = bankDataInputStream.readUTF();
+                            if (result.equals("token expired")) {
+                                bankDataOutputStream.writeUTF("get_token admin " +
+                                        DataBase.getDataBase().getBankOperation().getPassword());
+                                bankDataOutputStream.flush();
+                                bankToken = bankDataInputStream.readUTF().trim();
+                                bankDataOutputStream.writeUTF("create_receipt " + bankToken + " move " + money +
+                                        " " + DataBase.getDataBase().getBankOperation().getAccountId() + " " + accountId);
+                                bankDataOutputStream.flush();
+                                result = bankDataInputStream.readUTF();
+                            }
+                            dataOutputStream.writeUTF(result);
+                            dataOutputStream.flush();
+                            break;
+                        case "decrease money":
+                            money = Long.parseLong(dataInputStream.readUTF());
+                            accountId = Long.parseLong(dataInputStream.readUTF());
+                            Account account = AllAccountZone.getAccountByBankId(accountId);
+                            if (account instanceof Buyer) {
+                                ((Buyer) account).setWallet(((Buyer) account).getWallet() - money);
+                            } else {
+                                ((Seller) account).setWallet(((Seller) account).getWallet() - money);
+                            }
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "get bank account id":
+                            dataOutputStream.writeLong(((Seller)currentAccount).getBankAccountId());
+                            dataOutputStream.flush();
+                            break;
+                        case "request withdraw money":
+                            money = Long.parseLong(dataInputStream.readUTF());
+                            accountId =  dataInputStream.readLong();
+                            DataBase.getDataBase().getBankOperation().addSellerWithdrawRequest(money, accountId);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "get min money":
+                            dataOutputStream.writeLong(DataBase.getDataBase().getBankOperation().getMinimumMoney());
+                            dataOutputStream.flush();
+                            break;
                         case "exit":
                             FileProcess.writeDataBaseOnFile();
                             dataOutputStream.writeUTF("done");

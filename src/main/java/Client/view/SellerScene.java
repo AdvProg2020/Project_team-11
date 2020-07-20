@@ -69,7 +69,7 @@ public class SellerScene {
         Label usernameLabel = createLabel("Username : ", 150);
         Label passwordLabel = createLabel("Password : ", 150);
         Label companyLabel = createLabel("Company : ", 150);
-        Label walletLabel = createLabel("Balance : ", 150);
+        Label walletLabel = createLabel("Wallet : ", 150);
 
         ArrayList<String> personalInfo = new ArrayList<>();
         try {
@@ -126,8 +126,9 @@ public class SellerScene {
         passwordButton.setOnMouseClicked(e -> Actions.editPersonalInfo(passwordButton, passwordText));
         Button companyButton = createButton("Edit", 100);
         companyButton.setOnMouseClicked(e -> Actions.editPersonalInfo(companyButton, companyText));
-        Button walletButton = createButton("Edit", 100);
-        walletButton.setOnMouseClicked(e -> Actions.editPersonalInfo(walletButton, walletText));
+        Button withdraw = createButton("Withdraw", 100);
+        withdraw.setOnMouseClicked(e -> MainScenes.getBorderPane()
+                .setCenter(withdrawWallet(Long.parseLong(walletText.getText()))));
 
         GridPane gridPane = new GridPane();
         gridPane.addColumn(0, firstNameLabel, lastNameLabel, emailLabel, phoneNumberLabel, usernameLabel,
@@ -137,12 +138,93 @@ public class SellerScene {
         gridPane.addColumn(2, firstNameButton, lastNameButton, emailButton, phoneNumberButton);
         gridPane.add(passwordButton, 2, 5);
         gridPane.add(companyButton, 2, 6);
-        gridPane.add(walletButton, 2, 7);
+        gridPane.add(withdraw, 2, 7);
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
         gridPane.setVgap(20);
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent withdrawWallet(long wallet) {
+        Label info = createLabel("Enter the amount of money you want to withdraw from the wallet.", 300);
+        TextField amount = createTextField("Amount", 200);
+        Button next = createButton("next", 200);
+        Button back = createButton("Back", 200);
+
+        back.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
+
+        next.setOnMouseClicked(e -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            if (Validation.validateLong(amount.getText())) {
+                long minMoney = 0;
+                try {
+                    getDataOutputStream().writeUTF("get min money");
+                    getDataOutputStream().flush();
+                    minMoney = getDataInputStream().readLong();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                if (Long.parseLong(amount.getText()) + minMoney <= wallet) {
+                    Label currentWallet = createLabel("Your current money in wallet : " + wallet + "$", 300);
+                    Label withdrawInfo = createLabel("Money to withdraw from wallet : " + amount.getText() + "$", 300);
+                    Button withdraw = createButton("Withdraw", 150);
+                    Button backToAmount = createButton("Back", 150);
+
+                    backToAmount.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(withdrawWallet(wallet)));
+
+                    withdraw.setOnMouseClicked(event -> {
+                        try {
+                            getDataOutputStream().writeUTF("get bank account id");
+                            getDataOutputStream().flush();
+                            long accountId = getDataInputStream().readLong();
+
+                            getDataOutputStream().writeUTF("request withdraw money");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(amount.getText());
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeLong(accountId);
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        MainScenes.getBorderPane().setCenter(getPersonalInfo());
+                        alert.setAlertType(Alert.AlertType.INFORMATION);
+                        alert.setContentText("Your request send to admin. Please wait.\n" +
+                                "If you send another request to withdraw money, it will be replace by this request.");
+                        alert.show();
+                    });
+
+                    VBox vBox = new VBox(20);
+                    vBox.setAlignment(Pos.CENTER);
+                    vBox.getChildren().addAll(currentWallet, withdrawInfo, withdraw, backToAmount);
+
+                    ScrollPane scrollPane = new ScrollPane(vBox);
+                    scrollPane.setFitToWidth(true);
+                    scrollPane.setFitToHeight(true);
+
+                    MainScenes.getBorderPane().setCenter(scrollPane);
+                } else {
+                    alert.setContentText("You don't have enough money in your wallet.\n" +
+                            "There should be at least " + minMoney + "$ left in your wallet.");
+                    alert.show();
+                }
+            } else {
+                alert.setContentText("amount format is not valid.");
+                alert.show();
+            }
+        });
+
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(info, amount, next, back);
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 

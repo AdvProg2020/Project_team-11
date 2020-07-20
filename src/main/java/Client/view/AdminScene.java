@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import static Client.view.MainScenes.*;
 import static Client.view.ClientHandler.getDataOutputStream;
@@ -1040,10 +1041,60 @@ public class AdminScene {
         Button minMoneyButton = createButton("Edit", 100);
         minMoneyButton.setOnMouseClicked(e -> Actions.editBankInfo(minMoneyButton, minMoneyText));
 
+        Label request = createLabel("Withdraw Requests :", 150);
+
+        VBox idAndMoney = new VBox(20);
+        idAndMoney.setAlignment(Pos.CENTER);
+
+        VBox pay = new VBox(20);
+        pay.setAlignment(Pos.CENTER);
+
+        for (Map.Entry<Long, Long> entry : bankOperation.getSellerWithdrawRequest().entrySet()) {
+            Label info = createLabel("Dest ID : " + entry.getKey() + " Amount : " + entry.getValue(), 200);
+            Button payment = createButton("Pay", 100);
+
+            payment.setOnMouseClicked(e -> {
+                try {
+                    getDataOutputStream().writeUTF("create withdraw receipt");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeLong(entry.getValue());
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeLong(entry.getKey());
+                    getDataOutputStream().flush();
+                    int receiptId = Integer.parseInt(getDataInputStream().readUTF());
+                    getDataOutputStream().writeUTF("pay receipt");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(receiptId);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                    getDataOutputStream().writeUTF("decrease money");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(String.valueOf(entry.getValue()));
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(String.valueOf(entry.getKey()));
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+
+                    idAndMoney.getChildren().remove(info);
+                    pay.getChildren().remove(payment);
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setContentText("Pay successfully.");
+                    alert.show();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            idAndMoney.getChildren().add(info);
+            pay.getChildren().add(payment);
+        }
+
         GridPane gridPane = new GridPane();
-        gridPane.addColumn(0, commissionLabel, minMoneyLabel, passwordLabel, idLabel);
-        gridPane.addColumn(1, commissionText, minMoneyText, passwordText, idText);
+        gridPane.addColumn(0, commissionLabel, minMoneyLabel, passwordLabel, idLabel, request);
+        gridPane.addColumn(1, commissionText, minMoneyText, passwordText, idText, idAndMoney);
         gridPane.addColumn(2, commissionButton, minMoneyButton);
+        gridPane.add(pay, 2, 4);
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
         gridPane.setVgap(20);

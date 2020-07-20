@@ -4,12 +4,14 @@ import server.Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class BankOperation {
     private int commission;
     private long minimumMoney;
     private String password;
     private long accountId;
+    private HashMap<Long, Long> sellerWithdrawRequest;// id & money
 
     public BankOperation(int commission, long minimumMoney, String password) {
         this.commission = commission;
@@ -26,6 +28,7 @@ public class BankOperation {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.sellerWithdrawRequest = new HashMap<>();
         DataBase.getDataBase().setBankOperation(this);
     }
 
@@ -43,6 +46,14 @@ public class BankOperation {
 
     public long getAccountId() {
         return accountId;
+    }
+
+    public HashMap<Long, Long> getSellerWithdrawRequest() {
+        return sellerWithdrawRequest;
+    }
+
+    public void addSellerWithdrawRequest(long money, long sellerId) {
+        this.sellerWithdrawRequest.put(sellerId, money);
     }
 
     public void setCommission(int commission) {
