@@ -187,25 +187,26 @@ public class AdminScene {
         tableView.getColumns().addAll(typeColumn, firstNameColumn, lastNameColumn, emailColumn, phoneNumberColumn,
                 usernameColumn, passwordColumn, balanceColumn, companyColumn);
 
-        TextField firstName = createTextField("First Name", 100);
-        TextField lastName = createTextField("Last Name", 100);
-        TextField email = createTextField("Email", 100);
-        TextField phoneNumber = createTextField("Phone Number", 100);
-        TextField username = createTextField("Username", 100);
-        TextField password = createTextField("Password", 100);
+        TextField adminFirstName = createTextField("First Name", 100);
+        TextField adminLastName = createTextField("Last Name", 100);
+        TextField adminEmail = createTextField("Email", 100);
+        TextField adminPhoneNumber = createTextField("Phone Number", 100);
+        TextField adminUsername = createTextField("Username", 100);
+        TextField adminPassword = createTextField("Password", 100);
 
-        Button addButton = createButton("Add Admin", 100);
-        addButton.setOnMouseClicked(e -> {
-            ArrayList<String> info = new ArrayList<>(Arrays.asList("admin", firstName.getText(),
-                    lastName.getText(), email.getText(), phoneNumber.getText(), username.getText(), password.getText()));
+        Button addAdmin = createButton("Add Admin", 100);
+        addAdmin.setOnMouseClicked(e -> {
+            ArrayList<String> info = new ArrayList<>(Arrays.asList("admin",
+                    adminFirstName.getText(), adminLastName.getText(), adminEmail.getText(),
+                    adminPhoneNumber.getText(), adminUsername.getText(), adminPassword.getText()));
             if (Actions.register(info)) {
                 tableView.setItems(Account.getAccounts());
-                firstName.clear();
-                lastName.clear();
-                email.clear();
-                phoneNumber.clear();
-                username.clear();
-                password.clear();
+                adminFirstName.clear();
+                adminLastName.clear();
+                adminEmail.clear();
+                adminPhoneNumber.clear();
+                adminUsername.clear();
+                adminPassword.clear();
             }
         });
         Button removeButton = createButton("Remove", 100);
@@ -230,13 +231,43 @@ public class AdminScene {
             });
         });
 
-        HBox hBox = new HBox(10);
-        hBox.getChildren().addAll(firstName, lastName, email, phoneNumber, username, password, addButton, removeButton);
-        hBox.setPadding(new Insets(10, 10, 10, 10));
-        hBox.setAlignment(Pos.CENTER);
+        HBox adminHBox = new HBox(10);
+        adminHBox.getChildren().addAll(adminFirstName, adminLastName, adminEmail, adminPhoneNumber, adminUsername,
+                adminPassword, addAdmin, removeButton);
+        adminHBox.setPadding(new Insets(10, 10, 10, 10));
+        adminHBox.setAlignment(Pos.CENTER);
+
+        TextField supportFirstName = createTextField("First Name", 100);
+        TextField supportLastName = createTextField("Last Name", 100);
+        TextField supportEmail = createTextField("Email", 100);
+        TextField supportPhoneNumber = createTextField("Phone Number", 100);
+        TextField supportUsername = createTextField("Username", 100);
+        TextField supportPassword = createTextField("Password", 100);
+
+        Button addSupport = createButton("Add Support", 100);
+        addSupport.setOnMouseClicked(e -> {
+            ArrayList<String> info = new ArrayList<>(Arrays.asList("support",
+                    supportFirstName.getText(), supportLastName.getText(), supportEmail.getText(),
+                    supportPhoneNumber.getText(), supportUsername.getText(), supportPassword.getText()));
+            if (Actions.register(info)) {
+                tableView.setItems(Account.getAccounts());
+                supportFirstName.clear();
+                supportLastName.clear();
+                supportEmail.clear();
+                supportPhoneNumber.clear();
+                supportUsername.clear();
+                supportPassword.clear();
+            }
+        });
+
+        HBox supportHBox = new HBox(10);
+        supportHBox.getChildren().addAll(supportFirstName, supportLastName, supportEmail, supportPhoneNumber,
+                supportUsername, supportPassword, addSupport);
+        supportHBox.setPadding(new Insets(10, 10, 10, 10));
+        supportHBox.setAlignment(Pos.CENTER);
 
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(tableView, hBox);
+        vBox.getChildren().addAll(tableView, adminHBox, supportHBox);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);

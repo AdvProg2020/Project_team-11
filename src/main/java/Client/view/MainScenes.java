@@ -150,7 +150,7 @@ public class MainScenes {
 
     public static Parent getSignInRoot() {
         ComboBox<String> type = new ComboBox<>();
-        type.getItems().addAll("Admin", "Seller", "Buyer");
+        type.getItems().addAll("Admin", "Support", "Seller", "Buyer");
         type.setMinWidth(300);
         type.setPromptText("Account Type");
 

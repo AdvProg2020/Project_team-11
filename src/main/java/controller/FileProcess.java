@@ -54,9 +54,15 @@ public class FileProcess {
         foundListType = new TypeToken<ArrayList<Buyer>>(){}.getType();
         ArrayList<Buyer> allBuyers = gson.fromJson(data, foundListType);
         scanner.close();
+        scanner = FileProcess.openFileToRead("resources\\supports.json");
+        data = scanner.nextLine();
+        foundListType = new TypeToken<ArrayList<Support>>(){}.getType();
+        ArrayList<Support> allSupports = gson.fromJson(data, foundListType);
+        scanner.close();
         allAccounts.addAll(allAdmins);
         allAccounts.addAll(allSellers);
         allAccounts.addAll(allBuyers);
+        allAccounts.addAll(allSupports);
         DataBase.getDataBase().setAllAccounts(allAccounts);
         scanner = FileProcess.openFileToRead("resources\\auctions.json");
         data = scanner.nextLine();
@@ -131,6 +137,7 @@ public class FileProcess {
         ArrayList<Admin> allAdmins = new ArrayList<>();
         ArrayList<Seller> allSellers = new ArrayList<>();
         ArrayList<Buyer> allBuyers = new ArrayList<>();
+        ArrayList<Support> allSupports = new ArrayList<>();
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
             if (account instanceof Admin)
                 allAdmins.add((Admin) account);
@@ -138,6 +145,8 @@ public class FileProcess {
                 allSellers.add((Seller) account);
             else if (account instanceof Buyer)
                 allBuyers.add((Buyer) account);
+            else if (account instanceof Support)
+                allSupports.add((Support) account);
         }
         ArrayList<SellLog> allSellLogs = new ArrayList<>();
         ArrayList<BuyLog> allBuyLogs = new ArrayList<>();
@@ -155,6 +164,9 @@ public class FileProcess {
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\buyers.json");
         formatter.format(gson.toJson(allBuyers));
+        formatter.close();
+        formatter = FileProcess.openFileToWrite("resources\\supports.json");
+        formatter.format(gson.toJson(allSupports));
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\auctions.json");
         formatter.format(gson.toJson(DataBase.getDataBase().getAllAuctions()));

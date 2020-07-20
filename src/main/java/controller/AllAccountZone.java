@@ -109,13 +109,6 @@ public class AllAccountZone {
         }).collect(Collectors.toList());
     }
 
-    public static long viewUserBalance(Account account) {
-        if (account instanceof Buyer)
-            return ((Buyer) account).getWallet();
-        else
-            return ((Seller) account).getWallet();
-    }
-
     public static ArrayList<String> getPersonalInfo(Account account) {
         if (account instanceof Admin) {
             Admin admin = (Admin) account;
@@ -126,11 +119,12 @@ public class AllAccountZone {
             return new ArrayList<>(Arrays.asList(seller.getFirstName(), seller.getLastName(), seller.getEmailAddress(),
                     seller.getPhoneNumber(), seller.getUsername(), seller.getPassword(), seller.getCompanyName(),
                     String.valueOf(seller.getWallet())));
-        } else {
+        } else if (account instanceof Buyer) {
             Buyer buyer = (Buyer) account;
             return new ArrayList<>(Arrays.asList(buyer.getFirstName(), buyer.getLastName(), buyer.getEmailAddress(),
                     buyer.getPhoneNumber(), buyer.getUsername(), buyer.getPassword(), String.valueOf(buyer.getWallet())));
         }
+        return null;
     }
 
     public static void addProductToCart(int productId, Account account) {
@@ -161,10 +155,12 @@ public class AllAccountZone {
         new Request(account.getUsername(), "add comment", String.valueOf(comment.getId()), "unseen");
     }
 
-    public static String createAccount(ArrayList<String> info) {
+    public static void createAccount(ArrayList<String> info) {
         if (info.get(0).equalsIgnoreCase("admin")) {
             DataBase.getDataBase().setHasAdminAccountCreated(true);
             new Admin(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
+        } else if (info.get(0).equalsIgnoreCase("support")) {
+            new Support(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6));
         } else if (info.get(0).equalsIgnoreCase("seller")) {
             StringBuilder requestDescription = new StringBuilder();
             for (int i = 1; i <= 6; i++) {
@@ -172,7 +168,6 @@ public class AllAccountZone {
             }
             requestDescription.append(info.get(7)).append(",");
             new Request(info.get(5), "create seller account", requestDescription.toString(), "unseen");
-            return "Request sent. Wait for Admin agreement.";
         } else {
             long accountId = 0;
             try {
@@ -198,7 +193,6 @@ public class AllAccountZone {
             }
             new Buyer(info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6), accountId);
         }
-        return "Successfully created.";
     }
 
     public static boolean isUsernameValid(String username) {
@@ -219,6 +213,13 @@ public class AllAccountZone {
                 if (account instanceof Admin && account.getUsername().equals(info.get(1))) {
                     if (account.getPassword().equals(info.get(2))) {
                         return "Login successfully admin.";
+                    }
+                    return "Wrong password.";
+                }
+            } else if (info.get(0).equalsIgnoreCase("support")) {
+                if (account instanceof Support && account.getUsername().equals(info.get(1))) {
+                    if (account.getPassword().equals(info.get(2))) {
+                        return "Login successfully support.";
                     }
                     return "Wrong password.";
                 }

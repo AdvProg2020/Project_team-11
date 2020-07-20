@@ -111,6 +111,17 @@ public class Actions {
                     button.getStyleClass().add("top-buttons");
                     ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
                     button.fire();
+                } else if (result.contains("support")) {
+                    Button button = new Button("Support");
+                    button.setOnAction(e -> {
+//                        MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot()); TODO
+//                        MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
+                    });
+                    button.setMinWidth(200);
+                    button.setAlignment(Pos.CENTER);
+                    button.getStyleClass().add("top-buttons");
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    button.fire();
                 } else if (result.contains("seller")) {
                     Button button = new Button("Seller");
                     button.setOnAction(e -> {

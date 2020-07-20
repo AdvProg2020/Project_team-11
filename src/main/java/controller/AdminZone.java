@@ -215,8 +215,12 @@ public class AdminZone {
                 accounts.add(new Client.view.tableViewData.Account("Seller", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(), account.getUsername(),
                         account.getPassword(), ((Seller) account).getWallet(), ((Seller) account).getCompanyName()));
-            } else {
+            } else if (account instanceof Admin) {
                 accounts.add(new Client.view.tableViewData.Account("Admin", account.getFirstName(),
+                        account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
+                        account.getUsername(), account.getPassword(), 0, ""));
+            } else {
+                accounts.add(new Client.view.tableViewData.Account("Support", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
                         account.getUsername(), account.getPassword(), 0, ""));
             }
@@ -236,8 +240,7 @@ public class AdminZone {
                 Discount discount = getDiscountByCode(discountCode);
                 discount.getAllowedUsers().remove(accountDeleted.getUsername());
             }
-        }
-        if (accountDeleted instanceof Seller) {
+        } else if (accountDeleted instanceof Seller) {
             ArrayList<Auction> sellerAuctions = new ArrayList<>();
             for (Auction auction : DataBase.getDataBase().getAllAuctions()) {
                 if (auction.getSellerName().equals(accountDeleted.getUsername()))
@@ -381,15 +384,6 @@ public class AdminZone {
             removeProduct(category.getProductList().get(0).getId());
         }
         DataBase.getDataBase().getAllCategories().remove(category);
-    }
-
-    public static boolean isCategoryNameValid(String categoryName) {
-        for (Category category : DataBase.getDataBase().getAllCategories()) {
-            if (category.getName().equals(categoryName)){
-                return false;
-            }
-        }
-        return true;
     }
 
     public static void editDiscount(String field, String value, String code) throws ParseException {
