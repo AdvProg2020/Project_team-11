@@ -1053,6 +1053,7 @@ public class AdminScene {
             Label info = createLabel("Dest ID : " + entry.getKey() + " Amount : " + entry.getValue(), 200);
             Button payment = createButton("Pay", 100);
 
+            BankOperation finalBankOperation = bankOperation;
             payment.setOnMouseClicked(e -> {
                 try {
                     getDataOutputStream().writeUTF("create withdraw receipt");
@@ -1077,6 +1078,7 @@ public class AdminScene {
 
                     idAndMoney.getChildren().remove(info);
                     pay.getChildren().remove(payment);
+                    finalBankOperation.getSellerWithdrawRequest().remove(entry.getKey());
 
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setContentText("Pay successfully.");

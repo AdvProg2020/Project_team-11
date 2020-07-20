@@ -353,7 +353,8 @@ public class Server {
                             dataOutputStream.flush();
                             break;
                         case "pay":
-                            BuyerZone.payMoney(currentAccount);
+                            String type = dataInputStream.readUTF();
+                            BuyerZone.payMoney(currentAccount, type, bankDataOutputStream, bankDataInputStream);
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;

@@ -2,6 +2,9 @@ package controller;
 
 import model.*;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,7 +83,7 @@ public class BuyerZone {
     public static boolean canPayMoney(Account account) {
         Buyer buyer = (Buyer) account;
         long totalPriceAfterDiscount = calculatePriceWithDiscountsAndAuctions(account);
-        return totalPriceAfterDiscount <= buyer.getWallet();
+        return totalPriceAfterDiscount + DataBase.getDataBase().getBankOperation().getMinimumMoney() <= buyer.getWallet();
     }
 
     public static long calculatePriceWithAuctions(Account account) {
@@ -108,25 +111,43 @@ public class BuyerZone {
         }
     }
 
-    public static void payMoney(Account account) {
+    public static void payMoney(Account account, String payType, DataOutputStream dos, DataInputStream dis) throws IOException {
         Buyer buyer = ((Buyer) account);
-        decreaseBuyerMoney(buyer);
+        decreaseBuyerMoney(buyer, payType, dos, dis);
         increaseSellerMoney(buyer);
         createLogs(buyer);
         removeActiveDiscount(buyer);
         buyer.getCart().clear();
     }
 
-    private static void decreaseBuyerMoney(Buyer buyer) {
-        long newMoney = buyer.getWallet() - calculatePriceWithDiscountsAndAuctions(buyer);
-        buyer.setWallet(newMoney);
+    private static void decreaseBuyerMoney(Buyer buyer, String payType, DataOutputStream dos, DataInputStream dis) throws IOException {
+        long totalPrice = calculatePriceWithDiscountsAndAuctions(buyer);
+        switch (payType) {
+            case "wallet":
+                long newMoney = buyer.getWallet() - totalPrice;
+                buyer.setWallet(newMoney);
+                break;
+            case "bank":
+                dos.writeUTF("get_token " + buyer.getUsername() + " " + buyer.getPassword());
+                dos.flush();
+                String token = dis.readUTF();
+                dos.writeUTF("create_receipt " + token + " move " + totalPrice + " " + buyer.getBankAccountId() +
+                        " " + DataBase.getDataBase().getBankOperation().getAccountId());
+                dos.flush();
+                int receiptId = Integer.parseInt(dis.readUTF());
+                dos.writeUTF("pay " + receiptId);
+                dos.flush();
+                dis.readUTF();
+        }
     }
 
     private static void increaseSellerMoney(Buyer buyer) {
+        int commission = DataBase.getDataBase().getBankOperation().getCommission();
         for (Map.Entry<Integer, Integer> entry : buyer.getCart().entrySet()) {
             Product product = SellerZone.getProductById(entry.getKey());
             Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
-            long newMoney = seller.getWallet() + product.getGeneralFeature().getAuctionPrice() * entry.getValue();
+            long newMoney = (long) (seller.getWallet() +
+                    (product.getGeneralFeature().getAuctionPrice() * entry.getValue() * (1 - (double) commission/100.0)));
             seller.setWallet(newMoney);
         }
     }
@@ -153,17 +174,19 @@ public class BuyerZone {
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), paidAmount, totalPrice - paidAmount,
                 purchasedProducts, numOfProduct, buyer.getUsername(), "sending");
         buyer.addBuyHistory(buyLog);
-        for (Integer productId : buyer.getCart().keySet()) {
-            Product product = SellerZone.getProductById(productId);
-            SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(), product.getGeneralFeature().getAuctionPrice(),
-                    product.getGeneralFeature().getPrice() - product.getGeneralFeature().getAuctionPrice(),
-                    product.getGeneralFeature().getName(), buyer.getCart().get(productId),
+        for (Map.Entry<Integer, Integer> entry : buyer.getCart().entrySet()) {
+            Product product = SellerZone.getProductById(entry.getKey());
+            SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(),
+                    product.getGeneralFeature().getAuctionPrice() * entry.getValue(),
+                    (product.getGeneralFeature().getPrice() -
+                            product.getGeneralFeature().getAuctionPrice()) * entry.getValue(),
+                    product.getGeneralFeature().getName(), buyer.getCart().get(entry.getKey()),
                     buyer.getFirstName() + " " + buyer.getLastName(), product.getGeneralFeature().getSeller(),
                     "sending");
             Seller seller = (Seller) AllAccountZone.getAccountByUsername(product.getGeneralFeature().getSeller());
             seller.addSellHistory(sellLog);
             product.getGeneralFeature().setStockStatus(product.getGeneralFeature().getStockStatus() -
-                    buyer.getCart().get(productId));
+                    buyer.getCart().get(entry.getKey()));
         }
     }
 

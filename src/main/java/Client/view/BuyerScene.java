@@ -168,7 +168,7 @@ public class BuyerScene {
                 Label chargeInfo = createLabel("Money to add your wallet : " + amount.getText() + "$", 300);
                 Label warning = createLabel("WARNING : You can't withdraw the money after charge.", 300);
                 Button charge = createButton("Charge", 150);
-                Button backToAmount = createButton("Back", 200);
+                Button backToAmount = createButton("Back", 150);
 
                 backToAmount.setOnMouseClicked(event -> MainScenes.getBorderPane().setCenter(chargeWallet(wallet)));
 
@@ -245,7 +245,7 @@ public class BuyerScene {
             TextField discount = createTextField("Discount Code", 500);
             Button applyDiscount = createButton("Apply Discount", 500);
             applyDiscount.setOnMouseClicked(event -> {
-                if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText())) {
+                if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText()) && discount.getText() != null) {
                     String result = "";
                     try {
                         getDataOutputStream().writeUTF("check discount");
@@ -395,7 +395,6 @@ public class BuyerScene {
                         getDataOutputStream().writeUTF("price with auction");
                         getDataOutputStream().flush();
                         String totalPrice = getDataInputStream().readUTF();
-                        System.out.println(totalPrice);
                         priceText.setText(totalPrice);
                     } else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -432,8 +431,10 @@ public class BuyerScene {
         Label price = createLabel("Total Price : " + priceWithDiscount + "$", 200);
         Label discountAmount =
                 createLabel("Discount : " + (totalPrice - priceWithDiscount) + "$", 200);
-        Button payment = createButton("Pay", 200);
-        payment.setOnMouseClicked(ev -> {
+        Button payWallet = createButton("Pay from wallet", 250);
+        Button payBank = createButton("Pay from bank account", 250);
+
+        payWallet.setOnMouseClicked(ev -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             try {
                 getDataOutputStream().writeUTF("can pay");
@@ -441,13 +442,53 @@ public class BuyerScene {
                 if (getDataInputStream().readBoolean()) {
                     getDataOutputStream().writeUTF("pay");
                     getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF("wallet");
+                    getDataOutputStream().flush();
                     getDataInputStream().readUTF();
                     alert.setContentText("Purchase Completed.\nThank you for buying.");
                     alert.show();
                     MainScenes.getBorderPane().setCenter(viewOrders());
                 } else {
                     alert.setAlertType(Alert.AlertType.ERROR);
-                    alert.setContentText("You don't have enough money.");
+                    try {
+                        getDataOutputStream().writeUTF("get min money");
+                        getDataOutputStream().flush();
+                        alert.setContentText("You don't have enough money.\n" +
+                                "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        payBank.setOnMouseClicked(ev -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            try {
+                getDataOutputStream().writeUTF("can pay");
+                getDataOutputStream().flush();
+                if (getDataInputStream().readBoolean()) {
+                    getDataOutputStream().writeUTF("pay");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF("bank");
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                    alert.setContentText("Purchase Completed.\nThank you for buying.");
+                    alert.show();
+                    MainScenes.getBorderPane().setCenter(viewOrders());
+                } else {
+                    alert.setAlertType(Alert.AlertType.ERROR);
+                    try {
+                        getDataOutputStream().writeUTF("get min money");
+                        getDataOutputStream().flush();
+                        alert.setContentText("You don't have enough money.\n" +
+                                "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                     alert.show();
                 }
             } catch (IOException e) {
@@ -457,7 +498,7 @@ public class BuyerScene {
 
         VBox payInfo = new VBox(20);
         payInfo.setAlignment(Pos.CENTER);
-        payInfo.getChildren().addAll(price, discountAmount, payment);
+        payInfo.getChildren().addAll(price, discountAmount, payWallet, payBank);
         MainScenes.getBorderPane().setCenter(payInfo);
     }
 
