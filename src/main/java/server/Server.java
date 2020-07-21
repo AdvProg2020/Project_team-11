@@ -632,6 +632,12 @@ public class Server {
         } else {
             Auction.setNumOfAllAuctions(1);
         }
+        if (!DataBase.getDataBase().getAllBids().isEmpty()) {
+            Bid.setNumOfAllBids(DataBase.getDataBase().getAllBids().stream()
+                    .max(Comparator.comparingInt(Bid::getId)).get().getId() + 1);
+        } else {
+            Bid.setNumOfAllBids(1);
+        }
         if (!DataBase.getDataBase().getAllComments().isEmpty()) {
             Comment.setNumOfAllComments(DataBase.getDataBase().getAllComments().stream()
                     .max(Comparator.comparingInt(Comment::getId)).get().getId() + 1);

@@ -6,6 +6,7 @@ public class DataBase {
     private static DataBase dataBase;
     private ArrayList<Account> allAccounts = new ArrayList<>();
     private ArrayList<Auction> allAuctions = new ArrayList<>();
+    private ArrayList<Bid> allBids = new ArrayList<>();
     private ArrayList<Category> allCategories = new ArrayList<>();
     private ArrayList<Comment> allComments = new ArrayList<>();
     private ArrayList<Discount> allDiscounts = new ArrayList<>();
@@ -39,6 +40,10 @@ public class DataBase {
 
     public void setAllAuctions(ArrayList<Auction> allAuctions) {
         this.allAuctions = allAuctions;
+    }
+
+    public void setAllBids(ArrayList<Bid> allBids) {
+        this.allBids = allBids;
     }
 
     public void setAllCategories(ArrayList<Category> allCategories) {
@@ -76,6 +81,10 @@ public class DataBase {
 
     public void setAllAuctions(Auction auction) {
         this.allAuctions.add(auction);
+    }
+
+    public void setAllBids(Bid bid) {
+        this.allBids.add(bid);
     }
 
     public void setAllCategories(Category category) {
@@ -117,6 +126,10 @@ public class DataBase {
 
     public ArrayList<Auction> getAllAuctions() {
         return allAuctions;
+    }
+
+    public ArrayList<Bid> getAllBids() {
+        return allBids;
     }
 
     public ArrayList<Category> getAllCategories() {

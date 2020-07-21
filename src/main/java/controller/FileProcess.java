@@ -70,6 +70,12 @@ public class FileProcess {
         ArrayList<Auction> auctions = gson.fromJson(data, foundListType);
         DataBase.getDataBase().setAllAuctions(auctions);
         scanner.close();
+        scanner = FileProcess.openFileToRead("resources\\bids.json");
+        data = scanner.nextLine();
+        foundListType = new TypeToken<ArrayList<Bid>>(){}.getType();
+        ArrayList<Bid> bids = gson.fromJson(data, foundListType);
+        DataBase.getDataBase().setAllBids(bids);
+        scanner.close();
         scanner = FileProcess.openFileToRead("resources\\categories.json");
         data = scanner.nextLine();
         foundListType = new TypeToken<ArrayList<Category>>(){}.getType();
@@ -170,6 +176,9 @@ public class FileProcess {
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\auctions.json");
         formatter.format(gson.toJson(DataBase.getDataBase().getAllAuctions()));
+        formatter.close();
+        formatter = FileProcess.openFileToWrite("resources\\bids.json");
+        formatter.format(gson.toJson(DataBase.getDataBase().getAllBids()));
         formatter.close();
         formatter = FileProcess.openFileToWrite("resources\\categories.json");
         formatter.format(gson.toJson(DataBase.getDataBase().getAllCategories()));

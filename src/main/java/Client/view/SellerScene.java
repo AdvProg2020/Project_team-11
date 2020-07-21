@@ -52,12 +52,17 @@ public class SellerScene {
         auctions.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageAuctions()));
         auctions.getStyleClass().add("account-button");
 
+        Button bids = createButton("View Bids", 300);
+        bids.setMinHeight(50);
+        bids.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageBids()));
+        bids.getStyleClass().add("account-button");
+
         Button support = createButton("Support", 300);
         support.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getSupportScene()));
         support.setMinHeight(50);
         support.getStyleClass().add("account-button");
 
-        VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions, support);
+        VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions, bids, support);
         vBox.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
@@ -927,5 +932,9 @@ public class SellerScene {
         scrollPane.setFitToHeight(true);
 
         return scrollPane;
+    }
+
+    private static Parent manageBids() {
+        return null;
     }
 }
