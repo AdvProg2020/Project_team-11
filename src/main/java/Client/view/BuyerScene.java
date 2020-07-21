@@ -51,7 +51,12 @@ public class BuyerScene {
         discountCodes.setMinHeight(50);
         discountCodes.getStyleClass().add("account-button");
 
-        VBox vBox = new VBox(personalInfo, cart, orders, discountCodes);
+        Button support = createButton("Support", 300);
+        support.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getSupportScene()));
+        support.setMinHeight(50);
+        support.getStyleClass().add("account-button");
+
+        VBox vBox = new VBox(personalInfo, cart, orders, discountCodes, support);
         vBox.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
@@ -553,5 +558,109 @@ public class BuyerScene {
         scrollPane.setFitToHeight(true);
 
         return scrollPane;
+    }
+
+    public static Parent getSupportScene() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+
+        Label info = createLabel("Click one of the online supports to start chat.", 500);
+        vBox.getChildren().add(info);
+
+        try {
+            getDataOutputStream().writeUTF("get online supports");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            ArrayList<String> onlineSupports = gson.fromJson(data, foundListType);
+
+            for (String support : onlineSupports) {
+                Hyperlink hyperlink = new Hyperlink(support);
+
+                hyperlink.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getChatRoot(support)));
+
+                vBox.getChildren().add(hyperlink);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    private static Parent getChatRoot(String supportUsername) {
+        VBox messageVBox = new VBox(10);
+        messageVBox.setAlignment(Pos.TOP_CENTER);
+
+        try {
+            getDataOutputStream().writeUTF("get last messages");
+            getDataOutputStream().flush();
+            getDataOutputStream().writeUTF(supportUsername);
+            getDataOutputStream().flush();
+            String data1 = getDataInputStream().readUTF();
+            Type foundListType1 = new TypeToken<ArrayList<HashMap<String, String>>>() {}.getType();
+            ArrayList<HashMap<String, String>> messages = gson.fromJson(data1, foundListType1);
+
+            if (messages != null) {
+                for (HashMap<String, String> message : messages) {
+                    for (Map.Entry<String, String> entry : message.entrySet()) {
+                        Label messageLabel = createLabel(entry.getValue(), 500);
+                        if (entry.getKey().equals(supportUsername)) {
+                            messageLabel.setAlignment(Pos.CENTER_LEFT);
+                        } else {
+                            messageLabel.setAlignment(Pos.CENTER_RIGHT);
+                        }
+                        messageVBox.getChildren().add(messageLabel);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        TextField textField = createTextField("Message", 800);
+        Button send = createButton("Send", 100);
+
+        send.setOnMouseClicked(e -> {
+            if (textField.getText() != null) {
+                Label message = createLabel(textField.getText(), 500);
+                message.setAlignment(Pos.CENTER_RIGHT);
+                messageVBox.getChildren().add(message);
+                try {
+                    getDataOutputStream().writeUTF("send message");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(supportUsername);
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF("me");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(textField.getText());
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            textField.clear();
+
+        });
+
+        HBox hBox = new HBox(20);
+        hBox.getChildren().addAll(textField, send);
+        VBox sendVBox = new VBox(hBox);
+        sendVBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        ScrollPane scrollPane = new ScrollPane(messageVBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(scrollPane, sendVBox);
+
+        return vBox;
     }
 }

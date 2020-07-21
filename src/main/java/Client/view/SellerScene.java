@@ -17,6 +17,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static Client.view.BuyerScene.getSupportScene;
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.*;
@@ -51,7 +52,12 @@ public class SellerScene {
         auctions.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageAuctions()));
         auctions.getStyleClass().add("account-button");
 
-        VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions);
+        Button support = createButton("Support", 300);
+        support.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getSupportScene()));
+        support.setMinHeight(50);
+        support.getStyleClass().add("account-button");
+
+        VBox vBox = new VBox(personalInfo, salesHistory, products, categories, auctions, support);
         vBox.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);

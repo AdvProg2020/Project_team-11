@@ -10,13 +10,12 @@ import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class Server {
     private static final int storeServerPort = 8888;
     private static final int bankServerPort = 9999;
+    private static ArrayList<String> onlineSupports = new ArrayList<>();
 
     public static int getBankServerPort() {
         return bankServerPort;
@@ -83,11 +82,15 @@ public class Server {
                             String result = AllAccountZone.loginUser(info);
                             if (result.startsWith("Login successfully")) {
                                 currentAccount = AllAccountZone.getAccountByUsername(info.get(1));
+                                if (currentAccount instanceof Support)
+                                    onlineSupports.add(currentAccount.getUsername());
                             }
                             dataOutputStream.writeUTF(result);
                             dataOutputStream.flush();
                             break;
                         case "logout":
+                            if (currentAccount instanceof Support)
+                                onlineSupports.remove(currentAccount.getUsername());
                             currentAccount = null;
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
@@ -539,6 +542,46 @@ public class Server {
                             break;
                         case "get min money":
                             dataOutputStream.writeLong(DataBase.getDataBase().getBankOperation().getMinimumMoney());
+                            dataOutputStream.flush();
+                            break;
+                        case "get message senders":
+                            dataOutputStream.writeUTF(gson.toJson(((Support) currentAccount).getMessages().keySet()));
+                            dataOutputStream.flush();
+                            break;
+                        case "get messages":
+                            String sender = dataInputStream.readUTF();
+                            dataOutputStream.writeUTF(gson.toJson(((Support) currentAccount).getMessages().get(sender)));
+                            dataOutputStream.flush();
+                            break;
+                        case "get online supports":
+                            dataOutputStream.writeUTF(gson.toJson(onlineSupports));
+                            dataOutputStream.flush();
+                            break;
+                        case "get last messages":
+                            username = dataInputStream.readUTF();
+                            Support support = (Support) AllAccountZone.getAccountByUsername(username);
+                            dataOutputStream.writeUTF(gson.toJson(support.getMessages().get(currentAccount.getUsername())));
+                            dataOutputStream.flush();
+                            break;
+                        case "send message":
+                            username = dataInputStream.readUTF();
+                            sender = dataInputStream.readUTF();
+                            String message = dataInputStream.readUTF();
+                            if (username.equals("me")) {
+                                username = currentAccount.getUsername();
+                                ((Support) currentAccount).getMessages().get(sender).add(new HashMap<>(Map.of(username, message)));
+                            }
+                            if (sender.equals("me")) {
+                                sender = currentAccount.getUsername();
+                                support = (Support) AllAccountZone.getAccountByUsername(username);
+                                if (support.getMessages().containsKey(sender)) {
+                                    support.getMessages().get(sender).add(new HashMap<>(Map.of(sender, message)));
+                                } else {
+                                    support.getMessages().put(sender,
+                                            new ArrayList<>(Arrays.asList(new HashMap<>(Map.of(sender, message)))));
+                                }
+                            }
+                            dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
                         case "exit":

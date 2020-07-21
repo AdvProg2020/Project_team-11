@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -114,8 +115,8 @@ public class Actions {
                 } else if (result.contains("support")) {
                     Button button = new Button("Support");
                     button.setOnAction(e -> {
-//                        MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot()); TODO
-//                        MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
+                        MainScenes.getBorderPane().setLeft(SupportScene.getSupportRoot());
+                        MainScenes.getBorderPane().setCenter(new VBox());
                     });
                     button.setMinWidth(200);
                     button.setAlignment(Pos.CENTER);
