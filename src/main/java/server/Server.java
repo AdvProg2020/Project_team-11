@@ -584,6 +584,19 @@ public class Server {
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
+                        case "get seller bid":
+                            dataOutputStream.writeUTF(gson.toJson(SellerZone.getBidDetails(currentAccount)));
+                            dataOutputStream.flush();
+                            break;
+                        case "add bid":
+                            data = dataInputStream.readUTF();
+                            foundListType = new TypeToken<ArrayList<String>>(){}.getType();
+                            info = gson.fromJson(data, foundListType);
+                            SellerZone.createBid(info, currentAccount);
+                            SellerZone.createBid(info, currentAccount);
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
                         case "exit":
                             FileProcess.writeDataBaseOnFile();
                             dataOutputStream.writeUTF("done");

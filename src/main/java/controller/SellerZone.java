@@ -201,4 +201,20 @@ public class SellerZone {
         }
         return false;
     }
+
+    public static ArrayList<String> getBidDetails(Account account) {
+        for (Bid bid : DataBase.getDataBase().getAllBids()) {
+            if (bid.getSellerName().equals(account.getUsername()))
+                return new ArrayList<>(Arrays.asList(String.valueOf(bid.getProductId()), bid.getStartDate().toString(),
+                        bid.getEndDate().toString(), String.valueOf(bid.getMaxPrice())));
+        }
+        return null;
+    }
+
+    public static void createBid(ArrayList<String> info, Account account) {
+        long startDateMilliSec = Long.parseLong(info.get(1));
+        long endDateMilliSec = Long.parseLong(info.get(2));
+        new Bid(Integer.parseInt(info.get(0)), new Date(startDateMilliSec), new Date(endDateMilliSec),
+                account.getUsername(), Long.parseLong(info.get(3)));
+    }
 }

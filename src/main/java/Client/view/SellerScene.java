@@ -935,6 +935,85 @@ public class SellerScene {
     }
 
     private static Parent manageBids() {
-        return null;
+        try {
+            getDataOutputStream().writeUTF("get seller bid");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            ArrayList<String> bidInfo = gson.fromJson(data, foundListType);
+
+            if (bidInfo == null) {
+                TextField productText = createTextField("Product ID", 400);
+                TextField startText = createTextField("Start Date [dd/mm/yyyy hh:mm:ss]", 400);
+                TextField endText = createTextField("End Date [dd/mm/yyyy hh:mm:ss]", 400);
+                TextField priceText = createTextField("Price Floor", 400);
+
+                Button create = createButton("Create", 100);
+                create.setOnMouseClicked(e -> {
+                    try {
+                        ArrayList<String> info = new ArrayList<>(Arrays.asList(productText.getText(), startText.getText(),
+                                endText.getText(), priceText.getText()));
+                        if (Actions.createBid(info)) {
+                            MainScenes.getBorderPane().setCenter(manageBids());
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+                VBox vBox = new VBox(20);
+                vBox.setAlignment(Pos.CENTER);
+                vBox.getChildren().addAll(productText, startText, endText, priceText, create);
+
+                ScrollPane scrollPane = new ScrollPane(vBox);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                return scrollPane;
+            } else {
+                Label productLabel = createLabel("Product Name : ", 100);
+                Label startLabel = createLabel("Start Date : ", 100);
+                Label endLabel = createLabel("End Date : ", 100);
+                Label priceLabel = createLabel("Max Offered Price : ", 100);
+
+                getDataOutputStream().writeUTF("get product name");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeInt(Integer.parseInt(bidInfo.get(0)));
+                getDataOutputStream().flush();
+                String productName = getDataInputStream().readUTF();
+                TextField productText = createTextField("Product", 400);
+                productText.setText(productName);
+                productText.setDisable(true);
+
+                TextField startText = createTextField("Start", 400);
+                startText.setText(bidInfo.get(1));
+                startText.setDisable(true);
+
+                TextField endText = createTextField("End", 400);
+                endText.setText(bidInfo.get(2));
+                endText.setDisable(true);
+
+                TextField priceText = createTextField("Price", 400);
+                priceText.setText(bidInfo.get(3));
+                priceText.setDisable(true);
+
+                GridPane gridPane = new GridPane();
+                gridPane.setAlignment(Pos.CENTER);
+                gridPane.setVgap(20);
+                gridPane.setHgap(20);
+                gridPane.addColumn(0, productLabel, startLabel, endLabel, priceLabel);
+                gridPane.addColumn(1, productText, startText, endText, priceText);
+
+                ScrollPane scrollPane = new ScrollPane(gridPane);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setFitToHeight(true);
+
+                return scrollPane;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

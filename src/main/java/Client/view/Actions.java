@@ -741,4 +741,57 @@ public class Actions {
             }
         });
     }
+
+    public static boolean createBid(ArrayList<String> info) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validateInteger(info.get(0))) {
+            alert.setContentText("Enter a number as product ID.");
+            alert.show();
+        } else if (!Validation.validateDate(info.get(1))) {
+            alert.setContentText("Start date format is not valid.");
+            alert.show();
+        } else if (!Validation.validateDate(info.get(2))) {
+            alert.setContentText("End date format is not valid.");
+            alert.show();
+        } else if (!Validation.validateLong(info.get(3))) {
+            alert.setContentText("Price format is not valid.");
+            alert.show();
+        } else {
+            getDataOutputStream().writeUTF("seller has product");
+            getDataOutputStream().flush();
+            getDataOutputStream().writeUTF(info.get(0));
+            getDataOutputStream().flush();
+            if (getDataInputStream().readBoolean()) {
+                Date start = null, end = null;
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    start = format.parse(info.get(1));
+                    end = format.parse(info.get(2));
+                } catch (ParseException ex) {
+                    ex.printStackTrace();
+                }
+                if (end.before(start)) {
+                    alert.setContentText("End date should be after start date.");
+                    alert.show();
+                } else {
+                    info.set(1, String.valueOf(start.getTime()));
+                    info.set(2, String.valueOf(end.getTime()));
+                    try {
+                        getDataOutputStream().writeUTF("add bid");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(gson.toJson(info));
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+            } else {
+                alert.setContentText("You don't have this product.");
+                alert.show();
+            }
+        }
+        return false;
+    }
 }
