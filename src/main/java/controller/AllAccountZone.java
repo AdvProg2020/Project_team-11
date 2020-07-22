@@ -71,7 +71,9 @@ public class AllAccountZone {
             filterInfo = BidScene.getFilterInfo();
         return products.stream()
                 .filter(product -> {
-                    if (!product.getStatus().equals("accepted"))
+                    if (!product.getStatus().equals("accepted") && !className.equals("bid"))
+                        return false;
+                    if (!product.getStatus().equals("lock") && className.equals("bid"))
                         return false;
                     if (!filterInfo.getCategory().equals("") && !filterInfo.getCategory().equals("--------") &&
                             !filterInfo.getCategory().equals(product.getCategoryName()))
