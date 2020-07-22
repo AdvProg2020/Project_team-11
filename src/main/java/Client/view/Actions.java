@@ -757,37 +757,45 @@ public class Actions {
             alert.setContentText("Price format is not valid.");
             alert.show();
         } else {
-            // TODO : product stock
             getDataOutputStream().writeUTF("seller has product");
             getDataOutputStream().flush();
             getDataOutputStream().writeUTF(info.get(0));
             getDataOutputStream().flush();
             if (getDataInputStream().readBoolean()) {
-                Date start = null, end = null;
-                try {
-                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    start = format.parse(info.get(1));
-                    end = format.parse(info.get(2));
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
-                }
-                if (end.before(start)) {
-                    alert.setContentText("End date should be after start date.");
-                    alert.show();
-                } else {
-                    info.set(1, String.valueOf(start.getTime()));
-                    info.set(2, String.valueOf(end.getTime()));
+                getDataOutputStream().writeUTF("get product stock");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeUTF(info.get(0));
+                getDataOutputStream().flush();
+                int stock = getDataInputStream().readInt();
+                if (stock > 0) {
+                    Date start = null, end = null;
                     try {
-                        getDataOutputStream().writeUTF("add bid");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(gson.toJson(info));
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
-                        //TODO : lock the product
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        start = format.parse(info.get(1));
+                        end = format.parse(info.get(2));
+                    } catch (ParseException ex) {
+                        ex.printStackTrace();
                     }
-                    return true;
+                    if (end.before(start)) {
+                        alert.setContentText("End date should be after start date.");
+                        alert.show();
+                    } else {
+                        info.set(1, String.valueOf(start.getTime()));
+                        info.set(2, String.valueOf(end.getTime()));
+                        try {
+                            getDataOutputStream().writeUTF("add bid");
+                            getDataOutputStream().flush();
+                            getDataOutputStream().writeUTF(gson.toJson(info));
+                            getDataOutputStream().flush();
+                            getDataInputStream().readUTF();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                } else {
+                    alert.setContentText("Stock is empty.");
+                    alert.show();
                 }
             } else {
                 alert.setContentText("You don't have this product.");

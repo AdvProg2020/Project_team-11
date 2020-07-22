@@ -593,7 +593,6 @@ public class Server {
                             foundListType = new TypeToken<ArrayList<String>>(){}.getType();
                             info = gson.fromJson(data, foundListType);
                             SellerZone.createBid(info, currentAccount);
-                            SellerZone.createBid(info, currentAccount);
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
@@ -641,6 +640,11 @@ public class Server {
                             break;
                         case "get wallet":
                             dataOutputStream.writeLong(((Buyer) currentAccount).getWallet());
+                            dataOutputStream.flush();
+                            break;
+                        case "get product stock":
+                            productId = Integer.parseInt(dataInputStream.readUTF());
+                            dataOutputStream.writeInt(SellerZone.getProductById(productId).getGeneralFeature().getStockStatus());
                             dataOutputStream.flush();
                             break;
                         case "exit":

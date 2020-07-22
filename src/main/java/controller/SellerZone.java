@@ -216,6 +216,7 @@ public class SellerZone {
         long endDateMilliSec = Long.parseLong(info.get(2));
         new Bid(Integer.parseInt(info.get(0)), new Date(startDateMilliSec), new Date(endDateMilliSec),
                 account.getUsername(), Long.parseLong(info.get(3)));
+        getProductById(Integer.parseInt(info.get(0))).setStatus("lock");
     }
 
     public static String getBidIdByProductId(int productId) {
