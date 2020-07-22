@@ -205,8 +205,9 @@ public class SellerZone {
     public static ArrayList<String> getBidDetails(Account account) {
         for (Bid bid : DataBase.getDataBase().getAllBids()) {
             if (bid.getSellerName().equals(account.getUsername()))
-                return new ArrayList<>(Arrays.asList(String.valueOf(bid.getProductId()), bid.getStartDate().toString(),
-                        bid.getEndDate().toString(), String.valueOf(bid.getMaxPrice())));
+                if (AllAccountZone.getCurrentDate().before(bid.getEndDate()))
+                    return new ArrayList<>(Arrays.asList(String.valueOf(bid.getProductId()), bid.getStartDate().toString(),
+                            bid.getEndDate().toString(), String.valueOf(bid.getMaxPrice())));
         }
         return null;
     }
@@ -214,9 +215,22 @@ public class SellerZone {
     public static void createBid(ArrayList<String> info, Account account) {
         long startDateMilliSec = Long.parseLong(info.get(1));
         long endDateMilliSec = Long.parseLong(info.get(2));
-        new Bid(Integer.parseInt(info.get(0)), new Date(startDateMilliSec), new Date(endDateMilliSec),
+        Bid bid = new Bid(Integer.parseInt(info.get(0)), new Date(startDateMilliSec), new Date(endDateMilliSec),
                 account.getUsername(), Long.parseLong(info.get(3)));
-        getProductById(Integer.parseInt(info.get(0))).setStatus("lock");
+        getProductById(bid.getProductId()).setStatus("lock");
+        new Thread(() -> {
+            try {
+                Thread.sleep(bid.getEndDate().getTime() - AllAccountZone.getCurrentDate().getTime());
+                if (!bid.getOfferedPrice().isEmpty()) {
+                    Account seller = AllAccountZone.getAccountByUsername(bid.getSellerName());
+                    Account buyer = AllAccountZone.getAccountByUsername(bid.getOfferedPrice().get(bid.getMaxPrice()));
+                    BuyerZone.payBidMoney(seller, buyer, bid.getMaxPrice(), bid.getProductId());
+                }
+                getProductById(bid.getProductId()).setStatus("accepted");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static String getBidIdByProductId(int productId) {
@@ -240,6 +254,7 @@ public class SellerZone {
         if (bid.getMaxPrice() >= offeredPrice) {
             return "failed";
         } else {
+            //TODO : lock buyer money
             bid.getOfferedPrice().put(offeredPrice, account.getUsername());
             bid.setMaxPrice(offeredPrice);
             return "done";

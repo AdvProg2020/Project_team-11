@@ -248,4 +248,31 @@ public class BuyerZone {
         }
         return discounts;
     }
+
+    public static void payBidMoney(Account sellerAccount, Account buyerAccount, long price, int productId) {
+        Buyer buyer = ((Buyer) buyerAccount);
+        long newMoney = buyer.getWallet() - price;
+        buyer.setWallet(newMoney);
+        int commission = DataBase.getDataBase().getBankOperation().getCommission();
+        Seller seller = (Seller) sellerAccount;
+        newMoney = (long) (seller.getWallet() + price * (1 - (double) commission/100.0));
+        seller.setWallet(newMoney);
+
+        //create logs
+        HashMap<Integer, String> purchasedProducts = new HashMap<>();
+        HashMap<Integer, Integer> numOfProduct = new HashMap<>();
+        Product product = SellerZone.getProductById(productId);
+        purchasedProducts.put(productId, seller.getFirstName() + " " + seller.getLastName());
+        numOfProduct.put(productId, 1);
+        BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), price, 0,
+                purchasedProducts, numOfProduct, buyer.getUsername(), "sending");
+        buyer.addBuyHistory(buyLog);
+
+        SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(),
+                price, 0, product.getGeneralFeature().getName(), 1,
+                buyer.getFirstName() + " " + buyer.getLastName(), product.getGeneralFeature().getSeller(),
+                "sending");
+        seller.addSellHistory(sellLog);
+        product.getGeneralFeature().setStockStatus(product.getGeneralFeature().getStockStatus() - 1);
+    }
 }
