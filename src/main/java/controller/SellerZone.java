@@ -217,4 +217,31 @@ public class SellerZone {
         new Bid(Integer.parseInt(info.get(0)), new Date(startDateMilliSec), new Date(endDateMilliSec),
                 account.getUsername(), Long.parseLong(info.get(3)));
     }
+
+    public static String getBidIdByProductId(int productId) {
+        for (Bid bid : DataBase.getDataBase().getAllBids()) {
+            if (bid.getProductId() == productId)
+                return String.valueOf(bid.getId());
+        }
+        return "";
+    }
+
+    public static Bid getBidById(int bidId) {
+        for (Bid bid : DataBase.getDataBase().getAllBids()) {
+            if (bid.getId() == bidId)
+                return bid;
+        }
+        return null;
+    }
+
+    public static String offerBidPrice(int bidId, long offeredPrice, Account account) {
+        Bid bid = getBidById(bidId);
+        if (bid.getMaxPrice() >= offeredPrice) {
+            return "failed";
+        } else {
+            bid.getOfferedPrice().put(offeredPrice, account.getUsername());
+            bid.setMaxPrice(offeredPrice);
+            return "done";
+        }
+    }
 }

@@ -563,7 +563,7 @@ public class Server {
                             dataOutputStream.writeUTF(gson.toJson(support.getMessages().get(currentAccount.getUsername())));
                             dataOutputStream.flush();
                             break;
-                        case "send message":
+                        case "send message support":
                             username = dataInputStream.readUTF();
                             sender = dataInputStream.readUTF();
                             String message = dataInputStream.readUTF();
@@ -595,6 +595,52 @@ public class Server {
                             SellerZone.createBid(info, currentAccount);
                             SellerZone.createBid(info, currentAccount);
                             dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "get bid products":
+                            dataOutputStream.writeUTF(gson.toJson(AllAccountZone.getBidProducts()));
+                            dataOutputStream.flush();
+                            break;
+                        case "get bid id":
+                            productId = Integer.parseInt(dataInputStream.readUTF());
+                            dataOutputStream.writeUTF(SellerZone.getBidIdByProductId(productId));
+                            dataOutputStream.flush();
+                            break;
+                        case "get bid messages":
+                            int bidId = dataInputStream.readInt();
+                            dataOutputStream.writeUTF(gson.toJson(SellerZone.getBidById(bidId).getMessages()));
+                            dataOutputStream.flush();
+                            break;
+                        case "get username":
+                            dataOutputStream.writeUTF(currentAccount.getUsername());
+                            dataOutputStream.flush();
+                            break;
+                        case "get bid offers":
+                            bidId = dataInputStream.readInt();
+                            dataOutputStream.writeUTF(gson.toJson(SellerZone.getBidById(bidId).getOfferedPrice()));
+                            dataOutputStream.flush();
+                            break;
+                        case "send message bid":
+                            bidId = dataInputStream.readInt();
+                            message = dataInputStream.readUTF();
+                            SellerZone.getBidById(bidId).getMessages()
+                                    .add(new HashMap<>(Map.of(currentAccount.getUsername(), message)));
+                            dataOutputStream.writeUTF("done");
+                            dataOutputStream.flush();
+                            break;
+                        case "get bid price":
+                            bidId = dataInputStream.readInt();
+                            dataOutputStream.writeLong(SellerZone.getBidById(bidId).getMaxPrice());
+                            dataOutputStream.flush();
+                            break;
+                        case "offer bid price":
+                            bidId = dataInputStream.readInt();
+                            long offeredPrice = Long.parseLong(dataInputStream.readUTF());
+                            dataOutputStream.writeUTF(SellerZone.offerBidPrice(bidId, offeredPrice, currentAccount));
+                            dataOutputStream.flush();
+                            break;
+                        case "get wallet":
+                            dataOutputStream.writeLong(((Buyer) currentAccount).getWallet());
                             dataOutputStream.flush();
                             break;
                         case "exit":

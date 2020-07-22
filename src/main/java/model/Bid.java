@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -10,8 +11,9 @@ public class Bid {
     private Date startDate;
     private Date endDate;
     private String sellerName;
-    private HashMap<String, Long> offeredPrice;
+    private HashMap<Long, String> offeredPrice;
     private long maxPrice;
+    private ArrayList<HashMap<String, String>> messages;
 
     public Bid(int productId, Date startDate, Date endDate, String sellerName, long maxPrice) {
         this.id = numOfAllBids;
@@ -22,6 +24,7 @@ public class Bid {
         this.sellerName = sellerName;
         this.offeredPrice = new HashMap<>();
         this.maxPrice = maxPrice;
+        messages = new ArrayList<>();
         DataBase.getDataBase().setAllBids(this);
     }
 
@@ -45,8 +48,12 @@ public class Bid {
         return sellerName;
     }
 
-    public HashMap<String, Long> getOfferedPrice() {
+    public HashMap<Long, String> getOfferedPrice() {
         return offeredPrice;
+    }
+
+    public ArrayList<HashMap<String, String>> getMessages() {
+        return messages;
     }
 
     public long getMaxPrice() {

@@ -36,8 +36,10 @@ public class AllAccountZone {
         }
         if (className.equals("products"))
             ProductScene.getFilterInfo().setFeature(feature);
-        else
+        else if (className.equals("auction"))
             AuctionScene.getFilterInfo().setFeature(feature);
+        else if (className.equals("bid"))
+            BidScene.getFilterInfo().setFeature(feature);
     }
 
     public static ArrayList<Product> getProductsInSortAndFiltered(ArrayList<Product> products, String className) {
@@ -55,12 +57,18 @@ public class AllAccountZone {
         return new ArrayList<>(productsOut);
     }
 
+    public static ArrayList<Product> getBidProductInSortAndFiltered(ArrayList<Product> products, String className) {
+        return new ArrayList<>(getProductsInSortAndFiltered(products, className));
+    }
+
     private static List<Product> getFilteredProduct(List<Product> products, String className) {
         FilterInfo filterInfo;
         if (className.equals("products"))
             filterInfo = ProductScene.getFilterInfo();
-        else
+        else if (className.equals("auction"))
             filterInfo = AuctionScene.getFilterInfo();
+        else
+            filterInfo = BidScene.getFilterInfo();
         return products.stream()
                 .filter(product -> {
                     if (!product.getStatus().equals("accepted"))
@@ -91,8 +99,10 @@ public class AllAccountZone {
         String sort;
         if (className.equals("products"))
             sort = ProductScene.getSort();
-        else
+        else if (className.equals("auction"))
             sort = AuctionScene.getSort();
+        else
+            sort = BidScene.getSort();
         return filteredProducts.stream().sorted((p1, p2) -> {
             if (sort.equals("price(ascending)")) {
                 return Long.compare(p1.getGeneralFeature().getAuctionPrice(),
@@ -291,5 +301,16 @@ public class AllAccountZone {
             }
         }
         return null;
+    }
+
+    public static ArrayList<Product> getBidProducts() {
+        ArrayList<Product> products = new ArrayList<>();
+        for (Bid bid : DataBase.getDataBase().getAllBids()) {
+            if (bid.getStartDate().before(getCurrentDate()) && bid.getEndDate().after(getCurrentDate())) {
+                Product product = SellerZone.getProductById(bid.getProductId());
+                products.add(product);
+            }
+        }
+        return products;
     }
 }

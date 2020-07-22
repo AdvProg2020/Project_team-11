@@ -267,7 +267,7 @@ public class ProductScene {
         }
     }
 
-    private static ImageView getRateImage(String score) throws FileNotFoundException {
+    public static ImageView getRateImage(String score) throws FileNotFoundException {
         switch (score) {
             case "0.0":
                 return new ImageView(new Image(new FileInputStream("Styles/Photos/0.png")));

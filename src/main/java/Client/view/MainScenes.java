@@ -122,12 +122,14 @@ public class MainScenes {
         signIn.setOnMouseClicked(e -> borderPane.setCenter(getSignInRoot()));
         signIn.getStyleClass().add("top-buttons");
         signInOrOut = signIn;
+
         Button products = createButton("Products", 200);
         products.setOnAction(e -> {
             borderPane.setCenter(ProductScene.getProductsRoot());
             borderPane.setLeft(null);
         });
         products.getStyleClass().add("top-buttons");
+
         Button auctions = createButton("Auction", 200);
         auctions.setOnMouseClicked(e -> {
             borderPane.setCenter(AuctionScene.getAuctionsRoot());
@@ -135,7 +137,14 @@ public class MainScenes {
         });
         auctions.getStyleClass().add("top-buttons");
 
-        HBox hBox = new HBox(20, products, auctions, signIn);
+        Button bids = createButton("Bids", 200);
+        bids.setOnMouseClicked(e -> {
+            borderPane.setCenter(BidScene.getBidRoot());
+            borderPane.setLeft(null);
+        });
+        bids.getStyleClass().add("top-buttons");
+
+        HBox hBox = new HBox(20, products, auctions, bids, signIn);
         hBox.setPadding(new Insets(20, 20, 20, 20));
         hBox.setAlignment(Pos.CENTER);
 

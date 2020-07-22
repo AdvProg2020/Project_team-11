@@ -14,8 +14,4 @@ public class Support extends Account {
     public HashMap<String, ArrayList<HashMap<String, String>>> getMessages() {
         return messages;
     }
-
-    public void setMessages(HashMap<String, ArrayList<HashMap<String, String>>> messages) {
-        this.messages = messages;
-    }
 }

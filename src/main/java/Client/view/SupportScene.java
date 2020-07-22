@@ -92,7 +92,7 @@ public class SupportScene {
                 message.setAlignment(Pos.CENTER_RIGHT);
                 messageVBox.getChildren().add(message);
                 try {
-                    getDataOutputStream().writeUTF("send message");
+                    getDataOutputStream().writeUTF("send message support");
                     getDataOutputStream().flush();
                     getDataOutputStream().writeUTF("me"); //TODO : forbidden username
                     getDataOutputStream().flush();

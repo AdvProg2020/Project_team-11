@@ -110,7 +110,7 @@ public class Actions {
                     button.setMinWidth(200);
                     button.setAlignment(Pos.CENTER);
                     button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
                     button.fire();
                 } else if (result.contains("support")) {
                     Button button = new Button("Support");
@@ -121,7 +121,7 @@ public class Actions {
                     button.setMinWidth(200);
                     button.setAlignment(Pos.CENTER);
                     button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
                     button.fire();
                 } else if (result.contains("seller")) {
                     Button button = new Button("Seller");
@@ -132,7 +132,7 @@ public class Actions {
                     button.setMinWidth(200);
                     button.setAlignment(Pos.CENTER);
                     button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
                     button.fire();
                 } else {
                     Button button = new Button("Buyer");
@@ -143,7 +143,7 @@ public class Actions {
                     button.setMinWidth(200);
                     button.setAlignment(Pos.CENTER);
                     button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(2, button);
+                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
                     button.fire();
                 }
 
@@ -156,7 +156,7 @@ public class Actions {
     }
 
     public static void logout() {
-        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().remove(2);
+        ((HBox) MainScenes.getBorderPane().getTop()).getChildren().remove(3);
         try {
             getDataOutputStream().writeUTF("logout");
             getDataOutputStream().flush();
@@ -757,6 +757,7 @@ public class Actions {
             alert.setContentText("Price format is not valid.");
             alert.show();
         } else {
+            // TODO : product stock
             getDataOutputStream().writeUTF("seller has product");
             getDataOutputStream().flush();
             getDataOutputStream().writeUTF(info.get(0));
@@ -782,6 +783,7 @@ public class Actions {
                         getDataOutputStream().writeUTF(gson.toJson(info));
                         getDataOutputStream().flush();
                         getDataInputStream().readUTF();
+                        //TODO : lock the product
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -790,6 +792,55 @@ public class Actions {
             } else {
                 alert.setContentText("You don't have this product.");
                 alert.show();
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkBidPrice(String offeredPrice, int bidId) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        if (!Validation.validateLong(offeredPrice)) {
+            alert.setContentText("Price format is not valid.");
+            alert.show();
+        } else {
+            try {
+                getDataOutputStream().writeUTF("get wallet");
+                getDataOutputStream().flush();
+                long wallet = getDataInputStream().readLong();
+
+                getDataOutputStream().writeUTF("get bid price");
+                getDataOutputStream().flush();
+                getDataOutputStream().writeInt(bidId);
+                getDataOutputStream().flush();
+                long price = getDataInputStream().readLong();
+
+                if (Long.parseLong(offeredPrice) <= price) {
+                    alert.setContentText("Offer price more than " + price + "$.");
+                    alert.show();
+                } else if (Long.parseLong(offeredPrice) > wallet) {
+                    alert.setContentText("Charge your wallet. You have only " + wallet + "$.");
+                    alert.show();
+                } else {
+                    getDataOutputStream().writeUTF("offer bid price");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeInt(bidId);
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(offeredPrice);
+                    getDataOutputStream().flush();
+                    if (getDataInputStream().readUTF().equals("done")) {
+                        return true;
+                    } else {
+                        getDataOutputStream().writeUTF("get bid price");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeInt(bidId);
+                        getDataOutputStream().flush();
+                        price = getDataInputStream().readLong();
+                        alert.setContentText("Offer price more than " + price + "$.");
+                        alert.show();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return false;

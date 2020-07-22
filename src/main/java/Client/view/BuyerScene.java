@@ -630,7 +630,7 @@ public class BuyerScene {
                 message.setAlignment(Pos.CENTER_RIGHT);
                 messageVBox.getChildren().add(message);
                 try {
-                    getDataOutputStream().writeUTF("send message");
+                    getDataOutputStream().writeUTF("send message support");
                     getDataOutputStream().flush();
                     getDataOutputStream().writeUTF(supportUsername);
                     getDataOutputStream().flush();
