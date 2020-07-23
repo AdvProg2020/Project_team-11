@@ -111,11 +111,12 @@ public class BuyerZone {
         }
     }
 
-    public static void payMoney(Account account, String payType, DataOutputStream dos, DataInputStream dis) throws IOException {
+    public static void payMoney(Account account, String payType, DataOutputStream dos, DataInputStream dis,
+                                String address, String number) throws IOException {
         Buyer buyer = ((Buyer) account);
         decreaseBuyerMoney(buyer, payType, dos, dis);
         increaseSellerMoney(buyer);
-        createLogs(buyer);
+        createLogs(buyer, address, number);
         removeActiveDiscount(buyer);
         buyer.getCart().clear();
     }
@@ -160,7 +161,7 @@ public class BuyerZone {
         }
     }
 
-    private static void createLogs(Buyer buyer) {
+    private static void createLogs(Buyer buyer, String address, String number) {
         long paidAmount = calculatePriceWithDiscountsAndAuctions(buyer);
         long totalPrice = calculatePriceWithAuctions(buyer);
         HashMap<Integer, String> purchasedProducts = new HashMap<>();
@@ -172,7 +173,7 @@ public class BuyerZone {
             numOfProduct.put(productId, buyer.getCart().get(productId));
         }
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), paidAmount, totalPrice - paidAmount,
-                purchasedProducts, numOfProduct, buyer.getUsername(), "sending");
+                purchasedProducts, numOfProduct, buyer.getUsername(), "Wait for admin", address, number);
         buyer.addBuyHistory(buyLog);
         for (Map.Entry<Integer, Integer> entry : buyer.getCart().entrySet()) {
             Product product = SellerZone.getProductById(entry.getKey());
@@ -265,7 +266,7 @@ public class BuyerZone {
         purchasedProducts.put(productId, seller.getFirstName() + " " + seller.getLastName());
         numOfProduct.put(productId, 1);
         BuyLog buyLog = new BuyLog(AllAccountZone.getCurrentDate(), price, 0,
-                purchasedProducts, numOfProduct, buyer.getUsername(), "sending");
+                purchasedProducts, numOfProduct, buyer.getUsername(), "Wait for admin", "bid -_-", "");
         buyer.addBuyHistory(buyLog);
 
         SellLog sellLog = new SellLog(AllAccountZone.getCurrentDate(),

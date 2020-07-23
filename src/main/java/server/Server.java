@@ -357,12 +357,28 @@ public class Server {
                             break;
                         case "pay":
                             String type = dataInputStream.readUTF();
-                            BuyerZone.payMoney(currentAccount, type, bankDataOutputStream, bankDataInputStream);
+                            String address = dataInputStream.readUTF();
+                            String number = dataInputStream.readUTF();
+                            BuyerZone.payMoney(currentAccount, type, bankDataOutputStream, bankDataInputStream, address, number);
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
                         case "get orders":
                             dataOutputStream.writeUTF(gson.toJson(BuyerZone.getOrdersInfo(currentAccount)));
+                            dataOutputStream.flush();
+                            break;
+                        case "get all buy logs":
+                            dataOutputStream.writeUTF(gson.toJson(AdminZone.getAllOrders()));
+                            dataOutputStream.flush();
+                            break;
+                        case "get buy log address":
+                            dataOutputStream.writeUTF(gson.toJson(AdminZone.getOrderAddress()));
+                            dataOutputStream.flush();
+                            break;
+                        case "send buy log":
+                            int logId = Integer.parseInt(dataInputStream.readUTF());
+                            AdminZone.sendBuyLog(logId);
+                            dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break;
                         case "get buyer discounts":

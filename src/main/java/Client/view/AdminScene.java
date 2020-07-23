@@ -65,7 +65,12 @@ public class AdminScene {
         bankServices.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageBankServices()));
         bankServices.getStyleClass().add("account-button");
 
-        VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories, bankServices);
+        Button sendStatus = createButton("Send Status", 300);
+        sendStatus.setMinHeight(50);
+        sendStatus.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(manageBoughtProduct()));
+        sendStatus.getStyleClass().add("account-button");
+
+        VBox vBox = new VBox(personalInfo, users, products, discountCodes, requests, categories, bankServices, sendStatus);
         vBox.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane scrollPane = new ScrollPane(vBox);
@@ -1131,6 +1136,62 @@ public class AdminScene {
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(20);
         gridPane.setVgap(20);
+
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        return scrollPane;
+    }
+
+    public static Parent manageBoughtProduct() {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(20);
+        gridPane.setVgap(20);
+        gridPane.addRow(0, createLabel("Buy Logs", 400),
+                createLabel("Address & Phone number", 300));
+
+        ArrayList<String> orders = new ArrayList<>();
+        ArrayList<String> addresses = new ArrayList<>();
+        try {
+            getDataOutputStream().writeUTF("get all buy logs");
+            getDataOutputStream().flush();
+            String data = getDataInputStream().readUTF();
+            Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
+            orders = gson.fromJson(data, foundListType);
+
+            getDataOutputStream().writeUTF("get buy log address");
+            getDataOutputStream().flush();
+            data = getDataInputStream().readUTF();
+            addresses = gson.fromJson(data, foundListType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int i = 1;
+        for (String order : orders) {
+            Label buyLog = createLabel(order, 400);
+            gridPane.add(buyLog, 0, i);
+            Label address = createLabel(addresses.get(i - 1), 300);
+            gridPane.add(address, 1, i);
+            if (order.contains("Wait for admin")) {
+                Button send = createButton("Send Products", 100);
+                send.setOnMouseClicked(e -> {
+                    try {
+                        getDataOutputStream().writeUTF("send buy log");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(order.substring(0, order.indexOf('.')));
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                        MainScenes.getBorderPane().setCenter(manageBoughtProduct());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                gridPane.add(send, 2, i);
+            }
+        }
 
         ScrollPane scrollPane = new ScrollPane(gridPane);
         scrollPane.setFitToWidth(true);

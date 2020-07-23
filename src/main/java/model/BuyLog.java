@@ -10,9 +10,13 @@ public class BuyLog extends ExchangeLog {
     private HashMap<Integer, Integer> numOfProduct;//product ID , number
     private final String buyerUsername;
     private String deliveryStatus;
+    private String buyerAddress;
+    private String phoneNumber;
 
-    public BuyLog(Date date, long paidAmount, long discountAmountApplied, HashMap<Integer, String> purchasedProductionsAndSellers,
-                  HashMap<Integer, Integer> numOfProduct, String buyerUsername, String deliveryStatus) {
+    public BuyLog(Date date, long paidAmount, long discountAmountApplied,
+                  HashMap<Integer, String> purchasedProductionsAndSellers,
+                  HashMap<Integer, Integer> numOfProduct, String buyerUsername, String deliveryStatus,
+                  String buyerAddress, String phoneNumber) {
         super(date);
         this.paidAmount = paidAmount;
         this.discountAmountApplied = discountAmountApplied;
@@ -20,6 +24,8 @@ public class BuyLog extends ExchangeLog {
         this.numOfProduct = numOfProduct;
         this.buyerUsername = buyerUsername;
         this.deliveryStatus = deliveryStatus;
+        this.buyerAddress = buyerAddress;
+        this.phoneNumber = phoneNumber;
     }
 
     public long getPaidAmount() {
@@ -40,5 +46,17 @@ public class BuyLog extends ExchangeLog {
 
     public String getBuyerUsername() {
         return buyerUsername;
+    }
+
+    public String getBuyerAddress() {
+        return buyerAddress;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
     }
 }

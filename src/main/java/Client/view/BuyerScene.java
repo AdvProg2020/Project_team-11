@@ -264,7 +264,7 @@ public class BuyerScene {
                     if (result.equals("Discount applied.")) {
                         alert.setContentText("Discount applied.");
                         alert.show();
-                        paymentRoot();
+                        paymentRoot(address.getText(), phoneNumber.getText());
                     } else {
                         alert.setAlertType(Alert.AlertType.ERROR);
                         alert.setContentText(result);
@@ -275,7 +275,7 @@ public class BuyerScene {
             Button next = createButton("Next", 500);
             next.setOnMouseClicked(event -> {
                 if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText())) {
-                    paymentRoot();
+                    paymentRoot(address.getText(), phoneNumber.getText());
                 }
             });
             Button back = createButton("Back", 500);
@@ -420,7 +420,7 @@ public class BuyerScene {
         return vBox;
     }
 
-    private static void paymentRoot() {
+    private static void paymentRoot(String address, String phoneNumber) {
         long priceWithDiscount = 0, totalPrice = 0;
         boolean hasFile = false;
         try {
@@ -483,6 +483,10 @@ public class BuyerScene {
                         getDataOutputStream().flush();
                         getDataOutputStream().writeUTF("wallet");
                         getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(address);
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(phoneNumber);
+                        getDataOutputStream().flush();
                         getDataInputStream().readUTF();
                         alert.setContentText("Purchase Completed.\nThank you for buying.");
                         alert.show();
@@ -534,6 +538,10 @@ public class BuyerScene {
                         getDataOutputStream().writeUTF("pay");
                         getDataOutputStream().flush();
                         getDataOutputStream().writeUTF("bank");
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(address);
+                        getDataOutputStream().flush();
+                        getDataOutputStream().writeUTF(phoneNumber);
                         getDataOutputStream().flush();
                         getDataInputStream().readUTF();
                         alert.setContentText("Purchase Completed.\nThank you for buying.");

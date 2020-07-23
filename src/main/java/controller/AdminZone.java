@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 public class AdminZone {
 
@@ -452,5 +453,42 @@ public class AdminZone {
                 DataBase.getDataBase().getBankOperation().setMinimumMoney(Long.parseLong(newValue));
                 break;
         }
+    }
+
+    public static void sendBuyLog(int logId) {
+        for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
+            if (log.getId() == logId) {
+                ((BuyLog) log).setDeliveryStatus("Sending");
+            }
+        }
+    }
+
+    public static ArrayList<String> getAllOrders() {
+        ArrayList<String> buyLogs = new ArrayList<>();
+        StringBuilder productList = new StringBuilder();
+        for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
+            if (log instanceof BuyLog) {
+                BuyLog buyLog = (BuyLog) log;
+                for (Map.Entry<Integer, String> entry : buyLog.getPurchasedProductionsAndSellers().entrySet()) {
+                    productList.append(SellerZone.getProductById(entry.getKey()).getGeneralFeature().getName())
+                            .append(" seller : ").append(entry.getValue()).append("\n");
+                }
+                buyLogs.add(buyLog.getId() + ". " + buyLog.getDate() + " : \n\n" + productList + "\n" +
+                        buyLog.getPaidAmount() + "$ -> Discount = " + buyLog.getDiscountAmountApplied() + "$\n" +
+                        buyLog.getDeliveryStatus());
+            }
+        }
+        return buyLogs;
+    }
+
+    public static ArrayList<String> getOrderAddress() {
+        ArrayList<String> addresses = new ArrayList<>();
+        for (ExchangeLog log : DataBase.getDataBase().getAllLogs()) {
+            if (log instanceof BuyLog) {
+                BuyLog buyLog = (BuyLog) log;
+                addresses.add(buyLog.getBuyerAddress() + "\n" + buyLog.getPhoneNumber());
+            }
+        }
+        return addresses;
     }
 }
