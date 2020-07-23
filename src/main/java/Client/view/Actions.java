@@ -1,6 +1,7 @@
 package Client.view;
 
 import com.google.gson.Gson;
+import controller.FileProcess;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -13,13 +14,11 @@ import javafx.scene.layout.VBox;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static Client.view.MainScenes.getSignInRoot;
 import static Client.view.ClientHandler.getDataInputStream;
@@ -474,7 +473,8 @@ public class Actions {
         });
     }
 
-    public static boolean createProduct(ArrayList<String> info, HashMap<String, String> features, ImageView imageView, boolean hasImage) {
+    public static boolean createProduct(ArrayList<String> info, HashMap<String, String> features, ImageView imageView,
+                                        boolean hasImage, File file, String extension) {
         boolean isFeaturesComplete = true;
         for (Map.Entry<String, String> entry : features.entrySet()) {
             if (!Validation.validateNames(entry.getValue())) {
@@ -523,6 +523,19 @@ public class Actions {
                 try {
                     ImageIO.write(bufferedImage, "png", new File("Styles/Photos/p" + productId + ".png"));
                 } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (extension.equals("txt")) {
+                try {
+                    Formatter formatter = FileProcess.openFileToWrite("resources\\files\\p" + productId + "." + extension);
+                    Scanner scanner = new Scanner(file);
+                    while (scanner.hasNextLine()) {
+                        formatter.format(scanner.nextLine() + "\n");
+                    }
+                    formatter.close();
+                    scanner.close();
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
             }

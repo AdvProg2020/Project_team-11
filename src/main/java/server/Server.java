@@ -647,6 +647,14 @@ public class Server {
                             dataOutputStream.writeInt(SellerZone.getProductById(productId).getGeneralFeature().getStockStatus());
                             dataOutputStream.flush();
                             break;
+                        case "has file in cart":
+                            dataOutputStream.writeBoolean(BuyerZone.hasFileInCart(currentAccount));
+                            dataOutputStream.flush();
+                            break;
+                        case "get files id in cart":
+                            dataOutputStream.writeUTF(gson.toJson(BuyerZone.getFilesInCart(currentAccount)));
+                            dataOutputStream.flush();
+                            break;
                         case "exit":
                             FileProcess.writeDataBaseOnFile();
                             dataOutputStream.writeUTF("done");

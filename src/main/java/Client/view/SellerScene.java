@@ -460,6 +460,8 @@ public class SellerScene {
 
             ImageView imageView = null;
             final boolean[] hasImage = {false};
+            final String[] fileExtension = new String[1];
+            final File[] file = new File[1];
             try {
                 imageView = new javafx.scene.image.ImageView(new Image(new FileInputStream("Styles/Photos/Drag & Drop.png")));
                 imageView.setFitWidth(300);
@@ -475,9 +477,20 @@ public class SellerScene {
 
                 imageView.setOnDragDropped(event -> {
                     List<File> files = event.getDragboard().getFiles();
+                    List<String> validExtensions = Arrays.asList("png", "jpg", "txt");
                     try {
-                        finalImageView.setImage(new Image(new FileInputStream(files.get(0))));
-                        hasImage[0] = true;
+                        if (validExtensions.contains(getExtension(files.get(0).getName()))) {
+                            fileExtension[0] = getExtension(files.get(0).getName());
+                            file[0] = files.get(0);
+                            if (fileExtension[0].equals("png") || fileExtension[0].equals("jpg")) {
+                                finalImageView.setImage(new Image(new FileInputStream(files.get(0))));
+                                hasImage[0] = true;
+                            }
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setContentText("Dropped file extension should be one of these : \npng / jpg / txt");
+                            alert.show();
+                        }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -485,6 +498,7 @@ public class SellerScene {
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
+
             TextField name = createTextField("Name", 300);
             TextField company = createTextField("Company", 300);
             TextField price = createTextField("Price", 300);
@@ -549,7 +563,7 @@ public class SellerScene {
                             price.getText(), stock.getText(), description.getText(), category.getText())),
                             productFeature,
                             finalImageView1,
-                            hasImage[0])) {
+                            hasImage[0], file[0], fileExtension[0])) {
                         MainScenes.getBorderPane().setCenter(manageProducts());
                     }
                 }
@@ -582,6 +596,13 @@ public class SellerScene {
         scrollPane.setFitToHeight(true);
 
         return scrollPane;
+    }
+
+    private static String getExtension(String fileName) {
+        int i = fileName.lastIndexOf('.');
+        if (i > 0 && i < fileName.length() - 1)
+            return fileName.substring(i + 1).toLowerCase();
+        return "";
     }
 
     private static Parent showCategories() {

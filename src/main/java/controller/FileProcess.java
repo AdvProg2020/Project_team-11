@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class FileProcess {
 
-    private static Formatter openFileToWrite(String address) {
+    public static Formatter openFileToWrite(String address) {
         Formatter formatter = null;
         try {
             new File(address.substring(0, address.lastIndexOf("\\"))).mkdir();

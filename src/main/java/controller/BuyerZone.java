@@ -275,4 +275,22 @@ public class BuyerZone {
         seller.addSellHistory(sellLog);
         product.getGeneralFeature().setStockStatus(product.getGeneralFeature().getStockStatus() - 1);
     }
+
+    public static boolean hasFileInCart(Account account) {
+        for (Integer productId : ((Buyer) account).getCart().keySet()) {
+            if (SellerZone.getProductById(productId).getCategoryName().equalsIgnoreCase("file"))
+                return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Integer> getFilesInCart(Account account) {
+        ArrayList<Integer> productIds = new ArrayList<>();
+        for (Integer productId : ((Buyer) account).getCart().keySet()) {
+            if (SellerZone.getProductById(productId).getCategoryName().equalsIgnoreCase("file")) {
+                productIds.add(productId);
+            }
+        }
+        return productIds;
+    }
 }

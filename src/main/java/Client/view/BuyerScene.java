@@ -2,6 +2,7 @@ package Client.view;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import controller.FileProcess;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -11,13 +12,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
@@ -422,6 +422,7 @@ public class BuyerScene {
 
     private static void paymentRoot() {
         long priceWithDiscount = 0, totalPrice = 0;
+        boolean hasFile = false;
         try {
             getDataOutputStream().writeUTF("price with auction");
             getDataOutputStream().flush();
@@ -429,81 +430,135 @@ public class BuyerScene {
             getDataOutputStream().writeUTF("buyer price");
             getDataOutputStream().flush();
             priceWithDiscount = getDataInputStream().readLong();
+
+            getDataOutputStream().writeUTF("has file in cart");
+            getDataOutputStream().flush();
+            hasFile = getDataInputStream().readBoolean();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Label filePath = createLabel("Enter Path to save the files", 200);
+        TextField path = createTextField("Path", 200);
+        HBox hBox = new HBox(20, filePath, path);
+        hBox.setAlignment(Pos.CENTER);
         Label price = createLabel("Total Price : " + priceWithDiscount + "$", 200);
         Label discountAmount =
                 createLabel("Discount : " + (totalPrice - priceWithDiscount) + "$", 200);
         Button payWallet = createButton("Pay from wallet", 250);
         Button payBank = createButton("Pay from bank account", 250);
 
+        VBox payInfo = new VBox(20);
+        payInfo.setAlignment(Pos.CENTER);
+        if (hasFile) {
+            payInfo.getChildren().add(hBox);
+        }
+        payInfo.getChildren().addAll(price, discountAmount, payWallet, payBank);
+        MainScenes.getBorderPane().setCenter(payInfo);
+
+        boolean finalHasFile = hasFile;
         payWallet.setOnMouseClicked(ev -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            try {
-                getDataOutputStream().writeUTF("can pay");
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("pay");
+            if (!finalHasFile || path.getText() != null) {
+                try {
+                    getDataOutputStream().writeUTF("can pay");
                     getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF("wallet");
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
-                    alert.setContentText("Purchase Completed.\nThank you for buying.");
-                    alert.show();
-                    MainScenes.getBorderPane().setCenter(viewOrders());
-                } else {
-                    alert.setAlertType(Alert.AlertType.ERROR);
-                    try {
-                        getDataOutputStream().writeUTF("get min money");
+                    if (getDataInputStream().readBoolean()) {
+                        if (finalHasFile) {
+                            getDataOutputStream().writeUTF("get files id in cart");
+                            getDataOutputStream().flush();
+                            String data = getDataInputStream().readUTF();
+                            Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
+                            ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
+                            for (Integer fileId : fileIds) {
+                                Formatter formatter = FileProcess.openFileToWrite(path.getText() + "\\" + fileId + ".txt");
+                                Scanner scanner = new Scanner(new File("resources\\files\\p" + fileId + ".txt"));
+                                while (scanner.hasNextLine()) {
+                                    formatter.format(scanner.nextLine() + "\n");
+                                }
+                                formatter.close();
+                                scanner.close();
+                            }
+                        }
+                        getDataOutputStream().writeUTF("pay");
                         getDataOutputStream().flush();
-                        alert.setContentText("You don't have enough money.\n" +
-                                "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+                        getDataOutputStream().writeUTF("wallet");
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                        alert.setContentText("Purchase Completed.\nThank you for buying.");
+                        alert.show();
+                        MainScenes.getBorderPane().setCenter(viewOrders());
+                    } else {
+                        alert.setAlertType(Alert.AlertType.ERROR);
+                        try {
+                            getDataOutputStream().writeUTF("get min money");
+                            getDataOutputStream().flush();
+                            alert.setContentText("You don't have enough money.\n" +
+                                    "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        alert.show();
                     }
-                    alert.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                alert.setContentText("Enter the path.");
+                alert.show();
             }
         });
 
         payBank.setOnMouseClicked(ev -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            try {
-                getDataOutputStream().writeUTF("can pay");
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("pay");
+            if (!finalHasFile || path.getText() != null) {
+                try {
+                    getDataOutputStream().writeUTF("can pay");
                     getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF("bank");
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
-                    alert.setContentText("Purchase Completed.\nThank you for buying.");
-                    alert.show();
-                    MainScenes.getBorderPane().setCenter(viewOrders());
-                } else {
-                    alert.setAlertType(Alert.AlertType.ERROR);
-                    try {
-                        getDataOutputStream().writeUTF("get min money");
+                    if (getDataInputStream().readBoolean()) {
+                        if (finalHasFile) {
+                            getDataOutputStream().writeUTF("get files id in cart");
+                            getDataOutputStream().flush();
+                            String data = getDataInputStream().readUTF();
+                            Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
+                            ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
+                            for (Integer fileId : fileIds) {
+                                Formatter formatter = FileProcess.openFileToWrite(path.getText() + "\\" + fileId + ".txt");
+                                Scanner scanner = new Scanner(new File("resources\\files\\p" + fileId + ".txt"));
+                                while (scanner.hasNextLine()) {
+                                    formatter.format(scanner.nextLine() + "\n");
+                                }
+                                formatter.close();
+                                scanner.close();
+                            }
+                        }
+                        getDataOutputStream().writeUTF("pay");
                         getDataOutputStream().flush();
-                        alert.setContentText("You don't have enough money.\n" +
-                                "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+                        getDataOutputStream().writeUTF("bank");
+                        getDataOutputStream().flush();
+                        getDataInputStream().readUTF();
+                        alert.setContentText("Purchase Completed.\nThank you for buying.");
+                        alert.show();
+                        MainScenes.getBorderPane().setCenter(viewOrders());
+                    } else {
+                        alert.setAlertType(Alert.AlertType.ERROR);
+                        try {
+                            getDataOutputStream().writeUTF("get min money");
+                            getDataOutputStream().flush();
+                            alert.setContentText("You don't have enough money.\n" +
+                                    "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        alert.show();
                     }
-                    alert.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                alert.setContentText("Enter the path.");
+                alert.show();
             }
         });
-
-        VBox payInfo = new VBox(20);
-        payInfo.setAlignment(Pos.CENTER);
-        payInfo.getChildren().addAll(price, discountAmount, payWallet, payBank);
-        MainScenes.getBorderPane().setCenter(payInfo);
     }
 
     private static Parent viewOrders() {
