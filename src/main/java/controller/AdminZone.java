@@ -205,25 +205,31 @@ public class AdminZone {
         auction.setStatus("accepted");
     }
 
-    public static ArrayList<Client.view.tableViewData.Account> getUsers() {
+    public static ArrayList<Client.view.tableViewData.Account> getUsers(ArrayList<String> onlineAccounts) {
         ArrayList<Client.view.tableViewData.Account> accounts = new ArrayList<>();
         for (Account account : DataBase.getDataBase().getAllAccounts()) {
+            String status;
+            if (onlineAccounts.contains(account.getUsername())) {
+                status = "online";
+            } else {
+                status = "offline";
+            }
             if (account instanceof  Buyer) {
                 accounts.add(new Client.view.tableViewData.Account("Buyer", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
-                        account.getUsername(), account.getPassword(), ((Buyer) account).getWallet(), ""));
+                        account.getUsername(), account.getPassword(), ((Buyer) account).getWallet(), "", status));
             } else if (account instanceof Seller) {
                 accounts.add(new Client.view.tableViewData.Account("Seller", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(), account.getUsername(),
-                        account.getPassword(), ((Seller) account).getWallet(), ((Seller) account).getCompanyName()));
+                        account.getPassword(), ((Seller) account).getWallet(), ((Seller) account).getCompanyName(), status));
             } else if (account instanceof Admin) {
                 accounts.add(new Client.view.tableViewData.Account("Admin", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
-                        account.getUsername(), account.getPassword(), 0, ""));
+                        account.getUsername(), account.getPassword(), 0, "", status));
             } else {
                 accounts.add(new Client.view.tableViewData.Account("Support", account.getFirstName(),
                         account.getLastName(), account.getEmailAddress(), account.getPhoneNumber(),
-                        account.getUsername(), account.getPassword(), 0, ""));
+                        account.getUsername(), account.getPassword(), 0, "", status));
             }
         }
         return accounts;

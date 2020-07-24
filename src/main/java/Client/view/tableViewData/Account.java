@@ -20,9 +20,10 @@ public class Account {
     private String password;
     private long wallet;
     private String companyName;
+    private String onlineStatus;
 
     public Account(String accountType, String firstName, String lastName, String email, String phoneNumber,
-                   String username, String password, long wallet, String companyName) {
+                   String username, String password, long wallet, String companyName, String onlineStatus) {
         this.accountType = accountType;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,6 +33,7 @@ public class Account {
         this.password = password;
         this.companyName = companyName;
         this.wallet = wallet;
+        this.onlineStatus = onlineStatus;
     }
 
     public String getAccountType() {
@@ -104,6 +106,14 @@ public class Account {
 
     public void setWallet(long wallet) {
         this.wallet = wallet;
+    }
+
+    public String getOnlineStatus() {
+        return onlineStatus;
+    }
+
+    public void setOnlineStatus(String onlineStatus) {
+        this.onlineStatus = onlineStatus;
     }
 
     public static ObservableList<Account> getAccounts() {

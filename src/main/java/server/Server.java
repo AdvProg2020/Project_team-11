@@ -16,6 +16,7 @@ public class Server {
     private static final int storeServerPort = 8888;
     private static final int bankServerPort = 9999;
     private static ArrayList<String> onlineSupports = new ArrayList<>();
+    private static ArrayList<String> onlineAccounts = new ArrayList<>();
 
     public static int getBankServerPort() {
         return bankServerPort;
@@ -82,6 +83,7 @@ public class Server {
                             String result = AllAccountZone.loginUser(info);
                             if (result.startsWith("Login successfully")) {
                                 currentAccount = AllAccountZone.getAccountByUsername(info.get(1));
+                                onlineAccounts.add(currentAccount.getUsername());
                                 if (currentAccount instanceof Support)
                                     onlineSupports.add(currentAccount.getUsername());
                             }
@@ -234,7 +236,7 @@ public class Server {
                             dataOutputStream.flush();
                             break;
                         case "get users":
-                            dataOutputStream.writeUTF(gson.toJson(AdminZone.getUsers()));
+                            dataOutputStream.writeUTF(gson.toJson(AdminZone.getUsers(onlineAccounts)));
                             dataOutputStream.flush();
                             break;
                         case "delete user":

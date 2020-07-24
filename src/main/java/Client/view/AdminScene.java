@@ -187,10 +187,14 @@ public class AdminScene {
         companyColumn.setMinWidth(100);
         companyColumn.setCellValueFactory(new PropertyValueFactory<>("companyName"));
 
+        TableColumn<Account, String> onlineColumn = new TableColumn<>("Online Status");
+        onlineColumn.setMinWidth(100);
+        onlineColumn.setCellValueFactory(new PropertyValueFactory<>("onlineStatus"));
+
         TableView<Account> tableView = new TableView<>();
         tableView.setItems(Account.getAccounts());
         tableView.getColumns().addAll(typeColumn, firstNameColumn, lastNameColumn, emailColumn, phoneNumberColumn,
-                usernameColumn, passwordColumn, balanceColumn, companyColumn);
+                usernameColumn, passwordColumn, balanceColumn, companyColumn, onlineColumn);
 
         TextField adminFirstName = createTextField("First Name", 100);
         TextField adminLastName = createTextField("Last Name", 100);
