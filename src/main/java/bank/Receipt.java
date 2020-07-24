@@ -51,6 +51,10 @@ public class Receipt {
         this.paid = paid;
     }
 
+    public static void setAllReceipts(ArrayList<Receipt> allReceipts) {
+        Receipt.allReceipts = allReceipts;
+    }
+
     public static ArrayList<Receipt> getAllReceipts() {
         return allReceipts;
     }

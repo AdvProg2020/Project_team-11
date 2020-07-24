@@ -46,7 +46,7 @@ public class BankServer {
                             if (splitInfo.length == 3) {
                                 String result = Account.getToken(splitInfo[1], splitInfo[2]);
                                 if (!result.startsWith("invalid")) {
-                                    userAndToken.put(splitInfo[1], result);
+                                    userAndToken.put(result, splitInfo[1]);
                                     new Thread(() -> {
                                         try {
                                             Thread.sleep(3600 * 1000);
@@ -71,6 +71,17 @@ public class BankServer {
                                             splitInfo[4],
                                             splitInfo[5],
                                             splitInfo[6]));
+                                } else {
+                                    dataOutputStream.writeUTF("token expired");
+                                }
+                            } else if (splitInfo.length == 6) {
+                                if (userAndToken.containsKey(splitInfo[1])) {
+                                    dataOutputStream.writeUTF(Account.createReceipt(userAndToken.get(splitInfo[1]),
+                                            splitInfo[2],
+                                            splitInfo[3],
+                                            splitInfo[4],
+                                            splitInfo[5],
+                                            ""));
                                 } else {
                                     dataOutputStream.writeUTF("token expired");
                                 }
@@ -104,7 +115,7 @@ public class BankServer {
                             if (splitInfo.length == 2) {
                                 if (userAndToken.containsKey(splitInfo[1])) {
                                     dataOutputStream.writeUTF(String.valueOf(
-                                            Account.getAccountByUsername(splitInfo[1]).getBalance()));
+                                            Account.getAccountByUsername(userAndToken.get(splitInfo[1])).getBalance()));
                                 } else {
                                     dataOutputStream.writeUTF("token expired");
                                 }
@@ -115,7 +126,7 @@ public class BankServer {
                             break;
                         case "exit":
                             if (splitInfo.length == 1) {
-                                // TODO : file
+                                FileProcess.writeDataOnFile();
                                 break outerLoop;
                             } else {
                                 dataOutputStream.writeUTF("invalid parameter passed");
@@ -134,6 +145,9 @@ public class BankServer {
     }
 
     public static void main(String[] args) {
+        if (new File("resources\\bank\\accounts.json").exists()) {
+            FileProcess.initialize();
+        }
         try {
             ServerSocket serverSocket = new ServerSocket(bankServerPort);
             int counter = 1000;

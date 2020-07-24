@@ -30,6 +30,14 @@ public class Account {
         return balance;
     }
 
+    public static ArrayList<Account> getAllAccounts() {
+        return allAccounts;
+    }
+
+    public static void setAllAccounts(ArrayList<Account> allAccounts) {
+        Account.allAccounts = allAccounts;
+    }
+
     public static Account getAccountByUsername(String username) {
         for (Account account : allAccounts) {
             if (account.username.equals(username))
@@ -90,7 +98,7 @@ public class Account {
             return "your input contains invalid characters";
         }
 
-        if (!Validation.validateInteger(sourceId) || !Validation.validateInteger(destId)) {
+        if (!sourceId.matches("-?\\d{1,9}") || !destId.matches("-?\\d{1,9}")) {
             return "invalid parameters passed";
         }
 
