@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class BankServer {
-    private static final int bankServerPort = 9999;
+    private static final int BANK_SERVER_PORT = 9999;
     private static HashMap<String, String> userAndToken = new HashMap<>();
 
     static class ClientHandler extends Thread {
@@ -127,6 +127,8 @@ public class BankServer {
                         case "exit":
                             if (splitInfo.length == 1) {
                                 FileProcess.writeDataOnFile();
+                                dataOutputStream.writeUTF("done");
+                                dataOutputStream.flush();
                                 break outerLoop;
                             } else {
                                 dataOutputStream.writeUTF("invalid parameter passed");
@@ -149,7 +151,7 @@ public class BankServer {
             FileProcess.initialize();
         }
         try {
-            ServerSocket serverSocket = new ServerSocket(bankServerPort);
+            ServerSocket serverSocket = new ServerSocket(BANK_SERVER_PORT);
             int counter = 1000;
             while (true) {
                 Socket socket = serverSocket.accept();

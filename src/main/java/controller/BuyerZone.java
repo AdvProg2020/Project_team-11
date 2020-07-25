@@ -5,12 +5,10 @@ import model.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BuyerZone {
+    private static final long PRICE_FLOOR_TO_GET_DISCOUNT = 500;
 
     public static HashMap<String, Integer> getProductsInCart(Account account) {
         HashMap<String, Integer> products = new HashMap<>();
@@ -123,6 +121,9 @@ public class BuyerZone {
 
     private static void decreaseBuyerMoney(Buyer buyer, String payType, DataOutputStream dos, DataInputStream dis) throws IOException {
         long totalPrice = calculatePriceWithDiscountsAndAuctions(buyer);
+        if (totalPrice > PRICE_FLOOR_TO_GET_DISCOUNT) {
+            giveRewardDiscount(buyer);
+        }
         switch (payType) {
             case "wallet":
                 long newMoney = buyer.getWallet() - totalPrice;
@@ -140,6 +141,21 @@ public class BuyerZone {
                 dos.flush();
                 dis.readUTF();
         }
+    }
+
+    private static void giveRewardDiscount(Buyer buyer) {
+        Discount discount = AdminZone.getDiscountByCode("reward");
+        if (discount == null) {
+            new Discount("reward",
+                    AllAccountZone.getCurrentDate(),
+                    new Date(AllAccountZone.getCurrentDate().getTime() + 24 * 3600 * 1000),
+                    new long[]{40, 200},
+                    1,
+                    new ArrayList<>(Collections.singletonList(buyer.getUsername())));
+        } else {
+            discount.getAllowedUsers().add(buyer.getUsername());
+        }
+        buyer.getDiscountCodes().put("reward", 1);
     }
 
     private static void increaseSellerMoney(Buyer buyer) {
@@ -293,5 +309,20 @@ public class BuyerZone {
             }
         }
         return productIds;
+    }
+
+    public static void giveRandomDiscount(Buyer buyer) {
+        Discount discount = AdminZone.getDiscountByCode("random");
+        if (discount == null) {
+            new Discount("random",
+                    AllAccountZone.getCurrentDate(),
+                    new Date(AllAccountZone.getCurrentDate().getTime() + 24 * 3600 * 1000),
+                    new long[]{20, 200},
+                    1,
+                    new ArrayList<>(Collections.singletonList(buyer.getUsername())));
+        } else {
+            discount.getAllowedUsers().add(buyer.getUsername());
+        }
+        buyer.getDiscountCodes().put("random", 1);
     }
 }

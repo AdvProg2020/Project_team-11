@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler extends Application {
-    private static final int storeServerPort = 8888;
+    private static final int STORE_SERVER_PORT = 8888;
     private static Stage stage;
     private static MediaPlayer mediaPlayer;
     private static DataInputStream dataInputStream;
@@ -48,7 +48,7 @@ public class ClientHandler extends Application {
 
         boolean hasAdmin = false;
         try {
-            Socket socket = new Socket("127.0.0.1", storeServerPort);
+            Socket socket = new Socket("127.0.0.1", STORE_SERVER_PORT);
             dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             dataOutputStream.writeUTF("open app");

@@ -13,13 +13,13 @@ import java.text.ParseException;
 import java.util.*;
 
 public class Server {
-    private static final int storeServerPort = 8888;
-    private static final int bankServerPort = 9999;
+    private static final int STORE_SERVER_PORT = 8888;
+    private static final int BANK_SERVER_PORT = 9999;
     private static ArrayList<String> onlineSupports = new ArrayList<>();
     private static ArrayList<String> onlineAccounts = new ArrayList<>();
 
     public static int getBankServerPort() {
-        return bankServerPort;
+        return BANK_SERVER_PORT;
     }
 
     static class AppHandler extends Thread {
@@ -35,7 +35,7 @@ public class Server {
             this.dataInputStream = dataInputStream;
             this.currentAccount = null;
             this.bankToken = "";
-            Socket socket = new Socket("127.0.0.1", bankServerPort);
+            Socket socket = new Socket("127.0.0.1", BANK_SERVER_PORT);
             this.bankDataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             this.bankDataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             System.out.println(bankDataInputStream.readUTF());
@@ -675,6 +675,9 @@ public class Server {
                             break;
                         case "exit":
                             FileProcess.writeDataBaseOnFile();
+                            bankDataOutputStream.writeUTF("exit");
+                            bankDataOutputStream.flush();
+                            bankDataInputStream.readUTF();
                             dataOutputStream.writeUTF("done");
                             dataOutputStream.flush();
                             break outerLoop;
@@ -692,8 +695,23 @@ public class Server {
             FileProcess.initialize();
         }
         setStaticValues();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    ArrayList<Account> accounts = DataBase.getDataBase().getAllAccounts();
+                    int index;
+                    do {
+                        index = new Random().nextInt(accounts.size());
+                    } while (!(accounts.get(index) instanceof Buyer));
+                    BuyerZone.giveRandomDiscount((Buyer) accounts.get(index));
+                    Thread.sleep(7 * 24 * 3600 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         try {
-            ServerSocket serverSocket = new ServerSocket(storeServerPort);
+            ServerSocket serverSocket = new ServerSocket(STORE_SERVER_PORT);
             while (true) {
                 Socket socket = serverSocket.accept();
                 DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
