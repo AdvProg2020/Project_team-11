@@ -700,10 +700,12 @@ public class Server {
                 try {
                     ArrayList<Account> accounts = DataBase.getDataBase().getAllAccounts();
                     int index;
-                    do {
-                        index = new Random().nextInt(accounts.size());
-                    } while (!(accounts.get(index) instanceof Buyer));
-                    BuyerZone.giveRandomDiscount((Buyer) accounts.get(index));
+                    if (accounts.size() > 0) {
+                        do {
+                            index = new Random().nextInt(accounts.size());
+                        } while (!(accounts.get(index) instanceof Buyer));
+                        BuyerZone.giveRandomDiscount((Buyer) accounts.get(index));
+                    }
                     Thread.sleep(7 * 24 * 3600 * 1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

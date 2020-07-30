@@ -516,49 +516,34 @@ public class BuyerScene {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             if (!finalHasFile || path.getText() != null) {
                 try {
-                    getDataOutputStream().writeUTF("can pay");
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
-                        if (finalHasFile) {
-                            getDataOutputStream().writeUTF("get files id in cart");
-                            getDataOutputStream().flush();
-                            String data = getDataInputStream().readUTF();
-                            Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
-                            ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
-                            for (Integer fileId : fileIds) {
-                                Formatter formatter = FileProcess.openFileToWrite(path.getText() + "\\" + fileId + ".txt");
-                                Scanner scanner = new Scanner(new File("resources\\files\\p" + fileId + ".txt"));
-                                while (scanner.hasNextLine()) {
-                                    formatter.format(scanner.nextLine() + "\n");
-                                }
-                                formatter.close();
-                                scanner.close();
+                    if (finalHasFile) {
+                        getDataOutputStream().writeUTF("get files id in cart");
+                        getDataOutputStream().flush();
+                        String data = getDataInputStream().readUTF();
+                        Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
+                        ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
+                        for (Integer fileId : fileIds) {
+                            Formatter formatter = FileProcess.openFileToWrite(path.getText() + "\\" + fileId + ".txt");
+                            Scanner scanner = new Scanner(new File("resources\\files\\p" + fileId + ".txt"));
+                            while (scanner.hasNextLine()) {
+                                formatter.format(scanner.nextLine() + "\n");
                             }
+                            formatter.close();
+                            scanner.close();
                         }
-                        getDataOutputStream().writeUTF("pay");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF("bank");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(address);
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(phoneNumber);
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
-                        alert.setContentText("Purchase Completed.\nThank you for buying.");
-                        alert.show();
-                        MainScenes.getBorderPane().setCenter(viewOrders());
-                    } else {
-                        alert.setAlertType(Alert.AlertType.ERROR);
-                        try {
-                            getDataOutputStream().writeUTF("get min money");
-                            getDataOutputStream().flush();
-                            alert.setContentText("You don't have enough money.\n" +
-                                    "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        alert.show();
                     }
+                    getDataOutputStream().writeUTF("pay");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF("bank");
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(address);
+                    getDataOutputStream().flush();
+                    getDataOutputStream().writeUTF(phoneNumber);
+                    getDataOutputStream().flush();
+                    getDataInputStream().readUTF();
+                    alert.setContentText("Purchase Completed.\nThank you for buying.");
+                    alert.show();
+                    MainScenes.getBorderPane().setCenter(viewOrders());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
