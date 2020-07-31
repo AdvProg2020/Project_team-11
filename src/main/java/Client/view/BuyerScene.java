@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static Client.view.Actions.showError;
+import static Client.view.Actions.showInfoBox;
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.createButton;
@@ -155,7 +157,6 @@ public class BuyerScene {
         back.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
 
         next.setOnMouseClicked(e -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
             if (Validation.validateLong(amount.getText())) {
                 int receiptId = 0;
                 try {
@@ -189,13 +190,11 @@ public class BuyerScene {
                             getDataOutputStream().writeUTF(amount.getText());
                             getDataOutputStream().flush();
                             getDataInputStream().readUTF();
-                            alert.setAlertType(Alert.AlertType.INFORMATION);
-                            alert.setContentText("charge successfully.");
+                            showInfoBox("charge successfully.");
                             MainScenes.getBorderPane().setCenter(getPersonalInfo());
                         } else {
-                            alert.setContentText("You don't have enough money.");
+                            showError("You don't have enough money.");
                         }
-                        alert.show();
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -211,8 +210,7 @@ public class BuyerScene {
 
                 MainScenes.getBorderPane().setCenter(scrollPane);
             } else {
-                alert.setContentText("amount format is not valid.");
-                alert.show();
+                showError("amount format is not valid.");
             }
         });
 
@@ -260,15 +258,11 @@ public class BuyerScene {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     if (result.equals("Discount applied.")) {
-                        alert.setContentText("Discount applied.");
-                        alert.show();
+                        showInfoBox("Discount applied.");
                         paymentRoot(address.getText(), phoneNumber.getText());
                     } else {
-                        alert.setAlertType(Alert.AlertType.ERROR);
-                        alert.setContentText(result);
-                        alert.show();
+                        showError(result);
                     }
                 }
             });
@@ -401,9 +395,7 @@ public class BuyerScene {
                         String totalPrice = getDataInputStream().readUTF();
                         priceText.setText(totalPrice);
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setContentText("There isn't any more of this product.");
-                        alert.show();
+                        showError("There isn't any more of this product.");
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -457,7 +449,6 @@ public class BuyerScene {
 
         boolean finalHasFile = hasFile;
         payWallet.setOnMouseClicked(ev -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             if (!finalHasFile || path.getText() != null) {
                 try {
                     getDataOutputStream().writeUTF("can pay");
@@ -488,32 +479,27 @@ public class BuyerScene {
                         getDataOutputStream().writeUTF(phoneNumber);
                         getDataOutputStream().flush();
                         getDataInputStream().readUTF();
-                        alert.setContentText("Purchase Completed.\nThank you for buying.");
-                        alert.show();
+                        showInfoBox("Purchase Completed.\nThank you for buying.");
                         MainScenes.getBorderPane().setCenter(viewOrders());
                     } else {
-                        alert.setAlertType(Alert.AlertType.ERROR);
                         try {
                             getDataOutputStream().writeUTF("get min money");
                             getDataOutputStream().flush();
-                            alert.setContentText("You don't have enough money.\n" +
+                            showError("You don't have enough money.\n" +
                                     "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
-                        alert.show();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                alert.setContentText("Enter the path.");
-                alert.show();
+                showError("Enter the path.");
             }
         });
 
         payBank.setOnMouseClicked(ev -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             if (!finalHasFile || path.getText() != null) {
                 try {
                     if (finalHasFile) {
@@ -541,15 +527,13 @@ public class BuyerScene {
                     getDataOutputStream().writeUTF(phoneNumber);
                     getDataOutputStream().flush();
                     getDataInputStream().readUTF();
-                    alert.setContentText("Purchase Completed.\nThank you for buying.");
-                    alert.show();
+                    showInfoBox("Purchase Completed.\nThank you for buying.");
                     MainScenes.getBorderPane().setCenter(viewOrders());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                alert.setContentText("Enter the path.");
-                alert.show();
+                showError("Enter the path.");
             }
         });
     }

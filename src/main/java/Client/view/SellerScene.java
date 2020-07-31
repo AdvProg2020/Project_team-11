@@ -17,6 +17,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static Client.view.Actions.showError;
+import static Client.view.Actions.showInfoBox;
 import static Client.view.BuyerScene.getSupportScene;
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
@@ -170,7 +172,6 @@ public class SellerScene {
         back.setOnMouseClicked(e -> MainScenes.getBorderPane().setCenter(getPersonalInfo()));
 
         next.setOnMouseClicked(e -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
             if (Validation.validateLong(amount.getText())) {
                 long minMoney = 0;
                 try {
@@ -205,10 +206,8 @@ public class SellerScene {
                             ex.printStackTrace();
                         }
                         MainScenes.getBorderPane().setCenter(getPersonalInfo());
-                        alert.setAlertType(Alert.AlertType.INFORMATION);
-                        alert.setContentText("Your request send to admin. Please wait.\n" +
+                        showInfoBox("Your request send to admin. Please wait.\n" +
                                 "If you send another request to withdraw money, it will be replace by this request.");
-                        alert.show();
                     });
 
                     VBox vBox = new VBox(20);
@@ -221,13 +220,11 @@ public class SellerScene {
 
                     MainScenes.getBorderPane().setCenter(scrollPane);
                 } else {
-                    alert.setContentText("You don't have enough money in your wallet.\n" +
+                    showError("You don't have enough money in your wallet.\n" +
                             "There should be at least " + minMoney + "$ left in your wallet.");
-                    alert.show();
                 }
             } else {
-                alert.setContentText("amount format is not valid.");
-                alert.show();
+                showError("amount format is not valid.");
             }
         });
 
@@ -487,9 +484,7 @@ public class SellerScene {
                                 hasImage[0] = true;
                             }
                         } else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setContentText("Dropped file extension should be one of these : \npng / jpg / txt");
-                            alert.show();
+                            showError("Dropped file extension should be one of these : \npng / jpg / txt");
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -520,9 +515,7 @@ public class SellerScene {
                     getDataOutputStream().writeUTF(category.getText());
                     getDataOutputStream().flush();
                     if (getDataInputStream().readBoolean()) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setContentText("There is no category with this name.");
-                        alert.show();
+                        showError("There is no category with this name.");
                     } else {
                         features.getChildren().clear();
                         ArrayList<String> categoryFeature = new ArrayList<>();
@@ -551,9 +544,7 @@ public class SellerScene {
             ImageView finalImageView1 = imageView;
             create.setOnMouseClicked(event -> {
                 if (features.getChildren().isEmpty()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Enter Category.");
-                    alert.show();
+                    showError("Enter Category.");
                 } else {
                     HashMap<String, String> productFeature = new HashMap<>();
                     for (Node child : features.getChildren()) {
@@ -764,7 +755,6 @@ public class SellerScene {
                 TextField addText = createTextField("Product ID", 400);
                 Button addProduct = createButton("Add Product", 100);
                 addProduct.setOnMouseClicked(event -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
                     if (Validation.validateInteger(addText.getText())) {
                         try {
                             getDataOutputStream().writeUTF("has auction");
@@ -772,8 +762,7 @@ public class SellerScene {
                             getDataOutputStream().writeUTF(addText.getText());
                             getDataOutputStream().flush();
                             if (getDataInputStream().readBoolean()) {
-                                alert.setContentText("This product has an auction.");
-                                alert.show();
+                                showError("This product has an auction.");
                             } else {
                                 getDataOutputStream().writeUTF("seller has product");
                                 getDataOutputStream().flush();
@@ -816,16 +805,14 @@ public class SellerScene {
                                     getDataInputStream().readUTF();
                                     addText.clear();
                                 } else {
-                                    alert.setContentText("You haven't this product.");
-                                    alert.show();
+                                    showError("You haven't this product.");
                                 }
                             }
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
                     } else {
-                        alert.setContentText("invalid product ID.");
-                        alert.show();
+                        showError("invalid product ID.");
                     }
                 });
 
@@ -871,7 +858,6 @@ public class SellerScene {
 
             Button addProduct = createButton("Add", 100);
             addProduct.setOnMouseClicked(event -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
                 if (Validation.validateInteger(product.getText())) {
                     try {
                         getDataOutputStream().writeUTF("has auction");
@@ -879,8 +865,7 @@ public class SellerScene {
                         getDataOutputStream().writeUTF(product.getText());
                         getDataOutputStream().flush();
                         if (getDataInputStream().readBoolean()) {
-                            alert.setContentText("This product has an auction.");
-                            alert.show();
+                            showError("This product has an auction.");
                         } else {
                             getDataOutputStream().writeUTF("seller has product");
                             getDataOutputStream().flush();
@@ -906,16 +891,14 @@ public class SellerScene {
                                 });
                                 product.clear();
                             } else {
-                                alert.setContentText("You haven't this product.");
-                                alert.show();
+                                showError("You haven't this product.");
                             }
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
                 } else {
-                    alert.setContentText("invalid product ID.");
-                    alert.show();
+                    showError("invalid product ID.");
                 }
             });
 

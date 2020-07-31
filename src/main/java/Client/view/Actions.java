@@ -27,32 +27,35 @@ import static Client.view.ClientHandler.getDataOutputStream;
 public class Actions {
     private static Gson gson = new Gson();
 
-    public static boolean register(ArrayList<String> info) {
+    public static void showError(String text) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setContentText(text);
+        alert.show();
+    }
+
+    public static void showInfoBox(String text) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(text);
+        alert.show();
+    }
+
+    public static boolean register(ArrayList<String> info) {
         if (info.get(0) == null) {
-            alert.setContentText("Choose a type");
-            alert.show();
+            showError("Choose a type");
         } else if (!Validation.validateNames(info.get(1))) {
-            alert.setContentText("Enter first name.");
-            alert.show();
+            showError("Enter first name.");
         } else if (!Validation.validateNames(info.get(2))) {
-            alert.setContentText("Enter last name.");
-            alert.show();
+            showError("Enter last name.");
         } else if (!Validation.validateEmail(info.get(3))) {
-            alert.setContentText("Email address is not valid.");
-            alert.show();
+            showError("Email address is not valid.");
         } else if (!Validation.validateLong(info.get(4))) {
-            alert.setContentText("Phone number is not valid.");
-            alert.show();
+            showError("Phone number is not valid.");
         } else if (!Validation.validateNames(info.get(5))) {
-            alert.setContentText("Enter username.");
-            alert.show();
+            showError("Enter username.");
         } else if (!Validation.validateNames(info.get(6))) {
-            alert.setContentText("Enter password.");
-            alert.show();
+            showError("Enter password.");
         } else if (info.get(0).equals("seller") && !Validation.validateNames(info.get(7))) {
-            alert.setContentText("Enter Company name.");
-            alert.show();
+            showError("Enter Company name.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check username");
@@ -66,8 +69,7 @@ public class Actions {
                     getDataOutputStream().flush();
                     getDataInputStream().readUTF();
                 } else {
-                    alert.setContentText("This username is already occupied.");
-                    alert.show();
+                    showError("This username is already occupied.");
                     return false;
                 }
             } catch (IOException e) {
@@ -79,13 +81,10 @@ public class Actions {
     }
 
     public static void signIn(ArrayList<String> info) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(info.get(1))) {
-            alert.setContentText("Enter username.");
-            alert.show();
+            showError("Enter username.");
         } else if (!Validation.validateNames(info.get(2))) {
-            alert.setContentText("Enter your password.");
-            alert.show();
+            showError("Enter your password.");
         } else {
             String result = "";
             try {
@@ -148,8 +147,7 @@ public class Actions {
 
                 MainScenes.getSignInOrOut().setOnMouseClicked(e -> logout());
             } else {
-                alert.setContentText(result);
-                alert.show();
+                showError(result);
             }
         }
     }
@@ -208,36 +206,26 @@ public class Actions {
 
                 button.setOnMouseClicked(e -> editPersonalInfo(button, textField));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
 
     public static boolean createDiscount(ArrayList<String> info) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(info.get(0))) {
-            alert.setContentText("Enter Code.");
-            alert.show();
+            showError("Enter Code.");
         } else if (!Validation.validateDate(info.get(1))) {
-            alert.setContentText("Start Date is not valid.");
-            alert.show();
+            showError("Start Date is not valid.");
         }  else if (!Validation.validateDate(info.get(2))) {
-            alert.setContentText("End Date is not valid.");
-            alert.show();
+            showError("End Date is not valid.");
         }  else if (!Validation.validatePercent(info.get(3))) {
-            alert.setContentText("Discount percent is not valid.");
-            alert.show();
+            showError("Discount percent is not valid.");
         }  else if (!Validation.validateLong(info.get(4))) {
-            alert.setContentText("Max Discount is not valid.");
-            alert.show();
+            showError("Max Discount is not valid.");
         }  else if (!Validation.validateInteger(info.get(5))) {
-            alert.setContentText("Repeated Times is not valid.");
-            alert.show();
+            showError("Repeated Times is not valid.");
         }  else if (Integer.parseInt(info.get(5)) == 0) {
-            alert.setContentText("Repeated Times is not valid.");
-            alert.show();
+            showError("Repeated Times is not valid.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check discount code");
@@ -245,8 +233,7 @@ public class Actions {
                 getDataOutputStream().writeUTF(info.get(0));
                 getDataOutputStream().flush();
                 if (getDataInputStream().readBoolean()) {
-                    alert.setContentText("This code is already occupied.");
-                    alert.show();
+                    showError("This code is already occupied.");
                 } else {
                     Date start = null, end = null;
                     try {
@@ -257,8 +244,7 @@ public class Actions {
                         ex.printStackTrace();
                     }
                     if (end.before(start)) {
-                        alert.setContentText("End date should be after start date.");
-                        alert.show();
+                        showError("End date should be after start date.");
                     } else {
                         info.set(1, String.valueOf(start.getTime()));
                         info.set(2, String.valueOf(end.getTime()));
@@ -273,10 +259,8 @@ public class Actions {
     }
 
     public static boolean deleteDiscount(String code) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(code)) {
-            alert.setContentText("Enter Code.");
-            alert.show();
+            showError("Enter Code.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check discount code");
@@ -291,8 +275,7 @@ public class Actions {
                     getDataInputStream().readUTF();
                     return true;
                 } else {
-                    alert.setContentText("There is no discount with this code.");
-                    alert.show();
+                    showError("There is no discount with this code.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -302,10 +285,8 @@ public class Actions {
     }
 
     public static boolean addUserToDiscount(String username) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(username)) {
-            alert.setContentText("Enter username.");
-            alert.show();
+            showError("Enter username.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check username");
@@ -313,8 +294,7 @@ public class Actions {
                 getDataOutputStream().writeUTF(username);
                 getDataOutputStream().flush();
                 if (getDataInputStream().readBoolean()) {
-                    alert.setContentText("There is no user with this username.");
-                    alert.show();
+                    showError("There is no user with this username.");
                 } else {
                     return true;
                 }
@@ -363,18 +343,14 @@ public class Actions {
                 }
                 button.setOnMouseClicked(e -> editDiscount(button, textField, discountCode));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
 
     public static boolean checkCategoryName(String name) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(name)) {
-            alert.setContentText("Enter category name.");
-            alert.show();
+            showError("Enter category name.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check category name");
@@ -384,8 +360,7 @@ public class Actions {
                 if (getDataInputStream().readBoolean()) {
                     return true;
                 } else {
-                    alert.setContentText("This name is already occupied.");
-                    alert.show();
+                    showError("This name is already occupied.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -427,9 +402,7 @@ public class Actions {
                 }
                 button.setOnMouseClicked(e -> editCategory(textField, button, categoryName));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
@@ -466,9 +439,7 @@ public class Actions {
                 }
                 button.setOnMouseClicked(event -> editProduct(textField, button, productId));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
@@ -482,28 +453,20 @@ public class Actions {
                 break;
             }
         }
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(info.get(0))) {
-            alert.setContentText("Enter product name.");
-            alert.show();
+            showError("Enter product name.");
         } else if (!Validation.validateNames(info.get(1))) {
-            alert.setContentText("Enter company.");
-            alert.show();
+            showError("Enter company.");
         } else if (!Validation.validateLong(info.get(2))) {
-            alert.setContentText("Price format is not valid.");
-            alert.show();
+            showError("Price format is not valid.");
         } else if (!Validation.validateInteger(info.get(3))) {
-            alert.setContentText("Stock format is not valid.");
-            alert.show();
+            showError("Stock format is not valid.");
         } else if (!Validation.validateNames(info.get(4))) {
-            alert.setContentText("Enter Description.");
-            alert.show();
+            showError("Enter Description.");
         } else if (!Validation.validateNames(info.get(5))) {
-            alert.setContentText("Enter category name.");
-            alert.show();
+            showError("Enter category name.");
         } else if (!isFeaturesComplete) {
-            alert.setContentText("Complete features.");
-            alert.show();
+            showError("Complete features.");
         } else {
             String id = "";
             try {
@@ -546,16 +509,13 @@ public class Actions {
 
 
     public static boolean createAuction(ArrayList<String> info) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+
         if (!Validation.validatePercent(info.get(0))) {
-            alert.setContentText("Enter a number between 0 and 100.");
-            alert.show();
+            showError("Enter a number between 0 and 100.");
         } else if (!Validation.validateDate(info.get(1))) {
-            alert.setContentText("Start date format is not valid.");
-            alert.show();
+            showError("Start date format is not valid.");
         } else if (!Validation.validateDate(info.get(2))) {
-            alert.setContentText("End date format is not valid.");
-            alert.show();
+            showError("End date format is not valid.");
         } else {
             Date start = null, end = null;
             try {
@@ -566,8 +526,7 @@ public class Actions {
                 ex.printStackTrace();
             }
             if (end.before(start)) {
-                alert.setContentText("End date should be after start date.");
-                alert.show();
+                showError("End date should be after start date.");
             } else {
                 info.set(1, String.valueOf(start.getTime()));
                 info.set(2, String.valueOf(end.getTime()));
@@ -618,21 +577,16 @@ public class Actions {
                 }
                 button.setOnMouseClicked(e -> editAuction(textField, button, auctionId));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
 
     public static boolean checkReceiverInfo(String address, String number) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateNames(address)) {
-            alert.setContentText("Enter Address.");
-            alert.show();
+            showError("Enter Address.");
         } else if (!Validation.validateLong(number)) {
-            alert.setContentText("Invalid Phone Number.");
-            alert.show();
+            showError("Invalid Phone Number.");
         } else {
             return true;
         }
@@ -640,16 +594,12 @@ public class Actions {
     }
 
     public static boolean checkProductIdToCompare(int productId1, String productId2) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (productId2 == null) {
-            alert.setContentText("Enter product ID to compare.");
-            alert.show();
+            showError("Enter product ID to compare.");
         } else if (!Validation.validateInteger(productId2)) {
-            alert.setContentText("Enter a number.");
-            alert.show();
+            showError("Enter a number.");
         } else if (productId1 == Integer.parseInt(productId2)) {
-            alert.setContentText("Choose a different product.");
-            alert.show();
+            showError("Choose a different product.");
         } else {
             try {
                 getDataOutputStream().writeUTF("check product id");
@@ -665,14 +615,12 @@ public class Actions {
                     getDataOutputStream().flush();
                     String output = getDataInputStream().readUTF();
                     if (output.startsWith("Cannot")) {
-                        alert.setContentText(output);
-                        alert.show();
+                        showError(output);
                     } else {
                         return true;
                     }
                 } else {
-                    alert.setContentText("Invalid ID.");
-                    alert.show();
+                    showError("Invalid ID.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -682,18 +630,14 @@ public class Actions {
     }
 
     public static boolean rate(String scoreText) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (scoreText == null) {
-            alert.setContentText("Enter score.");
-            alert.show();
+            showError("Enter score.");
         } else if (!Validation.validateInteger(scoreText)) {
-            alert.setContentText("Invalid format.");
-            alert.show();
+            showError("Invalid format.");
         } else {
             int score = Integer.parseInt(scoreText);
             if (score > 5 || score < 0) {
-                alert.setContentText("Enter a number from 0 to 5.");
-                alert.show();
+                showError("Enter a number from 0 to 5.");
             } else {
                 return true;
             }
@@ -702,16 +646,12 @@ public class Actions {
     }
 
     public static boolean checkBankInfo(String commission, String minimumMoney, String bankPassword) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validatePercent(commission)) {
-            alert.setContentText("Enter a percent as commission.");
-            alert.show();
+            showError("Enter a percent as commission.");
         } else if (!Validation.validateLong(minimumMoney)) {
-            alert.setContentText("Minimum money format is not valid.");
-            alert.show();
+            showError("Minimum money format is not valid.");
         } else if (!Validation.validateNames(bankPassword)) {
-            alert.setContentText("Enter Bank Password.");
-            alert.show();
+            showError("Enter Bank Password.");
         } else {
             return true;
         }
@@ -748,27 +688,20 @@ public class Actions {
 
                 button.setOnMouseClicked(e -> editPersonalInfo(button, textField));
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Invalid format.");
-                alert.show();
+                showError("Invalid format.");
             }
         });
     }
 
     public static boolean createBid(ArrayList<String> info) throws IOException {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateInteger(info.get(0))) {
-            alert.setContentText("Enter a number as product ID.");
-            alert.show();
+            showError("Enter a number as product ID.");
         } else if (!Validation.validateDate(info.get(1))) {
-            alert.setContentText("Start date format is not valid.");
-            alert.show();
+            showError("Start date format is not valid.");
         } else if (!Validation.validateDate(info.get(2))) {
-            alert.setContentText("End date format is not valid.");
-            alert.show();
+            showError("End date format is not valid.");
         } else if (!Validation.validateLong(info.get(3))) {
-            alert.setContentText("Price format is not valid.");
-            alert.show();
+            showError("Price format is not valid.");
         } else {
             getDataOutputStream().writeUTF("seller has product");
             getDataOutputStream().flush();
@@ -790,8 +723,7 @@ public class Actions {
                         ex.printStackTrace();
                     }
                     if (end.before(start)) {
-                        alert.setContentText("End date should be after start date.");
-                        alert.show();
+                        showError("End date should be after start date.");
                     } else {
                         info.set(1, String.valueOf(start.getTime()));
                         info.set(2, String.valueOf(end.getTime()));
@@ -807,22 +739,18 @@ public class Actions {
                         return true;
                     }
                 } else {
-                    alert.setContentText("Stock is empty.");
-                    alert.show();
+                    showError("Stock is empty.");
                 }
             } else {
-                alert.setContentText("You don't have this product.");
-                alert.show();
+                showError("You don't have this product.");
             }
         }
         return false;
     }
 
     public static boolean checkBidPrice(String offeredPrice, int bidId) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
         if (!Validation.validateLong(offeredPrice)) {
-            alert.setContentText("Price format is not valid.");
-            alert.show();
+            showError("Price format is not valid.");
         } else {
             try {
                 getDataOutputStream().writeUTF("get wallet");
@@ -836,11 +764,9 @@ public class Actions {
                 long price = getDataInputStream().readLong();
 
                 if (Long.parseLong(offeredPrice) <= price) {
-                    alert.setContentText("Offer price more than " + price + "$.");
-                    alert.show();
+                    showError("Offer price more than " + price + "$.");
                 } else if (Long.parseLong(offeredPrice) > wallet) {
-                    alert.setContentText("Charge your wallet. You have only " + wallet + "$.");
-                    alert.show();
+                    showError("Charge your wallet. You have only " + wallet + "$.");
                 } else {
                     getDataOutputStream().writeUTF("offer bid price");
                     getDataOutputStream().flush();
@@ -856,8 +782,7 @@ public class Actions {
                         getDataOutputStream().writeInt(bidId);
                         getDataOutputStream().flush();
                         price = getDataInputStream().readLong();
-                        alert.setContentText("Offer price more than " + price + "$.");
-                        alert.show();
+                        showError("Offer price more than " + price + "$.");
                     }
                 }
             } catch (IOException e) {

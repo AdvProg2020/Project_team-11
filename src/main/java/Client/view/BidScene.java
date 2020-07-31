@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static Client.view.Actions.showError;
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.*;
@@ -250,9 +251,7 @@ public class BidScene {
                         if (getDataInputStream().readBoolean()) {
                             MainScenes.getBorderPane().setCenter(getBidPane(Integer.parseInt(bidHyperlink.getText())));
                         } else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setContentText("You should login as a buyer.");
-                            alert.show();
+                            showError("You should login as a buyer.");
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();

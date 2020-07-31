@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static Client.view.Actions.showError;
+import static Client.view.Actions.showInfoBox;
 import static Client.view.MainScenes.*;
 import static Client.view.ClientHandler.getDataInputStream;
 import static Client.view.ClientHandler.getDataOutputStream;
@@ -381,8 +383,6 @@ public class ProductScene {
 
         Button rate = createButton("Rate", 150);
         rate.setOnMouseClicked(e -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-
             try {
                 getDataOutputStream().writeUTF("is buyer");
                 getDataOutputStream().flush();
@@ -418,12 +418,10 @@ public class ProductScene {
 
                         MainScenes.getBorderPane().setCenter(hBox);
                     } else {
-                        alert.setContentText("You can't rate this product.");
-                        alert.show();
+                        showError("You can't rate this product.");
                     }
                 } else {
-                    alert.setContentText("You should sign in as a buyer.");
-                    alert.show();
+                    showError("You should sign in as a buyer.");
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -497,9 +495,7 @@ public class ProductScene {
                         Button send = createButton("Send", 100);
                         send.setOnMouseClicked(ev -> {
                             if (comment.getText() == null) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setContentText("Enter your comment.");
-                                alert.show();
+                                showError("Enter your comment.");
                             } else {
                                 try {
                                     getDataOutputStream().writeUTF("comment");
@@ -520,9 +516,7 @@ public class ProductScene {
                         vBox.getChildren().remove(add);
                         vBox.getChildren().addAll(comment, send);
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setContentText("You should sign in as a buyer.");
-                        alert.show();
+                        showError("You should sign in as a buyer.");
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -537,7 +531,6 @@ public class ProductScene {
 
         Button buy = createButton("Buy", 150);
         buy.setOnMouseClicked(e -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             try {
                 getDataOutputStream().writeUTF("is buyer");
                 getDataOutputStream().flush();
@@ -548,19 +541,16 @@ public class ProductScene {
                         getDataOutputStream().writeInt(productId);
                         getDataOutputStream().flush();
                         getDataInputStream().readUTF();
-                        alert.setContentText("Product added to your cart successfully.");
+                        showInfoBox("Product added to your cart successfully.");
                     } else {
-                        alert.setAlertType(Alert.AlertType.ERROR);
-                        alert.setContentText("Nothing left in stock.");
+                        showError("Nothing left in stock.");
                     }
                 } else {
-                    alert.setAlertType(Alert.AlertType.ERROR);
-                    alert.setContentText("You should sign in as a buyer.");
+                    showError("You should sign in as a buyer.");
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            alert.show();
         });
 
         ImageView productImage = null;

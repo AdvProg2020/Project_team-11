@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import static Client.view.Actions.showError;
+import static Client.view.Actions.showInfoBox;
 import static Client.view.MainScenes.*;
 import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.ClientHandler.getDataInputStream;
@@ -411,7 +413,6 @@ public class AdminScene {
                 TextField addUserText = createTextField("Username", 500);
                 Button addUserButton = createButton("Add", 100);
                 addUserButton.setOnMouseClicked(event -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
                     try {
                         getDataOutputStream().writeUTF("get buyer");
                         getDataOutputStream().flush();
@@ -419,8 +420,7 @@ public class AdminScene {
                         getDataOutputStream().flush();
                         if (getDataInputStream().readBoolean()) {
                             if (info.contains(addUserText.getText())) {
-                                alert.setContentText("Already exist.");
-                                alert.show();
+                                showError("Already exist.");
                             } else {
                                 getDataOutputStream().writeUTF("edit discount");
                                 getDataOutputStream().flush();
@@ -460,8 +460,7 @@ public class AdminScene {
                                 info.add(addUserText.getText());
                             }
                         } else {
-                            alert.setContentText("There is no user with this username.");
-                            alert.show();
+                            showError("There is no user with this username.");
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -880,14 +879,11 @@ public class AdminScene {
                 TextField addFeatureText = createTextField("Feature", 500);
                 Button addFeatureButton = createButton("Add", 100);
                 addFeatureButton.setOnMouseClicked(event -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
                     if (addFeatureText.getText() == null) {
-                        alert.setContentText("Enter feature.");
-                        alert.show();
+                        showError("Enter feature.");
                     } else {
                         if (feature.contains(addFeatureText.getText())) {
-                            alert.setContentText("Already exist.");
-                            alert.show();
+                            showError("Already exist.");
                         } else {
                             try {
                                 getDataOutputStream().writeUTF("edit category");
@@ -1120,9 +1116,7 @@ public class AdminScene {
                     pay.getChildren().remove(payment);
                     finalBankOperation.getSellerWithdrawRequest().remove(entry.getKey());
 
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setContentText("Pay successfully.");
-                    alert.show();
+                    showInfoBox("Pay successfully.");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
