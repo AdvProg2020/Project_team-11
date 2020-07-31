@@ -21,11 +21,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static Client.view.MainScenes.getSignInRoot;
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.ServerConnection.*;
 
 public class Actions {
-    private static Gson gson = new Gson();
 
     public static void showError(String text) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -58,16 +56,8 @@ public class Actions {
             showError("Enter Company name.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check username");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(info.get(5));
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("register");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(gson.toJson(info));
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                if (checkUsername(info.get(5))) {
+                    ServerConnection.register(info);
                 } else {
                     showError("This username is already occupied.");
                     return false;
@@ -88,62 +78,44 @@ public class Actions {
         } else {
             String result = "";
             try {
-                getDataOutputStream().writeUTF("sign in");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(gson.toJson(info));
-                getDataOutputStream().flush();
-                result = getDataInputStream().readUTF();
+                result = ServerConnection.signIn(info);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             if (result.startsWith("Login successfully")) {
                 MainScenes.getSignInOrOut().setText("Logout");
+                Button button;
                 if (result.contains("admin")) {
-                    Button button = new Button("Admin");
+                    button = new Button("Admin");
                     button.setOnAction(e -> {
                         MainScenes.getBorderPane().setLeft(AdminScene.getAdminRoot());
                         MainScenes.getBorderPane().setCenter(AdminScene.getPersonalInfo());
                     });
-                    button.setMinWidth(200);
-                    button.setAlignment(Pos.CENTER);
-                    button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
-                    button.fire();
                 } else if (result.contains("support")) {
-                    Button button = new Button("Support");
+                    button = new Button("Support");
                     button.setOnAction(e -> {
                         MainScenes.getBorderPane().setLeft(SupportScene.getSupportRoot());
                         MainScenes.getBorderPane().setCenter(new VBox());
                     });
-                    button.setMinWidth(200);
-                    button.setAlignment(Pos.CENTER);
-                    button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
-                    button.fire();
                 } else if (result.contains("seller")) {
-                    Button button = new Button("Seller");
+                    button = new Button("Seller");
                     button.setOnAction(e -> {
                         MainScenes.getBorderPane().setLeft(SellerScene.getSellerRoot());
                         MainScenes.getBorderPane().setCenter(SellerScene.getPersonalInfo());
                     });
-                    button.setMinWidth(200);
-                    button.setAlignment(Pos.CENTER);
-                    button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
-                    button.fire();
                 } else {
-                    Button button = new Button("Buyer");
+                    button = new Button("Buyer");
                     button.setOnAction(e -> {
                         MainScenes.getBorderPane().setLeft(BuyerScene.getBuyerRoot());
                         MainScenes.getBorderPane().setCenter(BuyerScene.getPersonalInfo());
                     });
-                    button.setMinWidth(200);
-                    button.setAlignment(Pos.CENTER);
-                    button.getStyleClass().add("top-buttons");
-                    ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
-                    button.fire();
                 }
+                button.setMinWidth(200);
+                button.setAlignment(Pos.CENTER);
+                button.getStyleClass().add("top-buttons");
+                ((HBox) MainScenes.getBorderPane().getTop()).getChildren().add(3, button);
+                button.fire();
 
                 MainScenes.getSignInOrOut().setOnMouseClicked(e -> logout());
             } else {
@@ -155,9 +127,7 @@ public class Actions {
     public static void logout() {
         ((HBox) MainScenes.getBorderPane().getTop()).getChildren().remove(3);
         try {
-            getDataOutputStream().writeUTF("logout");
-            getDataOutputStream().flush();
-            getDataInputStream().readUTF();
+            ServerConnection.logout();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -193,13 +163,7 @@ public class Actions {
                 textField.setDisable(true);
 
                 try {
-                    getDataOutputStream().writeUTF("edit personal info");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getPromptText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    ServerConnection.editPersonalInfo(textField.getPromptText(), textField.getText());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -228,11 +192,7 @@ public class Actions {
             showError("Repeated Times is not valid.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check discount code");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(info.get(0));
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
+                if (checkDiscountCode(info.get(0))) {
                     showError("This code is already occupied.");
                 } else {
                     Date start = null, end = null;
@@ -263,16 +223,8 @@ public class Actions {
             showError("Enter Code.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check discount code");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(code);
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("remove discount");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(code);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                if (checkDiscountCode(code)) {
+                    removeDiscount(code);
                     return true;
                 } else {
                     showError("There is no discount with this code.");
@@ -289,11 +241,7 @@ public class Actions {
             showError("Enter username.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check username");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(username);
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
+                if (checkUsername(username)) {
                     showError("There is no user with this username.");
                 } else {
                     return true;
@@ -329,15 +277,7 @@ public class Actions {
                 button.setText("Edit");
                 textField.setDisable(true);
                 try {
-                    getDataOutputStream().writeUTF("edit discount");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getPromptText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(discountCode);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    ServerConnection.editDiscount(textField.getPromptText(), textField.getText(), discountCode);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -353,11 +293,7 @@ public class Actions {
             showError("Enter category name.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check category name");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(name);
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
+                if (ServerConnection.checkCategoryName(name)) {
                     return true;
                 } else {
                     showError("This name is already occupied.");
@@ -386,17 +322,7 @@ public class Actions {
                 button.setText("Edit");
                 textField.setDisable(true);
                 try {
-                    getDataOutputStream().writeUTF("edit category");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getPromptText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(categoryName);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(lastField);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    ServerConnection.editCategory(textField.getPromptText(), textField.getText(), categoryName, lastField);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -429,11 +355,8 @@ public class Actions {
                 button.setText("Edit");
                 textField.setDisable(true);
                 try {
-                    getDataOutputStream().writeUTF("edit product");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(productId + "," + textField.getPromptText() + "," + textField.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    ServerConnection.editProduct(productId + "," + textField.getPromptText() +
+                            "," + textField.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -470,13 +393,7 @@ public class Actions {
         } else {
             String id = "";
             try {
-                getDataOutputStream().writeUTF("add product");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(gson.toJson(info));
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(gson.toJson(features));
-                getDataOutputStream().flush();
-                id = getDataInputStream().readUTF();
+                id = addProduct(info, features);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -531,11 +448,7 @@ public class Actions {
                 info.set(1, String.valueOf(start.getTime()));
                 info.set(2, String.valueOf(end.getTime()));
                 try {
-                    getDataOutputStream().writeUTF("add auction");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(gson.toJson(info));
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    addAuction(info);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -563,15 +476,7 @@ public class Actions {
                 button.setText("Edit");
                 textField.setDisable(true);
                 try {
-                    getDataOutputStream().writeUTF("edit auction");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getPromptText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(String.valueOf(auctionId));
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    ServerConnection.editAuction(textField.getPromptText(), textField.getText(), auctionId);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -602,18 +507,8 @@ public class Actions {
             showError("Choose a different product.");
         } else {
             try {
-                getDataOutputStream().writeUTF("check product id");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(productId2);
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("can compare product");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(String.valueOf(productId1));
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(productId2);
-                    getDataOutputStream().flush();
-                    String output = getDataInputStream().readUTF();
+                if (checkProductId(Integer.parseInt(productId2))) {
+                    String output = canCompareProduct(productId1, Integer.parseInt(productId2));
                     if (output.startsWith("Cannot")) {
                         showError(output);
                     } else {
@@ -675,13 +570,7 @@ public class Actions {
                 textField.setDisable(true);
 
                 try {
-                    getDataOutputStream().writeUTF("edit bank operation");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getPromptText());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    editBankOperation(textField.getPromptText(), textField.getText());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -703,16 +592,8 @@ public class Actions {
         } else if (!Validation.validateLong(info.get(3))) {
             showError("Price format is not valid.");
         } else {
-            getDataOutputStream().writeUTF("seller has product");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeUTF(info.get(0));
-            getDataOutputStream().flush();
-            if (getDataInputStream().readBoolean()) {
-                getDataOutputStream().writeUTF("get product stock");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(info.get(0));
-                getDataOutputStream().flush();
-                int stock = getDataInputStream().readInt();
+            if (sellerHasProduct(info.get(0))) {
+                int stock = getProductStock(info.get(0));
                 if (stock > 0) {
                     Date start = null, end = null;
                     try {
@@ -728,11 +609,7 @@ public class Actions {
                         info.set(1, String.valueOf(start.getTime()));
                         info.set(2, String.valueOf(end.getTime()));
                         try {
-                            getDataOutputStream().writeUTF("add bid");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(gson.toJson(info));
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                            addBid(info);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -753,35 +630,18 @@ public class Actions {
             showError("Price format is not valid.");
         } else {
             try {
-                getDataOutputStream().writeUTF("get wallet");
-                getDataOutputStream().flush();
-                long wallet = getDataInputStream().readLong();
-
-                getDataOutputStream().writeUTF("get bid price");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeInt(bidId);
-                getDataOutputStream().flush();
-                long price = getDataInputStream().readLong();
+                long wallet = getWallet();
+                long price = getBidPrice(bidId);
 
                 if (Long.parseLong(offeredPrice) <= price) {
                     showError("Offer price more than " + price + "$.");
                 } else if (Long.parseLong(offeredPrice) > wallet) {
                     showError("Charge your wallet. You have only " + wallet + "$.");
                 } else {
-                    getDataOutputStream().writeUTF("offer bid price");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(bidId);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(offeredPrice);
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readUTF().equals("done")) {
+                    if (offerBidPrice(bidId, offeredPrice).equals("done")) {
                         return true;
                     } else {
-                        getDataOutputStream().writeUTF("get bid price");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeInt(bidId);
-                        getDataOutputStream().flush();
-                        price = getDataInputStream().readLong();
+                        price = getBidPrice(bidId);
                         showError("Offer price more than " + price + "$.");
                     }
                 }

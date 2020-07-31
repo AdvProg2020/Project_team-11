@@ -24,8 +24,7 @@ import java.util.Map;
 import static Client.view.Actions.showError;
 import static Client.view.Actions.showInfoBox;
 import static Client.view.MainScenes.*;
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.ServerConnection.*;
 
 public class ProductScene {
     private static String sort = "date";
@@ -123,9 +122,7 @@ public class ProductScene {
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.getItems().add("--------");
         try {
-            getDataOutputStream().writeUTF("get categories");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getCategories();
             foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
             categoryFilter.getItems().addAll(new ArrayList<>(gson.fromJson(data, foundListType[0])));
         } catch (IOException e) {
@@ -143,11 +140,7 @@ public class ProductScene {
             filterInfo.setCategory(categoryFilter.getValue());
             ArrayList<String> features = new ArrayList<>();
             try {
-                getDataOutputStream().writeUTF("get category feature");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(categoryFilter.getValue());
-                getDataOutputStream().flush();
-                String data = getDataInputStream().readUTF();
+                String data = getCategoryFeature(categoryFilter.getValue());
                 foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
                 features = gson.fromJson(data, foundListType[0]);
                 AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), features, "products");
@@ -193,10 +186,8 @@ public class ProductScene {
 
     public static ArrayList<Product> getProducts() {
         try {
-            getDataOutputStream().writeUTF("get products");
-            getDataOutputStream().flush();
             Type foundListType = new TypeToken<ArrayList<Product>>(){}.getType();
-            return gson.fromJson(getDataInputStream().readUTF(), foundListType);
+            return gson.fromJson(ServerConnection.getProducts(), foundListType);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -329,11 +320,7 @@ public class ProductScene {
 
         Product product = null;
         try {
-            getDataOutputStream().writeUTF("get product");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeInt(productId);
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getProduct(productId);
             Type foundListType = new TypeToken<Product>() {}.getType();
             product = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -384,26 +371,14 @@ public class ProductScene {
         Button rate = createButton("Rate", 150);
         rate.setOnMouseClicked(e -> {
             try {
-                getDataOutputStream().writeUTF("is buyer");
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
-                    getDataOutputStream().writeUTF("has bought");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(productId);
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
+                if (isBuyer()) {
+                    if (hasBoughtProduct(productId)) {
                         TextField score = createTextField("Score", 100);
                         Button rateScore = createButton("Rate", 100);
                         rateScore.setOnMouseClicked(event -> {
                             if (Actions.rate(score.getText())) {
                                 try {
-                                    getDataOutputStream().writeUTF("rate");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeInt(productId);
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(score.getText());
-                                    getDataOutputStream().flush();
-                                    getDataInputStream().readUTF();
+                                    rate(productId, score.getText());
                                 } catch (IOException ex) {
                                     ex.printStackTrace();
                                 }
@@ -436,13 +411,7 @@ public class ProductScene {
                 if (Actions.checkProductIdToCompare(productId, productIdText.getText())) {
                     String output = "";
                     try {
-                        getDataOutputStream().writeUTF("compare product");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeInt(productId);
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeInt(Integer.parseInt(productIdText.getText()));
-                        getDataOutputStream().flush();
-                        output = getDataInputStream().readUTF();
+                        output = compareProduct(productId, Integer.parseInt(productIdText.getText()));
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -488,9 +457,7 @@ public class ProductScene {
             Button add = createButton("Add a comment", 200);
             add.setOnMouseClicked(event -> {
                 try {
-                    getDataOutputStream().writeUTF("is buyer");
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
+                    if (isBuyer()) {
                         TextField comment = createTextField("Comment", 500);
                         Button send = createButton("Send", 100);
                         send.setOnMouseClicked(ev -> {
@@ -498,13 +465,7 @@ public class ProductScene {
                                 showError("Enter your comment.");
                             } else {
                                 try {
-                                    getDataOutputStream().writeUTF("comment");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(comment.getText());
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeInt(productId);
-                                    getDataOutputStream().flush();
-                                    getDataInputStream().readUTF();
+                                    comment(comment.getText(), productId);
                                 } catch (IOException ex) {
                                     ex.printStackTrace();
                                 }
@@ -532,15 +493,9 @@ public class ProductScene {
         Button buy = createButton("Buy", 150);
         buy.setOnMouseClicked(e -> {
             try {
-                getDataOutputStream().writeUTF("is buyer");
-                getDataOutputStream().flush();
-                if (getDataInputStream().readBoolean()) {
+                if (isBuyer()) {
                     if (finalProduct.getGeneralFeature().getStockStatus() != 0) {
-                        getDataOutputStream().writeUTF("add to cart");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeInt(productId);
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        addProductToCart(productId);
                         showInfoBox("Product added to your cart successfully.");
                     } else {
                         showError("Nothing left in stock.");

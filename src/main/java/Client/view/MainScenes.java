@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
+import static Client.view.ServerConnection.setBankOperation;
 
 public class MainScenes {
     private static Button signInOrOut;
@@ -87,15 +86,7 @@ public class MainScenes {
                         phoneNumber.getText(), username.getText(), password.getText()));
                 if (Actions.register(info)) {
                     try {
-                        getDataOutputStream().writeUTF("set bank operation");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(commission.getText());
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(minimumMoney.getText());
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(bankPassword.getText());
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        setBankOperation(commission.getText(), minimumMoney.getText(), bankPassword.getText());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }

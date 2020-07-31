@@ -25,8 +25,7 @@ import java.util.Map;
 import static Client.view.Actions.showError;
 import static Client.view.Actions.showInfoBox;
 import static Client.view.MainScenes.*;
-import static Client.view.ClientHandler.getDataOutputStream;
-import static Client.view.ClientHandler.getDataInputStream;
+import static Client.view.ServerConnection.*;
 
 public class AdminScene {
     private static Gson gson = new Gson();
@@ -92,9 +91,7 @@ public class AdminScene {
 
         ArrayList<String> personalInfo = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get personal info");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = ServerConnection.getPersonalInfo();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             personalInfo = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -230,11 +227,7 @@ public class AdminScene {
                 if (!account.getAccountType().equals("Admin")) {
                     allAccounts.remove(account);
                     try {
-                        getDataOutputStream().writeUTF("delete user");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(account.getUsername());
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        deleteUser(account.getUsername());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -293,9 +286,7 @@ public class AdminScene {
 
         ArrayList<String> discounts = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get discounts");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getDiscounts();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             discounts = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -326,11 +317,7 @@ public class AdminScene {
 
                 ArrayList<String> info = new ArrayList<>();
                 try {
-                    getDataOutputStream().writeUTF("get discount info");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(hyperlink.getText());
-                    getDataOutputStream().flush();
-                    String data = getDataInputStream().readUTF();
+                    String data = getDiscountInfo(hyperlink.getText());
                     Type foundTypeList = new TypeToken<ArrayList<String>>() {}.getType();
                     info.addAll(gson.fromJson(data, foundTypeList));
                 } catch (IOException ex) {
@@ -369,15 +356,7 @@ public class AdminScene {
                     Button userButton = createButton("Remove", 100);
                     userButton.setOnMouseClicked(event -> {
                         try {
-                            getDataOutputStream().writeUTF("edit discount");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF("remove user");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(userText.getText());
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(info.get(0));
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                            editDiscount("remove user", userText.getText(), info.get(0));
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
@@ -414,23 +393,11 @@ public class AdminScene {
                 Button addUserButton = createButton("Add", 100);
                 addUserButton.setOnMouseClicked(event -> {
                     try {
-                        getDataOutputStream().writeUTF("get buyer");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(addUserText.getText());
-                        getDataOutputStream().flush();
-                        if (getDataInputStream().readBoolean()) {
+                        if (getBuyer(addUserText.getText())) {
                             if (info.contains(addUserText.getText())) {
                                 showError("Already exist.");
                             } else {
-                                getDataOutputStream().writeUTF("edit discount");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF("add user");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(addUserText.getText());
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(info.get(0));
-                                getDataOutputStream().flush();
-                                getDataInputStream().readUTF();
+                                editDiscount("add user", addUserText.getText(), info.get(0));
                                 TextField userText = createTextField("Username", 500);
                                 userText.setText(addUserText.getText());
                                 userText.setDisable(true);
@@ -438,15 +405,7 @@ public class AdminScene {
                                 Button userButton = createButton("Remove", 100);
                                 userButton.setOnMouseClicked(ev -> {
                                     try {
-                                        getDataOutputStream().writeUTF("edit discount");
-                                        getDataOutputStream().flush();
-                                        getDataOutputStream().writeUTF("remove user");
-                                        getDataOutputStream().flush();
-                                        getDataOutputStream().writeUTF(userText.getText());
-                                        getDataOutputStream().flush();
-                                        getDataOutputStream().writeUTF(info.get(0));
-                                        getDataOutputStream().flush();
-                                        getDataInputStream().readUTF();
+                                        editDiscount("remove user", userText.getText(), info.get(0));
                                     } catch (IOException ex) {
                                         ex.printStackTrace();
                                     }
@@ -561,13 +520,7 @@ public class AdminScene {
         finish.setOnMouseClicked(e -> {
             vBox.getChildren().remove(allowedUserHBox);
             try {
-                getDataOutputStream().writeUTF("create discount");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(gson.toJson(discountInfo));
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(gson.toJson(allowedUsers));
-                getDataOutputStream().flush();
-                getDataInputStream().readUTF();
+                createDiscount(discountInfo, allowedUsers);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -638,11 +591,7 @@ public class AdminScene {
             productSelected = tableView.getSelectionModel().getSelectedItems();
             for (Product product : productSelected) {
                 try {
-                    getDataOutputStream().writeUTF("remove product");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(product.getId());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    removeProduct(product.getId());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -674,9 +623,7 @@ public class AdminScene {
         int i = 0;
         ArrayList<Request> requests = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get requests");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getRequests();
             Type foundListType = new TypeToken<ArrayList<Request>>() {}.getType();
             requests = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -717,11 +664,7 @@ public class AdminScene {
             Button removeButton = createButton("Remove", 100);
             removeButton.setOnMouseClicked(e -> {
                 try {
-                    getDataOutputStream().writeUTF("remove request");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(idHyperlink.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    removeRequest(idHyperlink.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -734,11 +677,7 @@ public class AdminScene {
                 gridPane.add(declineButton, 4, i);
                 acceptButton.setOnMouseClicked(e -> {
                     try {
-                        getDataOutputStream().writeUTF("accept request");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(idHyperlink.getText());
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        acceptRequest(idHyperlink.getText());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -747,11 +686,7 @@ public class AdminScene {
                 });
                 declineButton.setOnMouseClicked(e -> {
                     try {
-                        getDataOutputStream().writeUTF("decline request");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(idHyperlink.getText());
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        declineRequest(idHyperlink.getText());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -787,9 +722,7 @@ public class AdminScene {
 
         ArrayList<String> categories = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get categories");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getCategories();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             categories = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -809,11 +742,7 @@ public class AdminScene {
 
                 ArrayList<String> feature = new ArrayList<>();
                 try {
-                    getDataOutputStream().writeUTF("get category feature");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(hyperlink.getText());
-                    getDataOutputStream().flush();
-                    String data = getDataInputStream().readUTF();
+                    String data = getCategoryFeature(hyperlink.getText());
                     Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
                     feature.addAll(gson.fromJson(data, foundListType));
                 } catch (IOException ex) {
@@ -848,17 +777,7 @@ public class AdminScene {
                     Button remove = createButton("Remove", 100);
                     remove.setOnMouseClicked(event -> {
                         try {
-                            getDataOutputStream().writeUTF("edit category");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF("remove feature");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(featureText.getText());
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(nameText.getText());
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF("");
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                            editCategory("remove feature", featureText.getText(), nameText.getText(), "");
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
@@ -886,17 +805,7 @@ public class AdminScene {
                             showError("Already exist.");
                         } else {
                             try {
-                                getDataOutputStream().writeUTF("edit category");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF("add feature");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(addFeatureText.getText());
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(nameText.getText());
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF("");
-                                getDataOutputStream().flush();
-                                getDataInputStream().readUTF();
+                                editCategory("add feature", addFeatureText.getText(), nameText.getText(), "");
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
@@ -907,17 +816,7 @@ public class AdminScene {
                             Button removeFeatureButton = createButton("Remove", 100);
                             removeFeatureButton.setOnMouseClicked(ev -> {
                                 try {
-                                    getDataOutputStream().writeUTF("edit category");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF("remove feature");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(featureText.getText());
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(nameText.getText());
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF("");
-                                    getDataOutputStream().flush();
-                                    getDataInputStream().readUTF();
+                                    editCategory("remove feature", featureText.getText(), nameText.getText(), "");
                                 } catch (IOException ex) {
                                     ex.printStackTrace();
                                 }
@@ -956,11 +855,7 @@ public class AdminScene {
                 nameVBox.getChildren().remove(hyperlink);
                 removeVBox.getChildren().remove(remove);
                 try {
-                    getDataOutputStream().writeUTF("remove category");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(hyperlink.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    removeCategory(hyperlink.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -1006,13 +901,7 @@ public class AdminScene {
 
                 finish.setOnMouseClicked(event -> {
                     try {
-                        getDataOutputStream().writeUTF("create category");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(name[0]);
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(gson.toJson(feature));
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        createCategory(name[0], feature);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -1047,9 +936,7 @@ public class AdminScene {
 
         BankOperation bankOperation = null;
         try {
-            getDataOutputStream().writeUTF("get bank operations");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getBankOperation();
             Type foundListType = new TypeToken<BankOperation>() {}.getType();
             bankOperation = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -1092,25 +979,9 @@ public class AdminScene {
             BankOperation finalBankOperation = bankOperation;
             payment.setOnMouseClicked(e -> {
                 try {
-                    getDataOutputStream().writeUTF("create withdraw receipt");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeLong(entry.getValue());
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeLong(entry.getKey());
-                    getDataOutputStream().flush();
-                    int receiptId = Integer.parseInt(getDataInputStream().readUTF());
-                    getDataOutputStream().writeUTF("pay receipt");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(receiptId);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
-                    getDataOutputStream().writeUTF("decrease money");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(String.valueOf(entry.getValue()));
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(String.valueOf(entry.getKey()));
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    int receiptId = Integer.parseInt(createWithdrawReceipt(entry.getValue(), entry.getKey()));
+                    payReceipt(receiptId);
+                    decreaseMoney(entry.getValue(), entry.getKey());
 
                     idAndMoney.getChildren().remove(info);
                     pay.getChildren().remove(payment);
@@ -1153,15 +1024,11 @@ public class AdminScene {
         ArrayList<String> orders = new ArrayList<>();
         ArrayList<String> addresses = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get all buy logs");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getAllBuyLog();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             orders = gson.fromJson(data, foundListType);
 
-            getDataOutputStream().writeUTF("get buy log address");
-            getDataOutputStream().flush();
-            data = getDataInputStream().readUTF();
+            data = getBuyLogAddress();
             addresses = gson.fromJson(data, foundListType);
         } catch (IOException e) {
             e.printStackTrace();
@@ -1177,11 +1044,7 @@ public class AdminScene {
                 Button send = createButton("Send Products", 100);
                 send.setOnMouseClicked(e -> {
                     try {
-                        getDataOutputStream().writeUTF("send buy log");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(order.substring(0, order.indexOf('.')));
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        sendBuyLog(order.substring(0, order.indexOf('.')));
                         MainScenes.getBorderPane().setCenter(manageBoughtProduct());
                     } catch (IOException ex) {
                         ex.printStackTrace();

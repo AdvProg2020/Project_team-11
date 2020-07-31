@@ -13,11 +13,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.createTextField;
 import static Client.view.ProductScene.getProducts;
 import static Client.view.ProductScene.setProducts;
+import static Client.view.ServerConnection.*;
 
 public class AuctionScene {
     private static String sort = "Date";
@@ -113,9 +112,7 @@ public class AuctionScene {
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.getItems().add("--------");
         try {
-            getDataOutputStream().writeUTF("get categories");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getCategories();
             foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
             categoryFilter.getItems().addAll(new ArrayList<>(gson.fromJson(data, foundListType[0])));
         } catch (IOException e) {
@@ -133,11 +130,7 @@ public class AuctionScene {
             filterInfo.setCategory(categoryFilter.getValue());
             ArrayList<String> features = new ArrayList<>();
             try {
-                getDataOutputStream().writeUTF("get category feature");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(categoryFilter.getValue());
-                getDataOutputStream().flush();
-                String data = getDataInputStream().readUTF();
+                String data = getCategoryFeature(categoryFilter.getValue());
                 foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
                 features = gson.fromJson(data, foundListType[0]);
                 AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), features, "auction");

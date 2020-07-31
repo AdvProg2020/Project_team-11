@@ -20,10 +20,9 @@ import java.util.*;
 import static Client.view.Actions.showError;
 import static Client.view.Actions.showInfoBox;
 import static Client.view.BuyerScene.getSupportScene;
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.*;
 import static Client.view.MainScenes.createTextField;
+import static Client.view.ServerConnection.*;
 
 public class SellerScene {
     private static Gson gson = new Gson();
@@ -86,9 +85,7 @@ public class SellerScene {
 
         ArrayList<String> personalInfo = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get personal info");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = ServerConnection.getPersonalInfo();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             personalInfo = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -175,9 +172,7 @@ public class SellerScene {
             if (Validation.validateLong(amount.getText())) {
                 long minMoney = 0;
                 try {
-                    getDataOutputStream().writeUTF("get min money");
-                    getDataOutputStream().flush();
-                    minMoney = getDataInputStream().readLong();
+                    minMoney = getMinMoney();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -191,17 +186,8 @@ public class SellerScene {
 
                     withdraw.setOnMouseClicked(event -> {
                         try {
-                            getDataOutputStream().writeUTF("get bank account id");
-                            getDataOutputStream().flush();
-                            long accountId = getDataInputStream().readLong();
-
-                            getDataOutputStream().writeUTF("request withdraw money");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(amount.getText());
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeLong(accountId);
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                            long accountId = getBankAccountId();
+                            requestWithdrawMoney(amount.getText(), accountId);
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
@@ -245,9 +231,7 @@ public class SellerScene {
 
         ArrayList<String> salesHistory = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get sales history");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getSalesHistory();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             salesHistory = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -277,9 +261,7 @@ public class SellerScene {
 
         HashMap<Integer, String> products = new HashMap<>();
         try {
-            getDataOutputStream().writeUTF("get seller products");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getSellerProducts();
             Type foundListType = new TypeToken<HashMap<Integer, String>>() {}.getType();
             products = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -299,11 +281,7 @@ public class SellerScene {
                 nameVBox.getChildren().remove(name);
                 removeVBox.getChildren().remove(remove);
                 try {
-                    getDataOutputStream().writeUTF("remove seller product");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(entry.getKey());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    removeSellerProduct(entry.getKey());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -312,11 +290,7 @@ public class SellerScene {
             id.setOnMouseClicked(e -> {
                 HashMap<String, String> productDetails = new HashMap<>();
                 try {
-                    getDataOutputStream().writeUTF("product details");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(id.getText());
-                    getDataOutputStream().flush();
-                    String data = getDataInputStream().readUTF();
+                    String data = getProductDetails(id.getText());
                     Type foundListType = new TypeToken<HashMap<String, String>>() {}.getType();
                     productDetails = gson.fromJson(data, foundListType);
                 } catch (IOException ex) {
@@ -510,21 +484,13 @@ public class SellerScene {
 
             apply.setOnMouseClicked(event -> {
                 try {
-                    getDataOutputStream().writeUTF("check category name");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(category.getText());
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
+                    if (checkCategoryName(category.getText())) {
                         showError("There is no category with this name.");
                     } else {
                         features.getChildren().clear();
                         ArrayList<String> categoryFeature = new ArrayList<>();
                         try {
-                            getDataOutputStream().writeUTF("get category feature");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(category.getText());
-                            getDataOutputStream().flush();
-                            String data = getDataInputStream().readUTF();
+                            String data = getCategoryFeature(category.getText());
                             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
                             categoryFeature = gson.fromJson(data, foundListType);
                         } catch (IOException ex) {
@@ -602,9 +568,7 @@ public class SellerScene {
 
         ArrayList<String> categories = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get categories");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getCategories();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             categories = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -619,11 +583,7 @@ public class SellerScene {
 
                 ArrayList<String> features = new ArrayList<>();
                 try {
-                    getDataOutputStream().writeUTF("get category feature");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(hyperlink.getText());
-                    getDataOutputStream().flush();
-                    String data = getDataInputStream().readUTF();
+                    String data = getCategoryFeature(hyperlink.getText());
                     Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
                     features = gson.fromJson(data, foundListType);
                 } catch (IOException ex) {
@@ -662,9 +622,7 @@ public class SellerScene {
 
         ArrayList<Integer> auctionsId = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get seller auctions");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getSellerAuctions();
             Type foundListType = new TypeToken<ArrayList<Integer>>() {}.getType();
             auctionsId = gson.fromJson(data, foundListType);
         } catch (IOException ex) {
@@ -684,11 +642,7 @@ public class SellerScene {
 
                 ArrayList<String> auctionDetail = new ArrayList<>();
                 try {
-                    getDataOutputStream().writeUTF("get auction details");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(hyperlink.getText());
-                    getDataOutputStream().flush();
-                    String data = getDataInputStream().readUTF();
+                    String data = getAuctionDetails(hyperlink.getText());
                     Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
                     auctionDetail = gson.fromJson(data, foundListType);
                 } catch (IOException ex) {
@@ -726,13 +680,8 @@ public class SellerScene {
                     Button removeProduct = createButton("Remove", 100);
                     removeProduct.setOnMouseClicked(event -> {
                         try {
-                            getDataOutputStream().writeUTF("remove auction product");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(hyperlink.getText());
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(productText.getText().substring(0, productText.getText().indexOf(".")));
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                            removeAuctionProduct(hyperlink.getText(),
+                                    productText.getText().substring(0, productText.getText().indexOf(".")));
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
@@ -757,37 +706,20 @@ public class SellerScene {
                 addProduct.setOnMouseClicked(event -> {
                     if (Validation.validateInteger(addText.getText())) {
                         try {
-                            getDataOutputStream().writeUTF("has auction");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(addText.getText());
-                            getDataOutputStream().flush();
-                            if (getDataInputStream().readBoolean()) {
+                            if (hasAuction(addText.getText())) {
                                 showError("This product has an auction.");
                             } else {
-                                getDataOutputStream().writeUTF("seller has product");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeUTF(addText.getText());
-                                getDataOutputStream().flush();
-                                if (getDataInputStream().readBoolean()) {
+                                if (sellerHasProduct(addText.getText())) {
                                     TextField productText = createTextField("Product", 400);
-                                    getDataOutputStream().writeUTF("get product name");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(addText.getText());
-                                    getDataOutputStream().flush();
-                                    productText.setText(addText.getText() + ". " + getDataInputStream().readUTF());
+                                    productText.setText(addText.getText() + ". " +
+                                            getProductName(Integer.parseInt(addText.getText())));
                                     productText.setDisable(true);
                                     productTextFields.getChildren().add(productText);
                                     Button removeProduct = createButton("Remove", 100);
                                     removeProduct.setOnMouseClicked(ev -> {
                                         try {
-                                            getDataOutputStream().writeUTF("remove auction product");
-                                            getDataOutputStream().flush();
-                                            getDataOutputStream().writeUTF(hyperlink.getText());
-                                            getDataOutputStream().flush();
-                                            getDataOutputStream().writeUTF(productText.getText()
-                                                    .substring(0, productText.getText().indexOf(".")));
-                                            getDataOutputStream().flush();
-                                            getDataInputStream().readUTF();
+                                            removeAuctionProduct(hyperlink.getText(),
+                                                    productText.getText().substring(0, productText.getText().indexOf(".")));
                                         } catch (IOException ex) {
                                             ex.printStackTrace();
                                         }
@@ -796,13 +728,7 @@ public class SellerScene {
                                     });
                                     productButton.getChildren().add(removeProduct);
 
-                                    getDataOutputStream().writeUTF("add auction product");
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(hyperlink.getText());
-                                    getDataOutputStream().flush();
-                                    getDataOutputStream().writeUTF(addText.getText());
-                                    getDataOutputStream().flush();
-                                    getDataInputStream().readUTF();
+                                    addAuctionProduct(hyperlink.getText(), addText.getText());
                                     addText.clear();
                                 } else {
                                     showError("You haven't this product.");
@@ -860,25 +786,14 @@ public class SellerScene {
             addProduct.setOnMouseClicked(event -> {
                 if (Validation.validateInteger(product.getText())) {
                     try {
-                        getDataOutputStream().writeUTF("has auction");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(product.getText());
-                        getDataOutputStream().flush();
-                        if (getDataInputStream().readBoolean()) {
+                        if (hasAuction(product.getText())) {
                             showError("This product has an auction.");
                         } else {
-                            getDataOutputStream().writeUTF("seller has product");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(product.getText());
-                            getDataOutputStream().flush();
-                            if (getDataInputStream().readBoolean()) {
+                            if (sellerHasProduct(product.getText())) {
                                 productsId.add(product.getText());
                                 TextField productText = createTextField("Product", 400);
-                                getDataOutputStream().writeUTF("get product name");
-                                getDataOutputStream().flush();
-                                getDataOutputStream().writeInt(Integer.parseInt(product.getText()));
-                                getDataOutputStream().flush();
-                                productText.setText(product.getText() + ". " + getDataInputStream().readUTF());
+                                productText.setText(product.getText() + ". " +
+                                        getProductName(Integer.parseInt(product.getText())));
                                 productText.setDisable(true);
                                 productVBox.getChildren().add(productText);
 
@@ -940,9 +855,7 @@ public class SellerScene {
 
     private static Parent manageBids() {
         try {
-            getDataOutputStream().writeUTF("get seller bid");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getSellerBid();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             ArrayList<String> bidInfo = gson.fromJson(data, foundListType);
 
@@ -980,11 +893,7 @@ public class SellerScene {
                 Label endLabel = createLabel("End Date : ", 100);
                 Label priceLabel = createLabel("Max Offered Price : ", 100);
 
-                getDataOutputStream().writeUTF("get product name");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeInt(Integer.parseInt(bidInfo.get(0)));
-                getDataOutputStream().flush();
-                String productName = getDataInputStream().readUTF();
+                String productName = getProductName(Integer.parseInt(bidInfo.get(0)));
                 TextField productText = createTextField("Product", 400);
                 productText.setText(productName);
                 productText.setDisable(true);
@@ -1014,7 +923,6 @@ public class SellerScene {
 
                 return scrollPane;
             }
-
         } catch (IOException e) {
             e.printStackTrace();
             return null;

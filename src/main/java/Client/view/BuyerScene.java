@@ -21,12 +21,11 @@ import java.util.*;
 
 import static Client.view.Actions.showError;
 import static Client.view.Actions.showInfoBox;
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.createButton;
 import static Client.view.MainScenes.createTextField;
 import static Client.view.MainScenes.createLabel;
 import static Client.view.ProductScene.getProductRoot;
+import static Client.view.ServerConnection.*;
 
 public class BuyerScene {
     private static Gson gson = new Gson();
@@ -78,9 +77,7 @@ public class BuyerScene {
 
         ArrayList<String> personalInfo = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get personal info");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = ServerConnection.getPersonalInfo();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             personalInfo = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -160,11 +157,7 @@ public class BuyerScene {
             if (Validation.validateLong(amount.getText())) {
                 int receiptId = 0;
                 try {
-                    getDataOutputStream().writeUTF("create charge receipt");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(amount.getText());
-                    getDataOutputStream().flush();
-                    receiptId = Integer.parseInt(getDataInputStream().readUTF());
+                    receiptId = Integer.parseInt(createChargeReceipt(amount.getText()));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -180,16 +173,8 @@ public class BuyerScene {
                 int finalReceiptId = receiptId;
                 charge.setOnMouseClicked(event -> {
                     try {
-                        getDataOutputStream().writeUTF("pay receipt");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeInt(finalReceiptId);
-                        getDataOutputStream().flush();
-                        if (getDataInputStream().readUTF().startsWith("done")) {
-                            getDataOutputStream().writeUTF("increase money");
-                            getDataOutputStream().flush();
-                            getDataOutputStream().writeUTF(amount.getText());
-                            getDataOutputStream().flush();
-                            getDataInputStream().readUTF();
+                        if (payReceipt(finalReceiptId).startsWith("done")) {
+                            increaseMoney(amount.getText());
                             showInfoBox("charge successfully.");
                             MainScenes.getBorderPane().setCenter(getPersonalInfo());
                         } else {
@@ -232,9 +217,7 @@ public class BuyerScene {
         Label priceLabel = createLabel("Total Price", 50);
         TextField priceText = createTextField("Price", 100);
         try {
-            getDataOutputStream().writeUTF("price with auction");
-            getDataOutputStream().flush();
-            priceText.setText(getDataInputStream().readUTF());
+            priceText.setText(getPriceWithAuction());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -250,11 +233,7 @@ public class BuyerScene {
                 if (Actions.checkReceiverInfo(address.getText(), phoneNumber.getText()) && discount.getText() != null) {
                     String result = "";
                     try {
-                        getDataOutputStream().writeUTF("check discount");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(discount.getText());
-                        getDataOutputStream().flush();
-                        result = getDataInputStream().readUTF();
+                        result = checkDiscount(discount.getText());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -283,9 +262,7 @@ public class BuyerScene {
 
         HashMap<String, Integer> products = new HashMap<>();
         try {
-            getDataOutputStream().writeUTF("product in cart");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getProductInCart();
             Type foundType = new TypeToken<HashMap<String, Integer>>() {}.getType();
             products = gson.fromJson(data, foundType);
         } catch (IOException e) {
@@ -316,16 +293,8 @@ public class BuyerScene {
             increase.setFitWidth(40);
             String productName = "", auctionPrice = "";
             try {
-                getDataOutputStream().writeUTF("get product name");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeInt(Integer.parseInt(entry.getKey()));
-                getDataOutputStream().flush();
-                productName = getDataInputStream().readUTF();
-                getDataOutputStream().writeUTF("get auction price");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeInt(Integer.parseInt(entry.getKey()));
-                getDataOutputStream().flush();
-                auctionPrice = getDataInputStream().readUTF();
+                productName = getProductName(Integer.parseInt(entry.getKey()));
+                auctionPrice = getAuctionPrice(Integer.parseInt(entry.getKey()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -351,29 +320,19 @@ public class BuyerScene {
 
             decrease.setOnMouseClicked(e -> {
                 try {
-                    getDataOutputStream().writeUTF("change number");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(Integer.parseInt(hyperlink.getText()));
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(-1);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readBoolean();
+                    changeNumber(Integer.parseInt(hyperlink.getText()), -1);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
                 textField.setText(String.valueOf(Integer.parseInt(textField.getText()) - 1));
                 try {
-                    getDataOutputStream().writeUTF("price with auction");
-                    getDataOutputStream().flush();
-                    priceText.setText(getDataInputStream().readUTF());
+                    priceText.setText(getPriceWithAuction());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
                 if (textField.getText().equals("0")) {
                     try {
-                        getDataOutputStream().writeUTF("remove product in cart");
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        removeProductInCart();
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -382,17 +341,9 @@ public class BuyerScene {
             });
             increase.setOnMouseClicked(e -> {
                 try {
-                    getDataOutputStream().writeUTF("change number");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(Integer.parseInt(hyperlink.getText()));
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(1);
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
+                    if (changeNumber(Integer.parseInt(hyperlink.getText()), 1)) {
                         textField.setText(String.valueOf(Integer.parseInt(textField.getText()) + 1));
-                        getDataOutputStream().writeUTF("price with auction");
-                        getDataOutputStream().flush();
-                        String totalPrice = getDataInputStream().readUTF();
+                        String totalPrice = getPriceWithAuction();
                         priceText.setText(totalPrice);
                     } else {
                         showError("There isn't any more of this product.");
@@ -416,16 +367,9 @@ public class BuyerScene {
         long priceWithDiscount = 0, totalPrice = 0;
         boolean hasFile = false;
         try {
-            getDataOutputStream().writeUTF("price with auction");
-            getDataOutputStream().flush();
-            totalPrice = Long.parseLong(getDataInputStream().readUTF());
-            getDataOutputStream().writeUTF("buyer price");
-            getDataOutputStream().flush();
-            priceWithDiscount = getDataInputStream().readLong();
-
-            getDataOutputStream().writeUTF("has file in cart");
-            getDataOutputStream().flush();
-            hasFile = getDataInputStream().readBoolean();
+            totalPrice = Long.parseLong(getPriceWithAuction());
+            priceWithDiscount = getBuyerPrice();
+            hasFile = hasFileInCart();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -451,13 +395,9 @@ public class BuyerScene {
         payWallet.setOnMouseClicked(ev -> {
             if (!finalHasFile || path.getText() != null) {
                 try {
-                    getDataOutputStream().writeUTF("can pay");
-                    getDataOutputStream().flush();
-                    if (getDataInputStream().readBoolean()) {
+                    if (canPay()) {
                         if (finalHasFile) {
-                            getDataOutputStream().writeUTF("get files id in cart");
-                            getDataOutputStream().flush();
-                            String data = getDataInputStream().readUTF();
+                            String data = getFilesIdInCart();
                             Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
                             ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
                             for (Integer fileId : fileIds) {
@@ -470,23 +410,13 @@ public class BuyerScene {
                                 scanner.close();
                             }
                         }
-                        getDataOutputStream().writeUTF("pay");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF("wallet");
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(address);
-                        getDataOutputStream().flush();
-                        getDataOutputStream().writeUTF(phoneNumber);
-                        getDataOutputStream().flush();
-                        getDataInputStream().readUTF();
+                        pay("wallet", address, phoneNumber);
                         showInfoBox("Purchase Completed.\nThank you for buying.");
                         MainScenes.getBorderPane().setCenter(viewOrders());
                     } else {
                         try {
-                            getDataOutputStream().writeUTF("get min money");
-                            getDataOutputStream().flush();
                             showError("You don't have enough money.\n" +
-                                    "There should be at least " + getDataInputStream().readLong() + "$ left in your wallet.");
+                                    "There should be at least " + getMinMoney() + "$ left in your wallet.");
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
@@ -503,9 +433,7 @@ public class BuyerScene {
             if (!finalHasFile || path.getText() != null) {
                 try {
                     if (finalHasFile) {
-                        getDataOutputStream().writeUTF("get files id in cart");
-                        getDataOutputStream().flush();
-                        String data = getDataInputStream().readUTF();
+                        String data = getFilesIdInCart();
                         Type foundListType = new TypeToken<ArrayList<Integer>>(){}.getType();
                         ArrayList<Integer> fileIds = gson.fromJson(data, foundListType);
                         for (Integer fileId : fileIds) {
@@ -518,15 +446,7 @@ public class BuyerScene {
                             scanner.close();
                         }
                     }
-                    getDataOutputStream().writeUTF("pay");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF("bank");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(address);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(phoneNumber);
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    pay("bank", address, phoneNumber);
                     showInfoBox("Purchase Completed.\nThank you for buying.");
                     MainScenes.getBorderPane().setCenter(viewOrders());
                 } catch (IOException e) {
@@ -544,9 +464,7 @@ public class BuyerScene {
 
         ArrayList<String> orders = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get orders");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getOrders();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             orders = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -571,9 +489,7 @@ public class BuyerScene {
 
         ArrayList<String> discounts = new ArrayList<>();
         try {
-            getDataOutputStream().writeUTF("get buyer discounts");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getBuyerDiscounts();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             discounts = gson.fromJson(data, foundListType);
         } catch (IOException e) {
@@ -599,9 +515,7 @@ public class BuyerScene {
         vBox.getChildren().add(info);
 
         try {
-            getDataOutputStream().writeUTF("get online supports");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getOnlineSupports();
             Type foundListType = new TypeToken<ArrayList<String>>() {}.getType();
             ArrayList<String> onlineSupports = gson.fromJson(data, foundListType);
 
@@ -628,11 +542,7 @@ public class BuyerScene {
         messageVBox.setAlignment(Pos.TOP_CENTER);
 
         try {
-            getDataOutputStream().writeUTF("get last messages");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeUTF(supportUsername);
-            getDataOutputStream().flush();
-            String data1 = getDataInputStream().readUTF();
+            String data1 = getLastSupportMessages(supportUsername);
             Type foundListType1 = new TypeToken<ArrayList<HashMap<String, String>>>() {}.getType();
             ArrayList<HashMap<String, String>> messages = gson.fromJson(data1, foundListType1);
 
@@ -662,15 +572,7 @@ public class BuyerScene {
                 message.setAlignment(Pos.CENTER_RIGHT);
                 messageVBox.getChildren().add(message);
                 try {
-                    getDataOutputStream().writeUTF("send message support");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(supportUsername);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF("me");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    sendMessageSupport(supportUsername, "me", textField.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

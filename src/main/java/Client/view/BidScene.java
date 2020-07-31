@@ -22,11 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static Client.view.Actions.showError;
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.*;
 import static Client.view.ProductScene.getProductRoot;
 import static Client.view.ProductScene.getRateImage;
+import static Client.view.ServerConnection.*;
 
 public class BidScene {
     private static String sort = "Date";
@@ -122,9 +121,7 @@ public class BidScene {
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.getItems().add("--------");
         try {
-            getDataOutputStream().writeUTF("get categories");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getCategories();
             foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
             categoryFilter.getItems().addAll(new ArrayList<>(gson.fromJson(data, foundListType[0])));
         } catch (IOException e) {
@@ -142,11 +139,7 @@ public class BidScene {
             filterInfo.setCategory(categoryFilter.getValue());
             ArrayList<String> features = new ArrayList<>();
             try {
-                getDataOutputStream().writeUTF("get category feature");
-                getDataOutputStream().flush();
-                getDataOutputStream().writeUTF(categoryFilter.getValue());
-                getDataOutputStream().flush();
-                String data = getDataInputStream().readUTF();
+                String data = getCategoryFeature(categoryFilter.getValue());
                 foundListType[0] = new TypeToken<ArrayList<String>>() {}.getType();
                 features = gson.fromJson(data, foundListType[0]);
                 AllAccountZone.setFilterCategoryFeature(categoryFilter.getValue(), features, "bid");
@@ -184,10 +177,8 @@ public class BidScene {
 
     public static ArrayList<Product> getProducts() {
         try {
-            getDataOutputStream().writeUTF("get bid products");
-            getDataOutputStream().flush();
             Type foundListType = new TypeToken<ArrayList<Product>>(){}.getType();
-            return gson.fromJson(getDataInputStream().readUTF(), foundListType);
+            return gson.fromJson(getBidProducts(), foundListType);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -231,11 +222,7 @@ public class BidScene {
                 productHyperlink.setAlignment(Pos.CENTER);
                 Hyperlink bidHyperlink = new Hyperlink();
                 try {
-                    getDataOutputStream().writeUTF("get bid id");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(productHyperlink.getText());
-                    getDataOutputStream().flush();
-                    bidHyperlink.setText(getDataInputStream().readUTF());
+                    bidHyperlink.setText(getBidId(productHyperlink.getText()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -246,9 +233,7 @@ public class BidScene {
                         MainScenes.getBorderPane().setCenter(getProductRoot(Integer.parseInt(productHyperlink.getText()))));
                 bidHyperlink.setOnMouseClicked(e -> {
                     try {
-                        getDataOutputStream().writeUTF("is buyer");
-                        getDataOutputStream().flush();
-                        if (getDataInputStream().readBoolean()) {
+                        if (isBuyer()) {
                             MainScenes.getBorderPane().setCenter(getBidPane(Integer.parseInt(bidHyperlink.getText())));
                         } else {
                             showError("You should login as a buyer.");
@@ -287,17 +272,11 @@ public class BidScene {
         scrollMessages.setFitToHeight(true);
 
         try {
-            getDataOutputStream().writeUTF("get bid messages");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeInt(bidId);
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getBidMessages(bidId);
             Type foundListType = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
             ArrayList<HashMap<String, String>> messages = gson.fromJson(data, foundListType);
 
-            getDataOutputStream().writeUTF("get username");
-            getDataOutputStream().flush();
-            String username = getDataInputStream().readUTF();
+            String username = getUsername();
 
             if (messages != null) {
                 for (HashMap<String, String> message : messages) {
@@ -329,13 +308,7 @@ public class BidScene {
                 Label message = createLabel(messageText.getText(), 500);
                 message.setAlignment(Pos.CENTER_RIGHT);
                 try {
-                    getDataOutputStream().writeUTF("send message bid");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeInt(bidId);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(message.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    sendMessageBid(bidId, message.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -357,17 +330,11 @@ public class BidScene {
         scrollOffers.setFitToHeight(true);
 
         try {
-            getDataOutputStream().writeUTF("get bid offers");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeInt(bidId);
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getBidOffers(bidId);
             Type foundListType = new TypeToken<HashMap<Long, String>>(){}.getType();
             HashMap<Long, String> offers = gson.fromJson(data, foundListType);
 
-            getDataOutputStream().writeUTF("get username");
-            getDataOutputStream().flush();
-            String username = getDataInputStream().readUTF();
+            String username = getUsername();
 
             ArrayList<Long> prices = new ArrayList<>(offers.keySet());
             prices.sort(Comparator.comparingLong(o -> o));

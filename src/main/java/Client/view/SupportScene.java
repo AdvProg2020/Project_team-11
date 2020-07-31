@@ -18,9 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static Client.view.ClientHandler.getDataInputStream;
-import static Client.view.ClientHandler.getDataOutputStream;
 import static Client.view.MainScenes.*;
+import static Client.view.ServerConnection.*;
 
 public class SupportScene {
     private static Gson gson = new Gson();
@@ -30,9 +29,7 @@ public class SupportScene {
         vBox.setAlignment(Pos.TOP_CENTER);
 
         try {
-            getDataOutputStream().writeUTF("get message senders");
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getMessageSenders();
             Type foundListType = new TypeToken<Set<String>>() {}.getType();
             Set<String> senders = gson.fromJson(data, foundListType);
 
@@ -60,11 +57,7 @@ public class SupportScene {
         messageVBox.setAlignment(Pos.TOP_CENTER);
 
         try {
-            getDataOutputStream().writeUTF("get messages");
-            getDataOutputStream().flush();
-            getDataOutputStream().writeUTF(sender);
-            getDataOutputStream().flush();
-            String data = getDataInputStream().readUTF();
+            String data = getMessages(sender);
             Type foundListType = new TypeToken<ArrayList<HashMap<String, String>>>() {}.getType();
             ArrayList<HashMap<String, String>> messages = gson.fromJson(data, foundListType);
 
@@ -92,15 +85,7 @@ public class SupportScene {
                 message.setAlignment(Pos.CENTER_RIGHT);
                 messageVBox.getChildren().add(message);
                 try {
-                    getDataOutputStream().writeUTF("send message support");
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF("me"); //TODO : forbidden username
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(sender);
-                    getDataOutputStream().flush();
-                    getDataOutputStream().writeUTF(textField.getText());
-                    getDataOutputStream().flush();
-                    getDataInputStream().readUTF();
+                    sendMessageSupport("me", sender, textField.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
